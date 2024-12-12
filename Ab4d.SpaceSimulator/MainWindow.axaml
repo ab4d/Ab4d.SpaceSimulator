@@ -5,7 +5,8 @@
         xmlns:sharpEngine="clr-namespace:Ab4d.SharpEngine.AvaloniaUI;assembly=Ab4d.SharpEngine.AvaloniaUI"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Ab4d.SpaceSimulator.MainWindow"
-        Title="Ab4d.SpaceSimulator">
+        Title="Ab4d.SpaceSimulator"
+        Icon="sharp-engine-logo.ico">
     <Grid Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -23,18 +24,52 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Name="BottomLeftOptionsPanel" Grid.Column="0" Orientation="Horizontal">
-                    <Button Name="TestButton1" Content="TEST1"></Button>
+                    <Button Name="PlayPauseButton" Content="⏵" VerticalAlignment="Center" Margin="5 0 0 0" Click="PlayPauseButton_OnClick" />
+
+                    <TextBlock Name="SimulationTimeTextBlock" Text="2024-12-31 00:00:00" Width="150" Margin="5 0 0 0" VerticalAlignment="Center" />
+
+                    <Slider Name="SimulationSpeedSlider" Minimum="0" Maximum="9" Width="160" Margin="10 0 0 0"
+                            TickFrequency="1" TickPlacement="BottomRight"
+                            ValueChanged="SimulationSpeedSlider_OnValueChanged"/>
+
+                    <TextBlock Name="SpeedInfoTextBlock" Text="+123.4 days" Margin="3 0 0 0" VerticalAlignment="Center" MinWidth="90"/>
+                    
+                    <TextBlock Text="Center:" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                    <ComboBox Name="ViewCenterComboBox" Width="100" Margin="3 0 0 0" VerticalAlignment="Center" />
+                    <ComboBox Name="ScaleTypeComboBox" Width="100" Margin="10 0 0 0" VerticalAlignment="Center" />
                 </StackPanel>
                  
                 <StackPanel Name="BottomRightOptionsPanel" Grid.Column="2" Orientation="Horizontal">
-                    <Button Name="TestButton2" Content="TEST2"></Button>
+                    <ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />
+                    <ToggleButton Name="SettingButton" Content="Setting" Margin="5 0 5 0" VerticalAlignment="Center" Click="SettingButton_OnClick" />
                 </StackPanel>
             </Grid>
         </Border>
 
+        <Border Name="InfoMessagesBorder" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5">
+            <StackPanel Name="InfoMessagesPanel" Orientation="Vertical" />
+        </Border>
+
+        <Border Name="ScenariosBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
+            <StackPanel Orientation="Vertical" Margin="8 10">
+                <TextBlock Text="Select scenario:" FontWeight="Bold"></TextBlock>
+                
+                <Button Name="Scenario1Button" Content="Scenario 1" Margin="0 5 0 0" Click="Scenario1Button_OnClick"
+                        ToolTip.Tip="Additional info about scenario 1"/>
+            </StackPanel>
+        </Border>
+        
+        <Border Name="SettingBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
+            <StackPanel Orientation="Vertical" Margin="8 10">
+                <TextBlock Text="Settings:" FontWeight="Bold"></TextBlock>
+                
+                <CheckBox Name="CheckBox1" Content="Demo checkbox" IsChecked="True" />
+            </StackPanel>
+        </Border>
+
         <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Vertical" Margin="10">
-          <TextBlock Name="TitleTextBlock" Text="Space Simulator" FontSize="20" FontWeight="Bold" Foreground="#CCC" />
-            <TextBlock Name="SubtitleTextBlock" Text="Test" FontSize="14" Foreground="#CCC" Margin="0 3 0 0" />
+            <TextBlock Name="TitleTextBlock" Text="Space Simulator" FontSize="20" FontWeight="Bold" Foreground="#CCC" />
+            <TextBlock Name="SubtitleTextBlock" Text="Space simulator in .Net that uses Ab4d.SharpEngine rendering engine" FontSize="14" Foreground="#CCC" Margin="0 3 0 0" />
         </StackPanel>
     </Grid>
 </Window>
