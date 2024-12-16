@@ -16,6 +16,29 @@ namespace Ab4d.SpaceSimulator
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
+#if VULKAN_BACKEND
+                .With(new Win32PlatformOptions
+                {
+                    RenderingMode = new[]
+                    {
+                        Win32RenderingMode.Vulkan
+                    }
+                })
+                .With(new X11PlatformOptions
+                {
+                    RenderingMode = new[]
+                    {
+                        X11RenderingMode.Vulkan
+                    }
+                })
+                .With(new Avalonia.Vulkan.VulkanOptions()
+                {
+                    VulkanInstanceCreationOptions = new Avalonia.Vulkan.VulkanInstanceCreationOptions()
+                    {
+                        UseDebug = true
+                    }
+                })
+#endif
                 .WithInterFont()
                 .LogToTrace();
     }

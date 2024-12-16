@@ -7,6 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>sharp-engine-logo.ico</ApplicationIcon>
+    <DefineConstants>VULKAN_BACKEND</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
