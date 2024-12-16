@@ -10,9 +10,16 @@
     <DefineConstants>VULKAN_BACKEND</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)==''">
+    <PackageReference Include="Ab4d.SharpEngine" Version="2.1.9118-beta2" />
+    <PackageReference Include="Ab4d.SharpEngine.AvaloniaUI" Version="2.1.9118-beta2" />
+  </ItemGroup>
+  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)!=''">
+    <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine\Ab4d.SharpEngine.csproj" />
+    <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine.AvaloniaUI\Ab4d.SharpEngine.AvaloniaUI.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
-    <!--<PackageReference Include="Ab4d.SharpEngine" Version="2.1.9118-beta2" />
-    <PackageReference Include="Ab4d.SharpEngine.AvaloniaUI" Version="2.1.9118-beta2" />-->
     <PackageReference Include="Avalonia" Version="11.2.2" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.2" />
@@ -21,12 +28,13 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)!=''">
-    <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine\Ab4d.SharpEngine.csproj" />
-    <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine.AvaloniaUI\Ab4d.SharpEngine.AvaloniaUI.csproj" />
+  <ItemGroup>
+    <AvaloniaResource Include="sharp-engine-logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="sharp-engine-logo.ico" />
+    <Content Include="Resources\SolarSystemData.txt" Link="Resources\SolarSystemData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
