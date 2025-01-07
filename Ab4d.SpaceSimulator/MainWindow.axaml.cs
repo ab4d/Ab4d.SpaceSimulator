@@ -26,9 +26,12 @@ namespace Ab4d.SpaceSimulator
         private bool _isInternalChange;
         private readonly int[] _simulationSpeedIntervals;
 
-        private List<TextBlock> _allMessages = new();
+        private readonly List<TextBlock> _allMessages = new();
         private const int MaxShownInfoMessagesCount = 5;
 
+        private readonly PhysicsEngine.PhysicsEngine _physicsEngine = new();
+        private readonly VisualizationEngine.VisualizationEngine _visualizationEngine = new();
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -49,6 +52,9 @@ namespace Ab4d.SpaceSimulator
 
             SetupCameraController();
             CreateTestScene();
+
+            var solarSystem = new SolarSystemScenario();
+            solarSystem.SetupScenario(_physicsEngine, _visualizationEngine);
 
             // In case when VulkanDevice cannot be created, show an error message
             // If this is not handled by the user, then SharpEngineSceneView will show its own error message
