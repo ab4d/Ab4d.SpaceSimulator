@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SpaceSimulator", "Ab4d.SpaceSimulator\Ab4d.SpaceSimulator.csproj", "{611869B1-11FF-4B03-A684-D086F3A35E29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SharpEngine", "%SHARPENGINE_PRIVATE_DIR%\Ab4d.SharpEngine\Ab4d.SharpEngine.csproj", "{002F6F0A-11F9-4195-AC4A-B3DE3681F8A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SharpEngine.AvaloniaUI", "%SHARPENGINE_PRIVATE_DIR%\Ab4d.SharpEngine.AvaloniaUI\Ab4d.SharpEngine.AvaloniaUI.csproj", "{A6A61D2D-802D-488B-9B00-E4691C46B4C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{611869B1-11FF-4B03-A684-D086F3A35E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{611869B1-11FF-4B03-A684-D086F3A35E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{611869B1-11FF-4B03-A684-D086F3A35E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{002F6F0A-11F9-4195-AC4A-B3DE3681F8A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{002F6F0A-11F9-4195-AC4A-B3DE3681F8A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{002F6F0A-11F9-4195-AC4A-B3DE3681F8A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{002F6F0A-11F9-4195-AC4A-B3DE3681F8A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6A61D2D-802D-488B-9B00-E4691C46B4C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6A61D2D-802D-488B-9B00-E4691C46B4C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6A61D2D-802D-488B-9B00-E4691C46B4C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6A61D2D-802D-488B-9B00-E4691C46B4C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

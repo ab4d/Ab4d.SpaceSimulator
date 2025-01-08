@@ -15,7 +15,8 @@ namespace Ab4d.SpaceSimulator
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
+                //desktop.MainWindow = new MainWindow();
+                desktop.MainWindow = new TestCustomCameraWindow();
             }
 
             base.OnFrameworkInitializationCompleted();
