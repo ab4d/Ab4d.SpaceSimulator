@@ -82,6 +82,10 @@ namespace Ab4d.SpaceSimulator
                 UpdateShownSimulationTime();
             };
 
+            // Initial UI update
+            UpdateShownSimulationTime();
+            SetSimulationSpeed(GetSimulationSpeed());
+
             // In case when VulkanDevice cannot be created, show an error message
             // If this is not handled by the user, then SharpEngineSceneView will show its own error message
             MainSceneView.GpuDeviceCreationFailed += delegate (object sender, DeviceCreateFailedEventArgs args)
@@ -172,7 +176,7 @@ namespace Ab4d.SpaceSimulator
 
             if (simulationSpeed <= 0)
             {
-                SpeedInfoTextBlock.Text = "";
+                SpeedInfoTextBlock.Text = "Speed: paused";
             }
             else
             {
@@ -200,7 +204,7 @@ namespace Ab4d.SpaceSimulator
                     infoUnit = "days";
                 }
 
-                SpeedInfoTextBlock.Text = $"+{infoValue:0.0} {infoUnit}/s";
+                SpeedInfoTextBlock.Text = $"Speed: +{infoValue:0.0} {infoUnit}/s";
             }
         }
 
@@ -289,14 +293,16 @@ namespace Ab4d.SpaceSimulator
         {
             if (_isPlaying)
             {
-                PlayPauseButton.Content = "\u23f5";
+                PlayPauseButton.Content = "Start";
                 _isPlaying = false;
             }
             else
             {
-                PlayPauseButton.Content = "\u23f8";
+                PlayPauseButton.Content = "Stop";
                 _isPlaying = true;
             }
+
+            UpdateShownSimulationTime();
         }
 
         private void ScenariosButton_OnClick(object? sender, RoutedEventArgs e)
