@@ -9,11 +9,11 @@ public class SolarSystemScenario
     private struct Entity
     {
         public string Name;
-        
+
         public string Parent;
-        
+
         public string Type;
-        
+
         public string MaterialName;
 
         public double Mass;
@@ -35,18 +35,18 @@ public class SolarSystemScenario
         public double SurfacePressure;
         public double NumberOfMoons;
     };
-    
-    
+
+
     private readonly List<Entity> _entities = [];
-    
+
     public SolarSystemScenario(string? dataFilename = null)
     {
         dataFilename ??= System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/SolarSystemData.txt");
 
         var dataLines = System.IO.File.ReadAllLines(dataFilename);
-        
+
         // First line is the data source
-        
+
         // Second line are the keys.
         var tokens = dataLines[1].Split('\t');
         var keyMap = new Dictionary<string, int>();
@@ -54,19 +54,19 @@ public class SolarSystemScenario
         {
             keyMap.Add(tokens[i].ToLower(), i);
         }
-        
+
         // Third line are the units
-        
+
         // Fourth line are the scale factors for conversion to basic SI units.
         tokens = dataLines[3].Split('\t');
-        tokens[0] = "1.0";  // First column is "Scale:" - replace it with a number 
+        tokens[0] = "1.0";  // First column is "Scale:" - replace it with a number
         var basicUnitScaleFactors = tokens.Select(t => double.Parse(t, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
 
         // The rest of lines are entries
         for (var i = 4; i < dataLines.Length; i++)
         {
             tokens = dataLines[i].Split('\t');
-            
+
             var entity = new Entity
             {
                 Name = tokens[0], // First column
@@ -89,7 +89,7 @@ public class SolarSystemScenario
                 OrbitalEccentricity = GetNumericField("Orbital Eccentricity", tokens),
                 ObliquityToOrbit = GetNumericField("Obliquity to Orbit", tokens),
                 MeanTemperature = GetNumericField("Mean Temperature", tokens),
-                SurfacePressure = GetNumericField("Surface Pressure", tokens), 
+                SurfacePressure = GetNumericField("Surface Pressure", tokens),
                 NumberOfMoons = GetNumericField("Number of Moons", tokens),
             };
             _entities.Add(entity);

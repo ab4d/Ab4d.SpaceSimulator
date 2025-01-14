@@ -57,7 +57,7 @@ public partial class TestCustomCameraWindow : Window
         };
 
         _customRenderingLayer = new RenderingLayer("CustomRenderingLayer");
-     
+
         _customRenderingLayer.CustomCamera = _spaceshipCamera;
         _customRenderingLayer.CustomAmbientLightColor = new Color3(0.4f);
         _customRenderingLayer.ClearDepthStencilBufferBeforeRendering = true;
@@ -167,10 +167,10 @@ public partial class TestCustomCameraWindow : Window
         };
 
         scene.RootNode.Add(spaceship);
-        
+
         var spaceshipEngine = new BoxModelNode("SpaceshipEngine")
         {
-            Position = spaceship.Position + new Vector3(0, 0, 0.052f),     
+            Position = spaceship.Position + new Vector3(0, 0, 0.052f),
             Size = new Vector3(0.01f, 0.01f, 0.004f),  // 4 meters long, 10 meters wide and 10 meters high
             Material = StandardMaterials.Red,
             CustomRenderingLayer = _customRenderingLayer,
@@ -193,7 +193,7 @@ public partial class TestCustomCameraWindow : Window
             _targetPositionCamera.Distance = 1f; // 1000 meters from spaceship
 
             UpdateSpaceshipCamera();
-            
+
             //if (_renderingLayerCustomCamera != null)
             //{
             //    _renderingLayerCustomCamera.TargetPosition = _targetPositionCamera.TargetPosition;

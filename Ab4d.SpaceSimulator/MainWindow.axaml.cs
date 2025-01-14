@@ -5,7 +5,6 @@ using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
-using Ab4d.SharpEngine.Transformations;
 using System.Numerics;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -24,14 +23,18 @@ namespace Ab4d.SpaceSimulator
 
         private bool _isPlaying;
         private bool _isInternalChange;
+
         private readonly int[] _simulationSpeedIntervals;
+        private double _simulationSpeed;
+
+        private DateTime _previousUpdateTime = DateTime.Now;
 
         private readonly List<TextBlock> _allMessages = new();
         private const int MaxShownInfoMessagesCount = 5;
 
         private readonly PhysicsEngine.PhysicsEngine _physicsEngine = new();
         private readonly VisualizationEngine.VisualizationEngine _visualizationEngine = new();
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -55,6 +58,29 @@ namespace Ab4d.SpaceSimulator
 
             var solarSystem = new SolarSystemScenario();
             solarSystem.SetupScenario(_physicsEngine, _visualizationEngine);
+
+            MainSceneView.SceneUpdating += (sender, args) =>
+            {
+                var now = DateTime.Now;
+
+                if (!_isPlaying)
+                {
+                    _previousUpdateTime = now;
+                    return;
+                }
+
+                // Compute elapsed real-time, then scale it with simulation speed (simulation time step per real-time second)
+                // to obtain the simulation time delta
+                var timeDelta = now - _previousUpdateTime;
+                _previousUpdateTime = now; // Store for next call
+
+                var scaledTimeDelta = timeDelta * _simulationSpeed;
+
+                _physicsEngine.Simulate(scaledTimeDelta.TotalSeconds);
+                _visualizationEngine.Update();
+
+                UpdateShownSimulationTime();
+            };
 
             // In case when VulkanDevice cannot be created, show an error message
             // If this is not handled by the user, then SharpEngineSceneView will show its own error message
@@ -92,8 +118,8 @@ namespace Ab4d.SpaceSimulator
 
         private void CreateTestScene()
         {
-            var boxModel = new BoxModelNode(centerPosition: new Vector3(0, 0, 0), 
-                size: new Vector3(80, 40, 60), 
+            var boxModel = new BoxModelNode(centerPosition: new Vector3(0, 0, 0),
+                size: new Vector3(80, 40, 60),
                 name: "Gold BoxModel")
             {
                 Material = StandardMaterials.Gold,
@@ -116,7 +142,7 @@ namespace Ab4d.SpaceSimulator
 
             RootGrid.Children.Add(errorTextBlock);
         }
-        
+
         private void ShowOptionPanels(Border panelToShow)
         {
             if (panelToShow == ScenariosBorder)
@@ -142,25 +168,14 @@ namespace Ab4d.SpaceSimulator
 
         private void SetSimulationSpeed(double simulationSpeed)
         {
+            _simulationSpeed = simulationSpeed;
+
             if (simulationSpeed <= 0)
             {
-                //_gravitySimulator.StopSimulation();
                 SpeedInfoTextBlock.Text = "";
             }
             else
             {
-                //double oneSimulationStepDuration = simulationSpeed / SimulationStepsPerSecond;
-
-                //if (!_gravitySimulator.IsSimulationStarted)
-                //{
-                //    _gravitySimulator.StartSimulation(SimulationStepsPerSecond, oneSimulationStepDuration);
-                //}
-                //else
-                //{
-                //    _gravitySimulator.SimulationStepsPerSecond = SimulationStepsPerSecond;
-                //    _gravitySimulator.OneSimulationStepDuration = oneSimulationStepDuration;
-                //}
-
                 double infoValue;
                 string infoUnit;
 
@@ -185,7 +200,7 @@ namespace Ab4d.SpaceSimulator
                     infoUnit = "days";
                 }
 
-                SpeedInfoTextBlock.Text = string.Format("+{0:0.0} {1}/s", infoValue, infoUnit);
+                SpeedInfoTextBlock.Text = $"+{infoValue:0.0} {infoUnit}/s";
             }
         }
 
@@ -215,26 +230,30 @@ namespace Ab4d.SpaceSimulator
 
         private void UpdateShownSimulationTime()
         {
-            //string timeText = "Time: ";
+            var simulationTime = _physicsEngine.SimulationTime;
+            var timeText = "Time: ";
 
-            //if (_gravitySimulator.TimeInDays > 1)
-            //    timeText += string.Format("+{0:0} days ", _gravitySimulator.TimeInDays);
+            if (simulationTime >= PhysicsEngine.Constants.SecondsInDay)
+            {
+                var days = (int)Math.Floor(simulationTime / PhysicsEngine.Constants.SecondsInDay);
+                timeText += $"+{days:0} day(s) ";
+            }
 
-            //int timeWithinDay = (int)_gravitySimulator.TimeInSeconds % (24 * 60 * 60);
-            //int hours = timeWithinDay / (60 * 60);
-            //int minutes = (timeWithinDay % (60 * 60)) / 60;
-            //int seconds = timeWithinDay % 60;
+            var timeWithinDay = (int)simulationTime % (PhysicsEngine.Constants.SecondsInDay);
+            var hours = timeWithinDay / (60 * 60);
+            var minutes = (timeWithinDay % (60 * 60)) / 60;
+            var seconds = timeWithinDay % 60;
 
-            //timeText += string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
+            timeText += $"{hours:00}:{minutes:00}:{seconds:00}";
 
-            //SimulationTimeTextBlock.Text = timeText;
+            SimulationTimeTextBlock.Text = timeText;
         }
 
         private void AddInfoMessage(string message)
         {
             AddInfoMessage(message, Avalonia.Media.Colors.White, isBold: false);
         }
-        
+
         private void AddInfoMessage(string message, Color color, bool isBold = false)
         {
             var textBlock = new TextBlock()
@@ -254,7 +273,7 @@ namespace Ab4d.SpaceSimulator
                 _allMessages.RemoveAt(0);
             }
         }
-        
+
         private void SimulationSpeedSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (!this.IsLoaded || _isInternalChange)
@@ -295,15 +314,15 @@ namespace Ab4d.SpaceSimulator
             else
                 ShowOptionPanels(SettingBorder);
         }
-        
+
         private void ScaleTypeComboBoxOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            
+
         }
 
         private void ViewCenterComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            
+
         }
 
         private void Scenario1Button_OnClick(object? sender, RoutedEventArgs e)
