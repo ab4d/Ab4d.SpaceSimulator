@@ -13,7 +13,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Colors = Avalonia.Media.Colors;
 
-namespace Ab4d.SpaceSimulator;
+namespace Ab4d.SpaceSimulator.Shared;
 
 public partial class TestCustomCameraWindow : Window
 {
