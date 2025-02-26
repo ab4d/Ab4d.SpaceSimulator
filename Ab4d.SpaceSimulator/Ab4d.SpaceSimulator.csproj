@@ -33,9 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\SolarSystemData.txt" Link="Resources\SolarSystemData.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\earthmap1k.png" Link="Resources\earthmap1k.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

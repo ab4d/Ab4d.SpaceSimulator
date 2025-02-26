@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+using System.Diagnostics;
+using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.PhysicsEngine;
@@ -10,176 +10,264 @@ namespace Ab4d.SpaceSimulator;
 
 public class SolarSystemScenario
 {
-    private struct Entity
+    enum EntityType
     {
-        public string Name;
-
-        public string Parent;
-
-        public string Type;
-
-        public string MaterialName;
-
-        public double Mass;
-        public double Radius;
-        public double Density;
-        public double Gravity;
-        public double EscapeVelocity;
-        public double RotationPeriod;
-        public double LengthOfDay;
-        public double DistanceFromParent;
-        public double Perihelion;
-        public double Aphelion;
-        public double OrbitalPeriod;
-        public double OrbitalVelocity;
-        public double OrbitalInclination;
-        public double OrbitalEccentricity;
-        public double ObliquityToOrbit;
-        public double MeanTemperature;
-        public double SurfacePressure;
-        public double NumberOfMoons;
+        Star = 1,
+        Planet = 2,
+        Moon = 3,
     };
 
-
-    private readonly List<Entity> _entities = [];
-
-    public SolarSystemScenario(string? dataFilename = null)
+    private struct Entity
     {
-        dataFilename ??= System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/SolarSystemData.txt");
+        // Basic info
+        public required string Name;
+        public required EntityType Type;
 
-        var dataLines = System.IO.File.ReadAllLines(dataFilename);
+        // Properties from NASA planetary fact sheet:
+        // https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
+        public required double Mass; // kg
+        public required double Diameter; // meters
+        public required double DistanceFromParent; // meters
+        public required double OrbitalVelocity; // m/s
 
-        // First line is the data source
+        // Visualization info
 
-        // Second line are the keys.
-        var tokens = dataLines[1].Split('\t');
-        var keyMap = new Dictionary<string, int>();
-        for (var i = 0; i < tokens.Length; i++)
+        // Texture - see the following possible sources:
+        //  https://nasa3d.arc.nasa.gov/images
+        //  https://planetpixelemporium.com
+        public string? TextureName;
+
+        public float MinimumVisualizationSize = 0.05f;
+
+        // Moons
+        public List<Entity>? Moons;
+
+        public Entity()
         {
-            keyMap.Add(tokens[i].ToLower(), i);
         }
+    };
 
-        // Third line are the units
+    // Sun / Sol
+    private readonly Entity Sun = new()
+    {
+        Name = "Sun",
+        Type = EntityType.Star,
 
-        // Fourth line are the scale factors for conversion to basic SI units.
-        tokens = dataLines[3].Split('\t');
-        tokens[0] = "1.0";  // First column is "Scale:" - replace it with a number
-        var basicUnitScaleFactors = tokens.Select(t => double.Parse(t, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+        Mass = 1_988_550 * 1e24,
+        Diameter = 1_392_700 * 1e3,
+        DistanceFromParent = 0,
+        OrbitalVelocity = 0,
 
-        // The rest of lines are entries
-        for (var i = 4; i < dataLines.Length; i++)
-        {
-            tokens = dataLines[i].Split('\t');
+        TextureName = "sunmap.png",
+    };
 
-            var entity = new Entity
-            {
-                Name = tokens[0], // First column
-                Parent = GetStringField("Parent", tokens),
-                Type = GetStringField("Type", tokens),
-                MaterialName = GetStringField("Material", tokens),
-                Mass = GetNumericField("Mass", tokens),
-                Radius = GetNumericField("Radius", tokens),
-                Density = GetNumericField("Density", tokens),
-                Gravity = GetNumericField("Gravity", tokens),
-                EscapeVelocity = GetNumericField("Escape Velocity", tokens),
-                RotationPeriod = GetNumericField("Rotation Period", tokens),
-                LengthOfDay = GetNumericField("Length of Day", tokens),
-                DistanceFromParent = GetNumericField("Distance from parent", tokens),
-                Perihelion = GetNumericField("Perihelion", tokens),
-                Aphelion = GetNumericField("Aphelion", tokens),
-                OrbitalPeriod = GetNumericField("Orbital Period", tokens),
-                OrbitalVelocity = GetNumericField("Orbital Velocity", tokens),
-                OrbitalInclination = GetNumericField("Orbital Inclination", tokens),
-                OrbitalEccentricity = GetNumericField("Orbital Eccentricity", tokens),
-                ObliquityToOrbit = GetNumericField("Obliquity to Orbit", tokens),
-                MeanTemperature = GetNumericField("Mean Temperature", tokens),
-                SurfacePressure = GetNumericField("Surface Pressure", tokens),
-                NumberOfMoons = GetNumericField("Number of Moons", tokens),
-            };
-            _entities.Add(entity);
-        }
+    // Mercury
+    private readonly Entity Mercury = new()
+    {
+        Name = "Mercury",
+        Type = EntityType.Planet,
 
-        return;
+        Mass = 0.330 * 1e24,
+        Diameter = 4_879 * 1e3,
+        DistanceFromParent = 57.9 * 1e9,
+        OrbitalVelocity = 47.4 * 1e3,
 
-        // Local helper functions
-        double GetNumericField(string key, string[] fieldTokens)
-        {
-            var keyIdx = keyMap[key.ToLower()];
-            if (keyIdx >= fieldTokens.Length)
-            {
-                return double.NaN;
-            }
-            var rawValue = double.Parse(fieldTokens[keyIdx], System.Globalization.CultureInfo.InvariantCulture);
-            var scaleFactor = basicUnitScaleFactors[keyIdx];
-            return scaleFactor * rawValue;
-        }
+        TextureName = "mercurymap.png",
+    };
 
-        string GetStringField(string key, string[] fieldTokens)
-        {
-            var keyIdx = keyMap[key.ToLower()];
-            return fieldTokens[keyIdx];
-        }
+    // Venus
+    private readonly Entity Venus = new()
+    {
+        Name = "Venus",
+        Type = EntityType.Planet,
+
+        Mass = 4.87 * 1e24,
+        Diameter = 12_104 * 1e3,
+        DistanceFromParent = 108.2 * 1e9,
+        OrbitalVelocity = 35.0 * 1e3,
+
+        TextureName = "venusmap.png",
+    };
+
+    // Earth and its Moon
+    private readonly Entity Earth = new()
+    {
+        Name = "Earth",
+        Type = EntityType.Planet,
+
+        Mass = 5.97 * 1e24,
+        Diameter = 12_756 * 1e3,
+        DistanceFromParent = 149.6 * 1e9,
+        OrbitalVelocity = 29.8 * 1e3,
+
+        TextureName = "earthmap1k.png",
+
+        Moons = [
+            new Entity {
+                Name = "Moon",
+                Type = EntityType.Moon,
+
+                Mass = 0.073 * 1e24,
+                Diameter = 3_475 * 1e3,
+                DistanceFromParent = 0.384 * 1e9,
+                OrbitalVelocity = 1.0 * 1e3,
+
+                TextureName = "moonmap1k.png",
+            },
+        ],
+    };
+
+    // Mars
+    private readonly Entity Mars = new()
+    {
+        Name = "Mars",
+        Type = EntityType.Planet,
+
+        Mass = 0.642 * 1e24,
+        Diameter = 6_792 * 1e3,
+        DistanceFromParent = 228.0 * 1e9,
+        OrbitalVelocity = 24.1 * 1e3,
+
+        TextureName = "mars_1k_color.png",
+    };
+
+    // Jupiter
+    private readonly Entity Jupiter = new()
+    {
+        Name = "Jupiter",
+        Type = EntityType.Planet,
+
+        Mass = 1_898 * 1e24,
+        Diameter = 142_984 * 1e3,
+        DistanceFromParent = 778.5 * 1e9,
+        OrbitalVelocity = 13.1 * 1e3,
+
+        TextureName = "jupitermap.png",
+    };
+
+    // Saturn
+    private readonly Entity Saturn = new()
+    {
+        Name = "Saturn",
+        Type = EntityType.Planet,
+
+        Mass = 568 * 1e24,
+        Diameter = 120_536 * 1e3,
+        DistanceFromParent = 1_432.0 * 1e9,
+        OrbitalVelocity = 9.7 * 1e3,
+
+        TextureName = "saturnmap.png",
+    };
+
+    // Uranus
+    private readonly Entity Uranus = new()
+    {
+        Name = "Uranus",
+        Type = EntityType.Planet,
+
+        Mass = 86.8 * 1e24,
+        Diameter = 51_118 * 1e3,
+        DistanceFromParent = 2_867.0 * 1e9,
+        OrbitalVelocity = 6.8 * 1e3,
+
+        TextureName = "uranusmap.png",
+    };
+
+    // Neptune
+    private readonly Entity Neptune = new()
+    {
+        Name = "Nepute",
+        Type = EntityType.Planet,
+
+        Mass = 102 * 1e24,
+        Diameter = 49_528 * 1e3,
+        DistanceFromParent = 4_515.0 * 1e9,
+        OrbitalVelocity = 5.4 * 1e3,
+
+        TextureName = "neptunemap.png",
+    };
+
+    // Pluto
+    private readonly Entity Pluto = new()
+    {
+        Name = "Pluto",
+        Type = EntityType.Planet,
+
+        Mass = 0.0130 * 1e24,
+        Diameter = 2_376 * 1e3,
+        DistanceFromParent = 5_906.4 * 1e9,
+        OrbitalVelocity = 4.7 * 1e3,
+
+        TextureName = "plutomap1k.png",
+    };
+
+    private readonly IBitmapIO _imageReader = new PngBitmapIO();
+    private readonly List<Entity> _entities;
+
+    public SolarSystemScenario()
+    {
+        _entities =
+        [
+            Sun,
+            Mercury,
+            Venus,
+            Earth,
+            Mars,
+            Jupiter,
+            Saturn,
+            Uranus,
+            Neptune,
+            Pluto,
+        ];
     }
 
     public void SetupScenario(PhysicsEngine.PhysicsEngine physicsEngine, VisualizationEngine.VisualizationEngine visualizationEngine)
     {
-        // TODO: define these elsewhere
-
-        // Textures from:
-        //  https://nasa3d.arc.nasa.gov/images
-        //  https://planetpixelemporium.com
-        var imageReader = new PngBitmapIO();
-
-        var textures = new Dictionary<string, string>()
-        {
-            {"Sun", "sunmap.png"},
-            {"Mercury", "mercurymap.png"},
-            {"Venus", "venusmap.png"},
-            {"Earth", "earthmap1k.png"},
-            {"Moon", "moonmap1k.png"},
-            {"Mars", "mars_1k_color.png"},
-            {"Jupiter", "jupitermap.png"},
-            {"Saturn", "saturnmap.png"},
-            {"Uranus", "uranusmap.png"},
-            {"Neptune", "neptunemap.png"},
-            {"Pluto", "plutomap1k.png"},
-        };
-
-        var bodies = new Dictionary<string, PhysicsEngine.MassBody>(); // Used to look-up parent position
-
         foreach (var entity in _entities)
         {
-            Console.Out.WriteLine($"Adding entity: {entity.Name}, of type {entity.Type} with parent {entity.Parent}, distance from parent {entity.DistanceFromParent} and velocity {entity.OrbitalVelocity}.");
-
-            var parentPosition = Vector3d.Zero;
-            var parentVelocity = Vector3d.Zero;
-            var hasParent = false;
-            if (bodies.TryGetValue(entity.Parent, out var parentMassBody))
-            {
-                hasParent = true;
-                parentPosition = parentMassBody.Position;
-                parentVelocity = parentMassBody.Velocity;
-            }
-
-            // Mass body for physics engine
+            // Mass body for the physics engine
             var massBody = new PhysicsEngine.CelestialBody()
             {
                 Name = entity.Name,
-                Position = new Vector3d(0, 0, hasParent ? entity.DistanceFromParent : 0) + parentPosition, // meters
+                Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
                 Mass = entity.Mass, // kg
-                Radius = entity.Radius, // meters
-                Velocity = new Vector3d(hasParent ? entity.OrbitalVelocity : 0, 0, 0) + parentVelocity // m/s
+                Radius = entity.Diameter / 2.0, // meters
+                Velocity = new Vector3d(entity.OrbitalVelocity, 0, 0) // m/s
             };
 
             physicsEngine.AddBody(massBody);
-            bodies.Add(entity.Name, massBody);
 
             // Visualization
-            var textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", textures[entity.Name]);
-            var material = new StandardMaterial(textureFilename, imageReader, name: $"Texture-{entity.Name}");
-            var visualization = new VisualizationEngine.CelestialBody(massBody, material);
+            Debug.Assert(entity.TextureName != null, $"Texture file not specified for {entity.Name}!");
+            var textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", entity.TextureName);
+            Debug.Assert(System.IO.Path.Exists(textureFilename), $"Texture file {textureFilename} does not exist!");
+            var material = new StandardMaterial(textureFilename, _imageReader, name: $"Texture-{entity.Name}");
+            var visualization = new VisualizationEngine.CelestialBody(massBody, material, entity.MinimumVisualizationSize);
 
             visualizationEngine.AddCelestialBody(visualization);
+
+            // Create moon(s)
+            foreach (var moonEntity in entity.Moons ?? [])
+            {
+                var moonMassBody = new PhysicsEngine.CelestialBody()
+                {
+                    Name = moonEntity.Name,
+                    Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
+                    Mass = moonEntity.Mass, // kg
+                    Radius = moonEntity.Diameter / 2.0, // meters
+                    Velocity = new Vector3d(moonEntity.OrbitalVelocity, 0, 0) + massBody.Velocity // m/s
+                };
+
+                physicsEngine.AddBody(moonMassBody);
+
+                Debug.Assert(moonEntity.TextureName != null, $"Texture file not specified for {moonEntity.Name}!");
+                textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", moonEntity.TextureName);
+                Debug.Assert(System.IO.Path.Exists(textureFilename), $"Texture file {textureFilename} does not exist!");
+                var moonMaterial = new StandardMaterial(textureFilename, _imageReader, name: $"Texture-{moonEntity.Name}");
+                var moonVisualization = new VisualizationEngine.CelestialBody(moonMassBody, moonMaterial, moonEntity.MinimumVisualizationSize);
+
+                visualizationEngine.AddCelestialBody(moonVisualization);
+            }
         }
     }
 }

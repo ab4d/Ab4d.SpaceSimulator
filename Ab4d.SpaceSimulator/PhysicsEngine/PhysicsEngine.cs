@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
 
 namespace Ab4d.SpaceSimulator.PhysicsEngine;
 
 public class PhysicsEngine
 {
     // Simulation time, in seconds since the start of simulation
-    public double SimulationTime = 0;
+    public double SimulationTime;
 
     // Mass bodies in the system
     private readonly List<MassBody> _massBodies = [];

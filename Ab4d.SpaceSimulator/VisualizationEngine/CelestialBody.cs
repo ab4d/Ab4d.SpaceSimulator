@@ -11,11 +11,11 @@ public class CelestialBody
     private PhysicsEngine.CelestialBody? _celestialBody;
 
     public readonly SphereModelNode SceneNode;
-    public double ScaleFactor = 1.0;
+    public float MinimumSize;
 
-    public CelestialBody(PhysicsEngine.CelestialBody physicsObject, StandardMaterial material, double scaleFactor = 1.0)
+    public CelestialBody(PhysicsEngine.CelestialBody physicsObject, StandardMaterial material, float minimumSize)
     {
-        ScaleFactor = scaleFactor;
+        MinimumSize = minimumSize;
 
         // Store reference
         _celestialBody = physicsObject;
@@ -40,10 +40,10 @@ public class CelestialBody
         SceneNode.Radius = ScaleSize(_celestialBody.Radius);
     }
 
-    private Vector3 ScalePosition(PhysicsEngine.Vector3d realPosition)
+    private Vector3 ScalePosition(Vector3d realPosition)
     {
         var length = realPosition.Length();
-        var scaledLength = length / PhysicsEngine.Constants.AstronomicalUnit;
+        var scaledLength = length / Constants.AstronomicalUnit;
 
         var scaledPosition = scaledLength > 0 ? scaledLength * Vector3d.Normalize(realPosition) : Vector3d.Zero;
         return new Vector3((float)scaledPosition.X, (float)scaledPosition.Y, (float)scaledPosition.Z);
@@ -52,6 +52,6 @@ public class CelestialBody
     private float ScaleSize(double realSize)
     {
         // TODO: we can accurately show distances OR sizes, but not both at the same time...
-        return MathF.Max(0.01f, (float)(realSize / PhysicsEngine.Constants.AstronomicalUnit));
+        return MathF.Max(MinimumSize, (float)(realSize / Constants.AstronomicalUnit));
     }
 }

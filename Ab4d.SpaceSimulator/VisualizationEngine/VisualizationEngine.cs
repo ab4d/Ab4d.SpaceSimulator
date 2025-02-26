@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Ab4d.SharpEngine.SceneNodes;
-using Avalonia;
 
 namespace Ab4d.SpaceSimulator.VisualizationEngine;
 

@@ -2,7 +2,7 @@ namespace Ab4d.SpaceSimulator.PhysicsEngine;
 
 public class MassBody
 {
-    public string Name;
+    public required string Name;
 
     public Vector3d Position; // meters
     public Vector3d Velocity; // m/s
