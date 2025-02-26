@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using Ab4d.SharpEngine.Materials;
+using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.PhysicsEngine;
 
 namespace Ab4d.SpaceSimulator;
@@ -123,19 +124,25 @@ public class SolarSystemScenario
     public void SetupScenario(PhysicsEngine.PhysicsEngine physicsEngine, VisualizationEngine.VisualizationEngine visualizationEngine)
     {
         // TODO: define these elsewhere
-        var materials = new Dictionary<string, StandardMaterial>()
+
+        // Textures from:
+        //  https://nasa3d.arc.nasa.gov/images
+        //  https://planetpixelemporium.com
+        var imageReader = new PngBitmapIO();
+
+        var textures = new Dictionary<string, string>()
         {
-            {"Sun", StandardMaterials.Yellow},
-            {"Mercury", StandardMaterials.Gray},
-            {"Venus", StandardMaterials.LightBlue},
-            {"Earth", StandardMaterials.Blue},
-            {"Moon", StandardMaterials.Gray},
-            {"Mars", StandardMaterials.Red},
-            {"Jupiter", StandardMaterials.Yellow},
-            {"Saturn", StandardMaterials.Gray},
-            {"Uranus", StandardMaterials.LightBlue},
-            {"Neptune", StandardMaterials.LightBlue},
-            {"Pluto", StandardMaterials.Gray},
+            {"Sun", "sunmap.png"},
+            {"Mercury", "mercurymap.png"},
+            {"Venus", "venusmap.png"},
+            {"Earth", "earthmap1k.png"},
+            {"Moon", "moonmap1k.png"},
+            {"Mars", "mars_1k_color.png"},
+            {"Jupiter", "jupitermap.png"},
+            {"Saturn", "saturnmap.png"},
+            {"Uranus", "uranusmap.png"},
+            {"Neptune", "neptunemap.png"},
+            {"Pluto", "plutomap1k.png"},
         };
 
         var bodies = new Dictionary<string, PhysicsEngine.MassBody>(); // Used to look-up parent position
@@ -154,7 +161,7 @@ public class SolarSystemScenario
                 parentVelocity = parentMassBody.Velocity;
             }
 
-            // Mass body for pyhsics engine
+            // Mass body for physics engine
             var massBody = new PhysicsEngine.CelestialBody()
             {
                 Name = entity.Name,
@@ -168,7 +175,8 @@ public class SolarSystemScenario
             bodies.Add(entity.Name, massBody);
 
             // Visualization
-            var material = materials[entity.Name];
+            var textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", textures[entity.Name]);
+            var material = new StandardMaterial(textureFilename, imageReader, name: $"Texture-{entity.Name}");
             var visualization = new VisualizationEngine.CelestialBody(massBody, material);
 
             visualizationEngine.AddCelestialBody(visualization);
