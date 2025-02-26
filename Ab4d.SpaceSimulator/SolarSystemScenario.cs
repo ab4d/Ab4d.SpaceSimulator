@@ -37,7 +37,7 @@ public class SolarSystemScenario
         //  https://planetpixelemporium.com
         public string? TextureName;
 
-        public float MinimumVisualizationSize = 0.05f;
+        public float MinimumVisualizationSize = 0.001f;
 
         // Moons
         public List<Entity>? Moons;
@@ -113,6 +113,8 @@ public class SolarSystemScenario
                 OrbitalVelocity = 1.0 * 1e3,
 
                 TextureName = "moonmap1k.png",
+
+                MinimumVisualizationSize = 0.0001f,
             },
         ],
     };
