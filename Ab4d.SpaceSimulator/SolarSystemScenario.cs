@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
+using Ab4d.SharpEngine.Materials;
+using Ab4d.SpaceSimulator.PhysicsEngine;
 
 namespace Ab4d.SpaceSimulator;
 
@@ -119,9 +122,56 @@ public class SolarSystemScenario
 
     public void SetupScenario(PhysicsEngine.PhysicsEngine physicsEngine, VisualizationEngine.VisualizationEngine visualizationEngine)
     {
+        // TODO: define these elsewhere
+        var materials = new Dictionary<string, StandardMaterial>()
+        {
+            {"Sun", StandardMaterials.Yellow},
+            {"Mercury", StandardMaterials.Gray},
+            {"Venus", StandardMaterials.LightBlue},
+            {"Earth", StandardMaterials.Blue},
+            {"Moon", StandardMaterials.Gray},
+            {"Mars", StandardMaterials.Red},
+            {"Jupiter", StandardMaterials.Yellow},
+            {"Saturn", StandardMaterials.Gray},
+            {"Uranus", StandardMaterials.LightBlue},
+            {"Neptune", StandardMaterials.LightBlue},
+            {"Pluto", StandardMaterials.Gray},
+        };
+
+        var bodies = new Dictionary<string, PhysicsEngine.MassBody>(); // Used to look-up parent position
+
         foreach (var entity in _entities)
         {
-            Console.Out.WriteLine($"Adding entity: {entity.Name}, of type {entity.Type} with parent {entity.Parent}.");
+            Console.Out.WriteLine($"Adding entity: {entity.Name}, of type {entity.Type} with parent {entity.Parent}, distance from parent {entity.DistanceFromParent} and velocity {entity.OrbitalVelocity}.");
+
+            var parentPosition = Vector3d.Zero;
+            var parentVelocity = Vector3d.Zero;
+            var hasParent = false;
+            if (bodies.TryGetValue(entity.Parent, out var parentMassBody))
+            {
+                hasParent = true;
+                parentPosition = parentMassBody.Position;
+                parentVelocity = parentMassBody.Velocity;
+            }
+
+            // Mass body for pyhsics engine
+            var massBody = new PhysicsEngine.CelestialBody()
+            {
+                Name = entity.Name,
+                Position = new Vector3d(0, 0, hasParent ? entity.DistanceFromParent : 0) + parentPosition, // meters
+                Mass = entity.Mass, // kg
+                Radius = entity.Radius, // meters
+                Velocity = new Vector3d(hasParent ? entity.OrbitalVelocity : 0, 0, 0) + parentVelocity // m/s
+            };
+
+            physicsEngine.AddBody(massBody);
+            bodies.Add(entity.Name, massBody);
+
+            // Visualization
+            var material = materials[entity.Name];
+            var visualization = new VisualizationEngine.CelestialBody(massBody, material);
+
+            visualizationEngine.AddCelestialBody(visualization);
         }
     }
 }

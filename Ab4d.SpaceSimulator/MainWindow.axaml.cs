@@ -6,6 +6,8 @@ using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
 using System.Numerics;
+using Ab4d.SharpEngine;
+using Ab4d.SpaceSimulator.PhysicsEngine;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -54,10 +56,11 @@ namespace Ab4d.SpaceSimulator
             SpeedInfoTextBlock.Text = "";
 
             SetupCameraController();
-            CreateTestScene();
 
             var solarSystem = new SolarSystemScenario();
             solarSystem.SetupScenario(_physicsEngine, _visualizationEngine);
+
+            MainSceneView.Scene.RootNode.Add(_visualizationEngine.RootNode);
 
             MainSceneView.SceneUpdating += (sender, args) =>
             {
@@ -101,10 +104,10 @@ namespace Ab4d.SpaceSimulator
             {
                 Heading = -40,
                 Attitude = -30,
-                Distance = 500,
+                Distance = 5,
                 ViewWidth = 500,
                 TargetPosition = new Vector3(0, 0, 0),
-                ShowCameraLight = ShowCameraLightType.Always
+                ShowCameraLight = ShowCameraLightType.Always,
             };
 
             MainSceneView.SceneView.Camera = _camera;
@@ -118,20 +121,6 @@ namespace Ab4d.SpaceSimulator
                 ZoomMode = CameraZoomMode.PointerPosition,
                 RotateAroundPointerPosition = true
             };
-        }
-
-        private void CreateTestScene()
-        {
-            var boxModel = new BoxModelNode(centerPosition: new Vector3(0, 0, 0),
-                size: new Vector3(80, 40, 60),
-                name: "Gold BoxModel")
-            {
-                Material = StandardMaterials.Gold,
-                //Material = new StandardMaterial(Colors.Gold),
-                //Material = new StandardMaterial(diffuseColor: new Color3(1f, 0.84313726f, 0f))
-            };
-
-            MainSceneView.Scene.RootNode.Add(boxModel);
         }
 
         private void ShowDeviceCreateFailedError(Exception ex)
