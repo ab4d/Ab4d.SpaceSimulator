@@ -30,16 +30,16 @@ public class CelestialBody
         // Create sphere node
         SceneNode = new SphereModelNode(name: $"{_celestialBody.Name}-Sphere")
         {
-            CenterPosition = ScalePosition(physicsObject.Position),
-            Radius = ScaleSize(_celestialBody.Radius),
             Material = material,
         };
 
         // Create trajectory multi-line node
         var trajectoryColor = new Color4(Colors.White, .25f);
-        _trajectoryPositions.Enqueue(SceneNode.CenterPosition);
         TrajectoryNode =
             new MultiLineNode(_trajectoryPositions.ToArray(), true, trajectoryColor, 2, name: $"{_celestialBody.Name}-Trajectory");
+
+        // Perform initial update
+        Update();
     }
 
     public void Update()
