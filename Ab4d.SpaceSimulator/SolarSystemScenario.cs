@@ -19,23 +19,28 @@ public class SolarSystemScenario
 
     private struct Entity
     {
-        // Basic info
+        // ** Basic info **
         public required string Name;
         public required EntityType Type;
 
-        // Properties from NASA planetary fact sheet:
+        // ** Basic dimension properties required for the mass/gravity interaction model **
+        // Available from NASA planetary fact sheet:
         // https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
         public required double Mass; // kg
         public required double Diameter; // meters
         public required double DistanceFromParent; // meters
         public required double OrbitalVelocity; // m/s
 
+        // Inclination of orbit with respect to Earth's rotation plane (i.e., Earth's orbital inclination is 0).
+        public double OrbitalInclination = 0; // degrees
+
         // The tilt of planet's axis; called "obliquity to orbit" in NASA planetary fact sheet.
         public double AxialTilt = 0; // degrees
 
+        // Rotation
         public double RotationPeriod = 0; // hours
 
-        // Visualization info
+        // ** Visualization info **
 
         // Texture - see the following possible sources:
         //  https://nasa3d.arc.nasa.gov/images
@@ -81,6 +86,8 @@ public class SolarSystemScenario
         DistanceFromParent = 57.9 * 1e9,
         OrbitalVelocity = 47.4 * 1e3,
 
+        OrbitalInclination = 7.0,
+
         AxialTilt = 0.034,
 
         RotationPeriod = 1407.6, // hours
@@ -98,6 +105,8 @@ public class SolarSystemScenario
         Diameter = 12_104 * 1e3,
         DistanceFromParent = 108.2 * 1e9,
         OrbitalVelocity = 35.0 * 1e3,
+
+        OrbitalInclination = 3.4,
 
         AxialTilt = 177.4,
 
@@ -119,6 +128,8 @@ public class SolarSystemScenario
 
         AxialTilt = 23.4,
 
+        OrbitalInclination = 0.0, // Earth's revolution plane is the reference!
+
         RotationPeriod = 23.9, // hours
 
         TextureName = "earthmap1k.png",
@@ -134,6 +145,8 @@ public class SolarSystemScenario
                 OrbitalVelocity = 1.0 * 1e3,
 
                 AxialTilt = 6.7,
+
+                OrbitalInclination = 5.1,
 
                 RotationPeriod = 655.7, // hours
 
@@ -155,6 +168,8 @@ public class SolarSystemScenario
         DistanceFromParent = 228.0 * 1e9,
         OrbitalVelocity = 24.1 * 1e3,
 
+        OrbitalInclination = 1.8,
+
         AxialTilt = 25.2,
 
         RotationPeriod = 24.6, // hours
@@ -172,6 +187,8 @@ public class SolarSystemScenario
         Diameter = 142_984 * 1e3,
         DistanceFromParent = 778.5 * 1e9,
         OrbitalVelocity = 13.1 * 1e3,
+
+        OrbitalInclination = 1.3,
 
         AxialTilt = 3.1,
 
@@ -191,6 +208,8 @@ public class SolarSystemScenario
         DistanceFromParent = 1_432.0 * 1e9,
         OrbitalVelocity = 9.7 * 1e3,
 
+        OrbitalInclination = 2.5,
+
         AxialTilt = 26.7,
 
         RotationPeriod = 10.7, // hours
@@ -208,6 +227,8 @@ public class SolarSystemScenario
         Diameter = 51_118 * 1e3,
         DistanceFromParent = 2_867.0 * 1e9,
         OrbitalVelocity = 6.8 * 1e3,
+
+        OrbitalInclination = 0.8,
 
         AxialTilt = 97.8,
 
@@ -227,6 +248,8 @@ public class SolarSystemScenario
         DistanceFromParent = 4_515.0 * 1e9,
         OrbitalVelocity = 5.4 * 1e3,
 
+        OrbitalInclination = 1.8,
+
         AxialTilt = 28.3,
 
         RotationPeriod = 16.1, // hours
@@ -244,6 +267,8 @@ public class SolarSystemScenario
         Diameter = 2_376 * 1e3,
         DistanceFromParent = 5_906.4 * 1e9,
         OrbitalVelocity = 4.7 * 1e3,
+
+        OrbitalInclination = 17.2,
 
         AxialTilt = 119.5,
 
@@ -272,6 +297,17 @@ public class SolarSystemScenario
         ];
     }
 
+    private static Vector3d TiltOrbitalVelocity(double orbitalVelocity, double orbitalInclination)
+    {
+        // In initial state, the celestial body is placed at position (0, 0, R), in coordinate system where X axis
+        // points to the right of the monitor, Y axis points upwards, and Z axis points out of the monitor (towards
+        // user). The orbital velocity is tangential, so if it were not for orbital inclination, it would point in
+        // direction of the X unit vector. To account for inclination, we need to tilt the vector in the X-Y plane.
+        var phi = orbitalInclination * Math.PI / 180.0; // deg -> rad
+        var directionVector = new Vector3d(Math.Cos(phi), Math.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
+        return orbitalVelocity * directionVector;
+    }
+
     public void SetupScenario(PhysicsEngine.PhysicsEngine physicsEngine, VisualizationEngine.VisualizationEngine visualizationEngine)
     {
         foreach (var entity in _entities)
@@ -283,7 +319,7 @@ public class SolarSystemScenario
                 Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
-                Velocity = new Vector3d(entity.OrbitalVelocity, 0, 0), // m/s
+                Velocity = TiltOrbitalVelocity(entity.OrbitalVelocity, entity.OrbitalInclination), // m/s
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
                 AxialTilt = entity.AxialTilt, // degrees
             };
@@ -308,7 +344,7 @@ public class SolarSystemScenario
                     Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters
-                    Velocity = new Vector3d(moonEntity.OrbitalVelocity, 0, 0) + massBody.Velocity // m/s
+                    Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + massBody.Velocity // m/s
                 };
 
                 physicsEngine.AddBody(moonMassBody);
