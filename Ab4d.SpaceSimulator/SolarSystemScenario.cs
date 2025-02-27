@@ -30,6 +30,8 @@ public class SolarSystemScenario
         public required double DistanceFromParent; // meters
         public required double OrbitalVelocity; // m/s
 
+        public double RotationPeriod = 0; // hours
+
         // Visualization info
 
         // Texture - see the following possible sources:
@@ -58,6 +60,8 @@ public class SolarSystemScenario
         DistanceFromParent = 0,
         OrbitalVelocity = 0,
 
+        RotationPeriod = 27 * 24, // 24.47 days at equator, 30 days at poles - use 27 days
+
         TextureName = "sunmap.png",
     };
 
@@ -71,6 +75,8 @@ public class SolarSystemScenario
         Diameter = 4_879 * 1e3,
         DistanceFromParent = 57.9 * 1e9,
         OrbitalVelocity = 47.4 * 1e3,
+
+        RotationPeriod = 1407.6, // hours
 
         TextureName = "mercurymap.png",
     };
@@ -86,6 +92,8 @@ public class SolarSystemScenario
         DistanceFromParent = 108.2 * 1e9,
         OrbitalVelocity = 35.0 * 1e3,
 
+        RotationPeriod = -5832.5, // hours; retrograde rotation
+
         TextureName = "venusmap.png",
     };
 
@@ -100,6 +108,8 @@ public class SolarSystemScenario
         DistanceFromParent = 149.6 * 1e9,
         OrbitalVelocity = 29.8 * 1e3,
 
+        RotationPeriod = 23.9, // hours
+
         TextureName = "earthmap1k.png",
 
         Moons = [
@@ -111,6 +121,8 @@ public class SolarSystemScenario
                 Diameter = 3_475 * 1e3,
                 DistanceFromParent = 0.384 * 1e9,
                 OrbitalVelocity = 1.0 * 1e3,
+
+                RotationPeriod = 655.7, // hours
 
                 TextureName = "moonmap1k.png",
 
@@ -130,6 +142,8 @@ public class SolarSystemScenario
         DistanceFromParent = 228.0 * 1e9,
         OrbitalVelocity = 24.1 * 1e3,
 
+        RotationPeriod = 24.6, // hours
+
         TextureName = "mars_1k_color.png",
     };
 
@@ -143,6 +157,8 @@ public class SolarSystemScenario
         Diameter = 142_984 * 1e3,
         DistanceFromParent = 778.5 * 1e9,
         OrbitalVelocity = 13.1 * 1e3,
+
+        RotationPeriod = 9.9, // hours
 
         TextureName = "jupitermap.png",
     };
@@ -158,6 +174,8 @@ public class SolarSystemScenario
         DistanceFromParent = 1_432.0 * 1e9,
         OrbitalVelocity = 9.7 * 1e3,
 
+        RotationPeriod = 10.7, // hours
+
         TextureName = "saturnmap.png",
     };
 
@@ -171,6 +189,8 @@ public class SolarSystemScenario
         Diameter = 51_118 * 1e3,
         DistanceFromParent = 2_867.0 * 1e9,
         OrbitalVelocity = 6.8 * 1e3,
+
+        RotationPeriod = -17.2, // hours; retrograde rotation
 
         TextureName = "uranusmap.png",
     };
@@ -186,6 +206,8 @@ public class SolarSystemScenario
         DistanceFromParent = 4_515.0 * 1e9,
         OrbitalVelocity = 5.4 * 1e3,
 
+        RotationPeriod = 16.1, // hours
+
         TextureName = "neptunemap.png",
     };
 
@@ -199,6 +221,8 @@ public class SolarSystemScenario
         Diameter = 2_376 * 1e3,
         DistanceFromParent = 5_906.4 * 1e9,
         OrbitalVelocity = 4.7 * 1e3,
+
+        RotationPeriod = -153.3, // hours; retrograde rotation
 
         TextureName = "plutomap1k.png",
     };
@@ -234,7 +258,8 @@ public class SolarSystemScenario
                 Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
-                Velocity = new Vector3d(entity.OrbitalVelocity, 0, 0) // m/s
+                Velocity = new Vector3d(entity.OrbitalVelocity, 0, 0), // m/s
+                RotationSpeed = (entity.RotationPeriod != 0) ? 2 * Math.PI / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (rad/s)
             };
 
             physicsEngine.AddBody(massBody);

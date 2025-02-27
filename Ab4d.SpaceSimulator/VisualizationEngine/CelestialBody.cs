@@ -4,6 +4,7 @@ using System.Numerics;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
+using Ab4d.SharpEngine.Transformations;
 using Ab4d.SpaceSimulator.PhysicsEngine;
 
 namespace Ab4d.SpaceSimulator.VisualizationEngine;
@@ -49,6 +50,12 @@ public class CelestialBody
         // Update position from the underlying physical object
         SceneNode.CenterPosition = ScalePosition(_celestialBody.Position);
         SceneNode.Radius = ScaleSize(_celestialBody.Radius);
+
+        // Rotate around body's axis
+        SceneNode.Transform = new AxisAngleRotateTransform(
+            Vector3.UnitY,
+            (float)_celestialBody.Rotation * 180.0f / MathF.PI,
+            SceneNode.CenterPosition);
 
         // Update trail
         // TODO: once multiple position-scaling methods are implemented, we will need to keep track of the original
