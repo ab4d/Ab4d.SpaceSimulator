@@ -52,10 +52,7 @@ public class CelestialBody
         SceneNode.Radius = ScaleSize(_celestialBody.Radius);
 
         // Rotate around body's axis
-        SceneNode.Transform = new AxisAngleRotateTransform(
-            Vector3.UnitY,
-            (float)_celestialBody.Rotation * 180.0f / MathF.PI,
-            SceneNode.CenterPosition);
+        SceneNode.Transform = new AxisAngleRotateTransform(Vector3.UnitY,(float)_celestialBody.Rotation, SceneNode.CenterPosition);
 
         // Update trail
         // TODO: once multiple position-scaling methods are implemented, we will need to keep track of the original

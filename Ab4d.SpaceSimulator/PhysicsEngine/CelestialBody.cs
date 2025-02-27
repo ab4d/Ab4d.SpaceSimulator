@@ -8,16 +8,16 @@ public class CelestialBody : MassBody
     public double Radius; // meters
 
     // Angular velocity of rotation around the body's axis.
-    public double RotationSpeed = 0; // rad/sec
-    public double Rotation = 0; // rad
+    public double RotationSpeed = 0; // deg/sec
+    public double Rotation = 0; // degrees
 
     public override void UpdateState(double timeDelta)
     {
         // Chain up to parent
         base.UpdateState(timeDelta);
 
-        // Apply rotation speed, and clamp the rotation into 0 ~ 2*PI range.
-        Rotation = (Rotation + RotationSpeed * timeDelta) % (2 * Math.PI);
+        // Apply rotation speed, and clamp the rotation into 0 ~ 360 range.
+        Rotation = (Rotation + RotationSpeed * timeDelta) % 360;
         Debug.Assert(double.IsFinite(Rotation), $"Rotation angle of {Name} is non-finite!");
     }
 }

@@ -259,7 +259,7 @@ public class SolarSystemScenario
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
                 Velocity = new Vector3d(entity.OrbitalVelocity, 0, 0), // m/s
-                RotationSpeed = (entity.RotationPeriod != 0) ? 2 * Math.PI / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (rad/s)
+                RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
             };
 
             physicsEngine.AddBody(massBody);
