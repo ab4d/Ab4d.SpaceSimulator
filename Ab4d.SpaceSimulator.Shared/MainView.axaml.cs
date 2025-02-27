@@ -25,14 +25,20 @@ public partial class MainView : UserControl
     private bool _isPlaying;
     private bool _isInternalChange;
     private readonly int[] _simulationSpeedIntervals;
+    private double _simulationSpeed;
+
+    private DateTime _previousUpdateTime = DateTime.Now;
 
     private List<TextBlock> _allMessages = new();
     private const int MaxShownInfoMessagesCount = 5;
 
+    private readonly PhysicsEngine.PhysicsEngine _physicsEngine = new();
+    private readonly VisualizationEngine.VisualizationEngine _visualizationEngine = new();
+
     public MainView()
     {
         InitializeComponent();
-    
+
         // Uncomment when ObjectsScaleMethods enum is available:
         //ScaleTypeComboBox.ItemsSource = Enum.GetNames(typeof(ObjectsScaleMethods));
         //ScaleTypeComboBox.SelectionChanged += ScaleTypeComboBoxOnSelectionChanged;
@@ -48,7 +54,39 @@ public partial class MainView : UserControl
         SpeedInfoTextBlock.Text = "";
 
         SetupCameraController();
-        CreateTestScene();
+
+        // Create scene
+        var solarSystem = new SolarSystemScenario();
+        solarSystem.SetupScenario(_physicsEngine, _visualizationEngine);
+
+        MainSceneView.Scene.RootNode.Add(_visualizationEngine.RootNode);
+
+        MainSceneView.SceneUpdating += (sender, args) =>
+        {
+            var now = DateTime.Now;
+
+            if (!_isPlaying)
+            {
+                _previousUpdateTime = now;
+                return;
+            }
+
+            // Compute elapsed real-time, then scale it with simulation speed (simulation time step per real-time second)
+            // to obtain the simulation time delta
+            var timeDelta = now - _previousUpdateTime;
+            _previousUpdateTime = now; // Store for next call
+
+            var scaledTimeDelta = timeDelta * _simulationSpeed;
+
+            _physicsEngine.Simulate(scaledTimeDelta.TotalSeconds);
+            _visualizationEngine.Update();
+
+            UpdateShownSimulationTime();
+        };
+
+        // Initial UI update
+        UpdateShownSimulationTime();
+        SetSimulationSpeed(GetSimulationSpeed());
 
         // In case when VulkanDevice cannot be created, show an error message
         // If this is not handled by the user, then SharpEngineSceneView will show its own error message
@@ -65,7 +103,7 @@ public partial class MainView : UserControl
         {
             Heading = -40,
             Attitude = -30,
-            Distance = 500,
+            Distance = 5,
             ViewWidth = 500,
             TargetPosition = new Vector3(0, 0, 0),
             ShowCameraLight = ShowCameraLightType.Always
@@ -84,20 +122,6 @@ public partial class MainView : UserControl
         };
     }
 
-    private void CreateTestScene()
-    {
-        var boxModel = new BoxModelNode(centerPosition: new Vector3(0, 0, 0), 
-            size: new Vector3(80, 40, 60), 
-            name: "Gold BoxModel")
-        {
-            Material = StandardMaterials.Gold,
-            //Material = new StandardMaterial(Colors.Gold),
-            //Material = new StandardMaterial(diffuseColor: new Color3(1f, 0.84313726f, 0f))
-        };
-
-        MainSceneView.Scene.RootNode.Add(boxModel);
-    }
-
     private void ShowDeviceCreateFailedError(Exception ex)
     {
         var errorTextBlock = new TextBlock()
@@ -110,7 +134,7 @@ public partial class MainView : UserControl
 
         RootGrid.Children.Add(errorTextBlock);
     }
-    
+
     private void ShowOptionPanels(Border panelToShow)
     {
         if (panelToShow == ScenariosBorder)
@@ -136,25 +160,14 @@ public partial class MainView : UserControl
 
     private void SetSimulationSpeed(double simulationSpeed)
     {
+        _simulationSpeed = simulationSpeed;
+
         if (simulationSpeed <= 0)
         {
-            //_gravitySimulator.StopSimulation();
-            SpeedInfoTextBlock.Text = "";
+            SpeedInfoTextBlock.Text = "Speed: paused";
         }
         else
         {
-            //double oneSimulationStepDuration = simulationSpeed / SimulationStepsPerSecond;
-
-            //if (!_gravitySimulator.IsSimulationStarted)
-            //{
-            //    _gravitySimulator.StartSimulation(SimulationStepsPerSecond, oneSimulationStepDuration);
-            //}
-            //else
-            //{
-            //    _gravitySimulator.SimulationStepsPerSecond = SimulationStepsPerSecond;
-            //    _gravitySimulator.OneSimulationStepDuration = oneSimulationStepDuration;
-            //}
-
             double infoValue;
             string infoUnit;
 
@@ -179,7 +192,7 @@ public partial class MainView : UserControl
                 infoUnit = "days";
             }
 
-            SpeedInfoTextBlock.Text = string.Format("+{0:0.0} {1}/s", infoValue, infoUnit);
+            SpeedInfoTextBlock.Text = $"Speed: +{infoValue:0.0} {infoUnit}/s";
         }
     }
 
@@ -209,26 +222,30 @@ public partial class MainView : UserControl
 
     private void UpdateShownSimulationTime()
     {
-        //string timeText = "Time: ";
+        var simulationTime = _physicsEngine.SimulationTime;
+        var timeText = "Time: ";
 
-        //if (_gravitySimulator.TimeInDays > 1)
-        //    timeText += string.Format("+{0:0} days ", _gravitySimulator.TimeInDays);
+        if (simulationTime >= PhysicsEngine.Constants.SecondsInDay)
+        {
+            var days = (int)Math.Floor(simulationTime / PhysicsEngine.Constants.SecondsInDay);
+            timeText += $"+{days:0} day(s) ";
+        }
 
-        //int timeWithinDay = (int)_gravitySimulator.TimeInSeconds % (24 * 60 * 60);
-        //int hours = timeWithinDay / (60 * 60);
-        //int minutes = (timeWithinDay % (60 * 60)) / 60;
-        //int seconds = timeWithinDay % 60;
+        var timeWithinDay = (int)simulationTime % (PhysicsEngine.Constants.SecondsInDay);
+        var hours = timeWithinDay / (60 * 60);
+        var minutes = (timeWithinDay % (60 * 60)) / 60;
+        var seconds = timeWithinDay % 60;
 
-        //timeText += string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
+        timeText += $"{hours:00}:{minutes:00}:{seconds:00}";
 
-        //SimulationTimeTextBlock.Text = timeText;
+        SimulationTimeTextBlock.Text = timeText;
     }
 
     private void AddInfoMessage(string message)
     {
         AddInfoMessage(message, Avalonia.Media.Colors.White, isBold: false);
     }
-    
+
     private void AddInfoMessage(string message, Color color, bool isBold = false)
     {
         var textBlock = new TextBlock()
@@ -248,7 +265,7 @@ public partial class MainView : UserControl
             _allMessages.RemoveAt(0);
         }
     }
-    
+
     private void SimulationSpeedSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (!this.IsLoaded || _isInternalChange)
@@ -264,14 +281,16 @@ public partial class MainView : UserControl
     {
         if (_isPlaying)
         {
-            PlayPauseButton.Content = "\u23f5";
+            PlayPauseButton.Content = "Start";
             _isPlaying = false;
         }
         else
         {
-            PlayPauseButton.Content = "\u23f8";
+            PlayPauseButton.Content = "Stop";
             _isPlaying = true;
         }
+
+        UpdateShownSimulationTime();
     }
 
     private void ScenariosButton_OnClick(object? sender, RoutedEventArgs e)
@@ -289,15 +308,15 @@ public partial class MainView : UserControl
         else
             ShowOptionPanels(SettingBorder);
     }
-    
+
     private void ScaleTypeComboBoxOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        
+
     }
 
     private void ViewCenterComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        
+
     }
 
     private void Scenario1Button_OnClick(object? sender, RoutedEventArgs e)

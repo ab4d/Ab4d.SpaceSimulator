@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <DefineConstants>VULKAN_BACKEND</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
