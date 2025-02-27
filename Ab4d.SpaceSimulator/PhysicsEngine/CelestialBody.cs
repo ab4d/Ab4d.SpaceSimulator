@@ -11,6 +11,9 @@ public class CelestialBody : MassBody
     public double RotationSpeed = 0; // deg/sec
     public double Rotation = 0; // degrees
 
+    // Axial tilt
+    public double AxialTilt = 0; // degrees
+
     public override void UpdateState(double timeDelta)
     {
         // Chain up to parent

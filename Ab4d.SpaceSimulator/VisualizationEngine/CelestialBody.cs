@@ -5,6 +5,7 @@ using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
 using Ab4d.SharpEngine.Transformations;
+using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.PhysicsEngine;
 
 namespace Ab4d.SpaceSimulator.VisualizationEngine;
@@ -52,7 +53,7 @@ public class CelestialBody
         SceneNode.Radius = ScaleSize(_celestialBody.Radius);
 
         // Rotate around body's axis
-        SceneNode.Transform = new AxisAngleRotateTransform(Vector3.UnitY,(float)_celestialBody.Rotation, SceneNode.CenterPosition);
+        SceneNode.Transform = ComputeTiltAndRotationTransform();
 
         // Update trail
         // TODO: once multiple position-scaling methods are implemented, we will need to keep track of the original
@@ -65,6 +66,22 @@ public class CelestialBody
             _trajectoryPositions.Dequeue();
         }
         TrajectoryNode.Positions = _trajectoryPositions.ToArray();
+    }
+
+    private MatrixTransform ComputeTiltAndRotationTransform()
+    {
+        if (_celestialBody is null)
+            return new MatrixTransform(); // identity
+
+        var center = SceneNode.CenterPosition;
+        var matrix = (
+            Matrix4x4.CreateTranslation(-center) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathUtils.DegreesToRadians((float)_celestialBody.Rotation)) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, MathUtils.DegreesToRadians((float)_celestialBody.AxialTilt)) *
+            Matrix4x4.CreateTranslation(center)
+        );
+
+        return new MatrixTransform(matrix);
     }
 
     private Vector3 ScalePosition(Vector3d realPosition)
