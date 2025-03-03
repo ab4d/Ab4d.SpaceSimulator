@@ -19,12 +19,12 @@ namespace Ab4d.SpaceSimulator.Android
         {
             // Ab4d.SharpEngine license must be activated from the entry assembly (otherwise an SDK license is needed).
             //
-            // Ab4d.SharpEngine Samples License can be used only for Ab4d.SharpEngine samples.
-            // To use Ab4d.SharpEngine in your project, get a license from ab4d.com/trial or ab4d.com/purchase 
+            // This is just temporal trial license and will be replaced by a free open source license:
+            // Ab4d.SharpEngine Trial License can be used for testing the Ab4d.SharpEngine and is valid until April 15, 2025.
             Ab4d.SharpEngine.Licensing.SetLicense(licenseOwner: "AB4D",
-                                                  licenseType: "SamplesLicense",
+                                                  licenseType: "TrialLicense",
                                                   platforms: "All",
-                                                  license: "5B53-8A17-DAEB-5B03-3B90-DD5B-958B-CA4D-0B88-CE79-FBB4-6002-D9C9-19C2-AFF8-1662-B2B2");
+                                                  license: "4045-4200-4577-BCD0-4186-154D-0519-2487-6A96-1677-6027-87D1-C2DF-D1D5-3064-F1B1-34EA");
 
             return base.CustomizeAppBuilder(builder)
                 .WithInterFont()
