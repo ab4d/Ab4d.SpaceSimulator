@@ -48,7 +48,7 @@ public partial class MainView : UserControl
         ViewCenterComboBox.SelectionChanged += ViewCenterComboBox_OnSelectionChanged;
         ViewCenterComboBox.SelectedIndex = 0;
 
-        _simulationSpeedIntervals = new int[] { 0, 1, 10, 60, 600, 3600, 6 * 3600, 24 * 3600, 7 * 24 * 3600, 30 * 24 * 3600 };
+        _simulationSpeedIntervals = new int[] { 0, 1, 10, 60, 600, 3600, 6 * 3600, 24 * 3600, 7 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600 };
 
         SimulationSpeedSlider.Maximum = _simulationSpeedIntervals.Length - 1;
         SpeedInfoTextBlock.Text = "";
