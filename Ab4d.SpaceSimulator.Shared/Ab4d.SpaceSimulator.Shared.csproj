@@ -32,38 +32,6 @@
 
   <!-- Textures -->
   <ItemGroup>
-    <Content Include="Resources\earthmap1k.png" Link="Resources\earthmap1k.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\jupitermap.png" Link="Resources\jupitermap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\mars_1k_color.png" Link="Resources\mars_1k_color.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\mercurymap.png" Link="Resources\mercurymap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\moonmap1k.png" Link="Resources\moonmap1k.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\neptunemap.png" Link="Resources\neptunemap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\plutomap1k.png" Link="Resources\plutomap1k.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\saturnmap.png" Link="Resources\saturnmap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\sunmap.png" Link="Resources\sunmap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\uranusmap.png" Link="Resources\uranusmap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\venusmap.png" Link="Resources\venusmap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\*" CopyToOutputDirectory="PreserveNewest" LinkBase="Resources\" />
   </ItemGroup>
 </Project>
