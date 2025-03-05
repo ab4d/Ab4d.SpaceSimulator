@@ -14,6 +14,9 @@ public class CelestialBody : MassBody
     // Axial tilt
     public double AxialTilt = 0; // degrees
 
+    // Parent in the star -> planet -> moon hierarchy
+    public CelestialBody? Parent;
+
     public override void UpdateState(double timeDelta)
     {
         // Chain up to parent

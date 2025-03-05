@@ -310,6 +310,8 @@ public class SolarSystemScenario
 
     public void SetupScenario(PhysicsEngine.PhysicsEngine physicsEngine, VisualizationEngine.VisualizationEngine visualizationEngine)
     {
+        PhysicsEngine.CelestialBody? sunObject = null; // Used to set parent object for planets
+
         foreach (var entity in _entities)
         {
             // Mass body for the physics engine
@@ -322,9 +324,13 @@ public class SolarSystemScenario
                 Velocity = TiltOrbitalVelocity(entity.OrbitalVelocity, entity.OrbitalInclination), // m/s
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
                 AxialTilt = entity.AxialTilt, // degrees
+                Parent = sunObject,
             };
 
             physicsEngine.AddBody(massBody);
+
+            if (entity.Name == "Sun")
+                sunObject = massBody;
 
             // Visualization
             Debug.Assert(entity.TextureName != null, $"Texture file not specified for {entity.Name}!");
@@ -344,7 +350,8 @@ public class SolarSystemScenario
                     Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters
-                    Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + massBody.Velocity // m/s
+                    Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + massBody.Velocity, // m/s
+                    Parent = massBody, // parent mass body
                 };
 
                 physicsEngine.AddBody(moonMassBody);
