@@ -114,7 +114,7 @@ public class TrajectoryTracker
 
 public class CelestialBodyVisualization
 {
-    private readonly CelestialBody? _celestialBody;
+    private readonly CelestialBody _celestialBody;
 
     public readonly SphereModelNode SceneNode;
     public float MinimumSize;
@@ -144,7 +144,7 @@ public class CelestialBodyVisualization
 
             // Create trajectory multi-line node
             var trajectoryColor = new Color4(Colors.White, .25f);
-            var initialTrajectory = GetTrail(_trajectoryTracker.TrajectoryData);
+            var initialTrajectory = GetTrajectoryTrail();
             TrajectoryNode = new MultiLineNode(
                 initialTrajectory,
                 true,
@@ -159,9 +159,6 @@ public class CelestialBodyVisualization
 
     public void Update()
     {
-        if (_celestialBody is null)
-            return;
-
         // Update position from the underlying physical object
         SceneNode.CenterPosition = ScalePosition(_celestialBody.Position);
         SceneNode.Radius = ScaleSize(_celestialBody.Radius);
@@ -173,15 +170,12 @@ public class CelestialBodyVisualization
         if (_trajectoryTracker != null && TrajectoryNode != null)
         {
             _trajectoryTracker.UpdatePosition(_celestialBody);
-            TrajectoryNode.Positions = GetTrail(_trajectoryTracker.TrajectoryData);
+            TrajectoryNode.Positions = GetTrajectoryTrail();
         }
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()
     {
-        if (_celestialBody is null)
-            return new MatrixTransform(); // identity
-
         var center = SceneNode.CenterPosition;
         var matrix = (
             Matrix4x4.CreateTranslation(-center) *
@@ -208,15 +202,33 @@ public class CelestialBodyVisualization
         return MathF.Max(MinimumSize, (float)(realSize / Constants.AstronomicalUnit));
     }
 
-    private Vector3[] GetTrail(Queue<TrajectoryTracker.TrajectoryEntry> data)
+    private Vector3[] GetTrajectoryTrail()
     {
+        if (_trajectoryTracker == null)
+            return [];
+
+        var data = _trajectoryTracker.TrajectoryData;
         var trajectory = new Vector3[data.Count];
 
-        var idx = 0;
-        foreach (var entry in data)
+        if (_celestialBody.Parent != null /* && !forceHeliocentricTrajectories */)
         {
-            // TODO: add support for parent-centric trajectories
-            trajectory[idx++] = ScalePosition(entry.Position);
+            // Parent-centric trajectory
+            var currentParentPosition = _celestialBody.Parent.Position;
+            var idx = 0;
+            foreach (var entry in data)
+            {
+                var position = currentParentPosition + (entry.Position - entry.ParentPosition);
+                trajectory[idx++] = ScalePosition(position);
+            }
+        }
+        else
+        {
+            // Helio-centric trajectory
+            var idx = 0;
+            foreach (var entry in data)
+            {
+                trajectory[idx++] = ScalePosition(entry.Position);
+            }
         }
 
         return trajectory;
