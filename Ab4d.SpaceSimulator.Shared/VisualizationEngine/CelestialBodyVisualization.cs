@@ -10,18 +10,119 @@ using Ab4d.SpaceSimulator.PhysicsEngine;
 
 namespace Ab4d.SpaceSimulator.VisualizationEngine;
 
+public class TrajectoryTracker
+{
+    public class TrajectoryEntry
+    {
+        //public double Timestamp;
+        public Vector3d Position;
+        public Vector3d ParentPosition;
+    };
+
+    public double MinimumAngleIncrement = 1; // minimum angle increment w.r.t. previous location, in degrees
+    public double MaxAngle = 270; // maximum angle w.r.t. last entry, in degrees
+
+    // Axis of the celestial body's revolution. Inferred on the very first update from the initial position.
+    public Vector3d? RevolutionAxis = null;
+
+    public readonly Queue<TrajectoryEntry> TrajectoryData = new();
+    private TrajectoryEntry? _lastTrajectoryEntry = null; // Keep track of last inserted item, since Queue supports look-up of only first element.
+
+    public void UpdatePosition(CelestialBody celestialBody)
+    {
+        var newEntry = new TrajectoryEntry()
+        {
+            Position = celestialBody.Position,
+            ParentPosition = celestialBody.Parent?.Position ?? Vector3d.Zero,
+        };
+
+        // Determine axis of revolution, if necessary. This serves as a normal vector in computation of signed revolution
+        // angle.
+        if (RevolutionAxis == null)
+        {
+            if (celestialBody.Parent != null)
+            {
+                var vector1 = Vector3d.Normalize(celestialBody.Position - celestialBody.Parent.Position);
+                var vector2 = Vector3d.Normalize(celestialBody.Velocity);
+                RevolutionAxis = Vector3d.Cross(vector1, vector2);
+            }
+            else
+            {
+                RevolutionAxis = new Vector3d(0, 1, 0); // Point upwards
+            }
+        }
+
+        // If we have information about the last inserted entry, compute angle between last and this entry.
+        if (_lastTrajectoryEntry != null)
+        {
+            var angle = ComputeAngle(_lastTrajectoryEntry, newEntry, RevolutionAxis.Value);
+            if (angle < MinimumAngleIncrement)
+            {
+                return; // Skip the update
+            }
+        }
+
+        // Store new entry.
+        TrajectoryData.Enqueue(newEntry);
+        _lastTrajectoryEntry = newEntry;
+
+        // Prune old entries - i.e., the ones that exceed the maximum angle w.r.t. the latest entry.
+        while (TrajectoryData.Count > 1)
+        {
+            // Peek at first entry
+            var entry = TrajectoryData.Peek();
+            var angle = ComputeAngle(entry, _lastTrajectoryEntry, RevolutionAxis.Value);
+            if (angle > MaxAngle)
+            {
+                TrajectoryData.Dequeue();
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    private static double ComputeAngle(TrajectoryEntry entry1, TrajectoryEntry entry2, Vector3d normalAxis)
+    {
+        // TODO: if we wanted to track helio-centric trajectories of moons, the vectors would need to be computed
+        // w.r.t. sun position, not parent position!
+        var vector1 = entry1.Position - entry1.ParentPosition;
+        var vector2 = entry2.Position - entry2.ParentPosition;
+
+        var length1 = vector1.Length();
+        var length2 = vector2.Length();
+        if (length1 == 0 || length2 == 0)
+        {
+            return 0;
+        }
+
+        vector1 /= length1;
+        vector2 /= length2;
+
+        var dot = Vector3d.Dot(vector1, vector2);
+        var angle = Math.Acos(dot) * 180 / Math.PI;
+
+        var cross = Vector3d.Normalize(Vector3d.Cross(vector1, vector2));
+        var dir = Vector3d.Dot(cross, normalAxis);
+        if (dir < 0)
+            angle = 360 - angle;
+
+        return angle;
+    }
+}
+
 public class CelestialBodyVisualization
 {
-    private PhysicsEngine.CelestialBody? _celestialBody;
+    private readonly CelestialBody? _celestialBody;
 
     public readonly SphereModelNode SceneNode;
     public float MinimumSize;
 
-    public const int TrajectoryLength = 100;
-    private Queue<Vector3> _trajectoryPositions = new();
-    public readonly MultiLineNode TrajectoryNode;
+    private readonly TrajectoryTracker? _trajectoryTracker = null;
+    public readonly MultiLineNode? TrajectoryNode = null;
 
-    public CelestialBodyVisualization(PhysicsEngine.CelestialBody physicsObject, StandardMaterial material, float minimumSize)
+    public CelestialBodyVisualization(CelestialBody physicsObject, StandardMaterial material, float minimumSize)
     {
         MinimumSize = minimumSize;
 
@@ -34,10 +135,23 @@ public class CelestialBodyVisualization
             Material = material,
         };
 
-        // Create trajectory multi-line node
-        var trajectoryColor = new Color4(Colors.White, .25f);
-        TrajectoryNode =
-            new MultiLineNode(_trajectoryPositions.ToArray(), true, trajectoryColor, 2, name: $"{_celestialBody.Name}-Trajectory");
+        // Trail / trajectory for objects with parent (planets and moons)
+        if (_celestialBody.Parent != null)
+        {
+            // Create trajectory tracker
+            _trajectoryTracker = new TrajectoryTracker();
+            _trajectoryTracker.UpdatePosition(_celestialBody);
+
+            // Create trajectory multi-line node
+            var trajectoryColor = new Color4(Colors.White, .25f);
+            var initialTrajectory = GetTrail(_trajectoryTracker.TrajectoryData);
+            TrajectoryNode = new MultiLineNode(
+                initialTrajectory,
+                true,
+                trajectoryColor,
+                2,
+                name: $"{_celestialBody.Name}-Trajectory");
+        }
 
         // Perform initial update
         Update();
@@ -55,17 +169,12 @@ public class CelestialBodyVisualization
         // Rotate around body's axis
         SceneNode.Transform = ComputeTiltAndRotationTransform();
 
-        // Update trail
-        // TODO: once multiple position-scaling methods are implemented, we will need to keep track of the original
-        // positions and re-scale them as necessary. For now, it suffices to store the last scaled position.
-        // TODO: the length of the trajectory should likely be defined by the age of its points instead of just
-        // maximum number of elements.
-        _trajectoryPositions.Enqueue(SceneNode.CenterPosition);
-        while (_trajectoryPositions.Count > TrajectoryLength)
+        // Update trajectory tracker to obtain celestial body's trail
+        if (_trajectoryTracker != null && TrajectoryNode != null)
         {
-            _trajectoryPositions.Dequeue();
+            _trajectoryTracker.UpdatePosition(_celestialBody);
+            TrajectoryNode.Positions = GetTrail(_trajectoryTracker.TrajectoryData);
         }
-        TrajectoryNode.Positions = _trajectoryPositions.ToArray();
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()
@@ -97,5 +206,19 @@ public class CelestialBodyVisualization
     {
         // TODO: we can accurately show distances OR sizes, but not both at the same time...
         return MathF.Max(MinimumSize, (float)(realSize / Constants.AstronomicalUnit));
+    }
+
+    private Vector3[] GetTrail(Queue<TrajectoryTracker.TrajectoryEntry> data)
+    {
+        var trajectory = new Vector3[data.Count];
+
+        var idx = 0;
+        foreach (var entry in data)
+        {
+            // TODO: add support for parent-centric trajectories
+            trajectory[idx++] = ScalePosition(entry.Position);
+        }
+
+        return trajectory;
     }
 }

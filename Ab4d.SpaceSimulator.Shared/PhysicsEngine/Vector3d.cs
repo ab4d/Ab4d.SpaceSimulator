@@ -70,6 +70,16 @@ public struct Vector3d
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector3d Cross(Vector3d vector1, Vector3d vector2)
+    {
+        return new Vector3d(
+            vector1.Y * vector2.Z - vector1.Z * vector2.Y,
+            vector1.Z * vector2.X - vector1.X * vector2.Z,
+            vector1.X * vector2.Y - vector1.Y * vector2.X
+        );
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly double Length() => Math.Sqrt(LengthSquared());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -12,7 +12,10 @@ public class VisualizationEngine
     {
         _celestialBodyVisualizations.Add(celestialBodyVisualization);
         RootNode.Add(celestialBodyVisualization.SceneNode);
-        RootNode.Add(celestialBodyVisualization.TrajectoryNode);
+        if (celestialBodyVisualization.TrajectoryNode != null)
+        {
+            RootNode.Add(celestialBodyVisualization.TrajectoryNode);
+        }
     }
 
     public void Update()
