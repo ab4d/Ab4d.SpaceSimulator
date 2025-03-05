@@ -208,13 +208,13 @@ public class CelestialBodyVisualization
             return [];
 
         var data = _trajectoryTracker.TrajectoryData;
-        var trajectory = new Vector3[data.Count];
+        var trajectory = new Vector3[data.Count + 1]; // Always append current position
 
+        var idx = 0;
         if (_celestialBody.Parent != null /* && !forceHeliocentricTrajectories */)
         {
             // Parent-centric trajectory
             var currentParentPosition = _celestialBody.Parent.Position;
-            var idx = 0;
             foreach (var entry in data)
             {
                 var position = currentParentPosition + (entry.Position - entry.ParentPosition);
@@ -224,12 +224,16 @@ public class CelestialBodyVisualization
         else
         {
             // Helio-centric trajectory
-            var idx = 0;
             foreach (var entry in data)
             {
                 trajectory[idx++] = ScalePosition(entry.Position);
             }
         }
+
+        // Add current position - this prevents "gaps" between the last tracked position and the current position
+        // (current position might not be tracked due to its revolution angle being below the threshold), and makes
+        // the trajectory update appear to be smooth.
+        trajectory[idx++] = ScalePosition(_celestialBody.Position);
 
         return trajectory;
     }
