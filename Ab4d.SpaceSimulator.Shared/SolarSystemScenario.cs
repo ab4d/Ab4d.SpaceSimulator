@@ -331,9 +331,9 @@ public class SolarSystemScenario
             var textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", entity.TextureName);
             Debug.Assert(System.IO.Path.Exists(textureFilename), $"Texture file {textureFilename} does not exist!");
             var material = new StandardMaterial(textureFilename, _imageReader, name: $"Texture-{entity.Name}");
-            var visualization = new VisualizationEngine.CelestialBody(massBody, material, entity.MinimumVisualizationSize);
+            var visualization = new VisualizationEngine.CelestialBodyVisualization(massBody, material, entity.MinimumVisualizationSize);
 
-            visualizationEngine.AddCelestialBody(visualization);
+            visualizationEngine.AddCelestialBodyVisualization(visualization);
 
             // Create moon(s)
             foreach (var moonEntity in entity.Moons ?? [])
@@ -353,9 +353,9 @@ public class SolarSystemScenario
                 textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", moonEntity.TextureName);
                 Debug.Assert(System.IO.Path.Exists(textureFilename), $"Texture file {textureFilename} does not exist!");
                 var moonMaterial = new StandardMaterial(textureFilename, _imageReader, name: $"Texture-{moonEntity.Name}");
-                var moonVisualization = new VisualizationEngine.CelestialBody(moonMassBody, moonMaterial, moonEntity.MinimumVisualizationSize);
+                var moonVisualization = new VisualizationEngine.CelestialBodyVisualization(moonMassBody, moonMaterial, moonEntity.MinimumVisualizationSize);
 
-                visualizationEngine.AddCelestialBody(moonVisualization);
+                visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
             }
         }
     }

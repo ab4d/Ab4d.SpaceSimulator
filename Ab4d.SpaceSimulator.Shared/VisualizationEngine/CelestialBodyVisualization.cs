@@ -10,7 +10,7 @@ using Ab4d.SpaceSimulator.PhysicsEngine;
 
 namespace Ab4d.SpaceSimulator.VisualizationEngine;
 
-public class CelestialBody
+public class CelestialBodyVisualization
 {
     private PhysicsEngine.CelestialBody? _celestialBody;
 
@@ -21,7 +21,7 @@ public class CelestialBody
     private Queue<Vector3> _trajectoryPositions = new();
     public readonly MultiLineNode TrajectoryNode;
 
-    public CelestialBody(PhysicsEngine.CelestialBody physicsObject, StandardMaterial material, float minimumSize)
+    public CelestialBodyVisualization(PhysicsEngine.CelestialBody physicsObject, StandardMaterial material, float minimumSize)
     {
         MinimumSize = minimumSize;
 

@@ -6,20 +6,20 @@ namespace Ab4d.SpaceSimulator.VisualizationEngine;
 public class VisualizationEngine
 {
     public readonly GroupNode RootNode = new();
-    private readonly List<CelestialBody> _celestialBodies = [];
+    private readonly List<CelestialBodyVisualization> _celestialBodyVisualizations = [];
 
-    public void AddCelestialBody(CelestialBody celestialBody)
+    public void AddCelestialBodyVisualization(CelestialBodyVisualization celestialBodyVisualization)
     {
-        _celestialBodies.Add(celestialBody);
-        RootNode.Add(celestialBody.SceneNode);
-        RootNode.Add(celestialBody.TrajectoryNode);
+        _celestialBodyVisualizations.Add(celestialBodyVisualization);
+        RootNode.Add(celestialBodyVisualization.SceneNode);
+        RootNode.Add(celestialBodyVisualization.TrajectoryNode);
     }
 
     public void Update()
     {
-        foreach (var celestialBody in _celestialBodies)
+        foreach (var visualization in _celestialBodyVisualizations)
         {
-            celestialBody.Update();
+            visualization.Update();
         }
     }
 }
