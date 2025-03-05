@@ -13,12 +13,13 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Colors = Avalonia.Media.Colors;
+using Ab4d.SpaceSimulator.Utilities;
 
 namespace Ab4d.SpaceSimulator.Shared;
 
 public partial class MainView : UserControl
 {
-    private PointerCameraController? _pointerCameraController;
+    private GesturesCameraController? _cameraController;
 
     private TargetPositionCamera? _camera;
 
@@ -116,13 +117,21 @@ public partial class MainView : UserControl
         MainSceneView.SceneView.Camera = _camera;
 
 
-        _pointerCameraController = new PointerCameraController(MainSceneView)
+        // Create GesturesCameraController that is defined in Common folder.
+        // It can also recognize pinch and scroll gestures.
+        _cameraController = new GesturesCameraController(MainSceneView)
         {
-            RotateCameraConditions = PointerAndKeyboardConditions.LeftPointerButtonPressed,                                                       // this is already the default value but is still set up here for clarity
-            MoveCameraConditions = PointerAndKeyboardConditions.LeftPointerButtonPressed | PointerAndKeyboardConditions.ControlKey,               // this is already the default value but is still set up here for clarity
-            QuickZoomConditions = PointerAndKeyboardConditions.LeftPointerButtonPressed | PointerAndKeyboardConditions.RightPointerButtonPressed, // quick zoom is disabled by default
+            RotateCameraConditions = PointerAndKeyboardConditions.LeftPointerButtonPressed,                                                          // this is already the default value but is still set up here for clarity
+            MoveCameraConditions   = PointerAndKeyboardConditions.Disabled,
+            QuickZoomConditions    = PointerAndKeyboardConditions.LeftPointerButtonPressed | PointerAndKeyboardConditions.RightPointerButtonPressed, // quick zoom is disabled by default
+                
             ZoomMode = CameraZoomMode.PointerPosition,
-            RotateAroundPointerPosition = true
+            RotateAroundPointerPosition = true,
+
+            IsPinchGestureEnabled         = true,
+            IsScrollGestureEnabled        = false,
+            RotateCameraWithScrollGesture = false, // When true, then dragging with one finger will rotate the camera (this is the default)
+            RotateWithPinchGesture        = true,  // When true, we can rotate the camera with two fingers (false by default)
         };
     }
 
