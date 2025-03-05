@@ -108,8 +108,9 @@ public partial class MainView : UserControl
             TargetPosition = new Vector3(0, 0, 0),
             ShowCameraLight = ShowCameraLightType.Always,
 
-            NearPlaneDistance = 100_000f / (float)Constants.AstronomicalUnit, // 100 km in AU
-            IsAutomaticNearPlaneDistanceCalculation = false,
+            // TODO: this breaks the zoom on Linux
+            /*NearPlaneDistance = 100_000f / (float)PhysicsEngine.Constants.AstronomicalUnit, // 100 km in AU
+            IsAutomaticNearPlaneDistanceCalculation = false,*/
         };
 
         MainSceneView.SceneView.Camera = _camera;
