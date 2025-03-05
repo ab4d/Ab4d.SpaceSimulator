@@ -14,6 +14,11 @@ public class CelestialBody : MassBody
     // Axial tilt
     public double AxialTilt = 0; // degrees
 
+    // Fixed orbit
+    public bool HasOrbit;
+    public double OrbitRadius; // meters
+    public double OrbitalInclination; // deg
+
     // Parent in the star -> planet -> moon hierarchy
     public CelestialBody? Parent;
 
