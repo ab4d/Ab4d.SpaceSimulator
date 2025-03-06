@@ -40,7 +40,7 @@ public class CelestialBodyView
         // Orbit ellipse
         if (_celestialBody.HasOrbit && _celestialBody.Parent != null)
         {
-            var orbitColor = new Color3(0.1f, 0.1f, 0.1f);
+            var orbitColor = new Color3(0.2f, 0.2f, 0.2f);
 
             var majorSemiAxis = (float)ScaleDistance(_celestialBody.OrbitRadius);
             var majorSemiAxisDir = Vector3.UnitZ;
