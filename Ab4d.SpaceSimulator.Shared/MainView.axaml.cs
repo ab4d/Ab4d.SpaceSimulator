@@ -91,7 +91,7 @@ public partial class MainView : UserControl
             var scaledTimeDelta = timeDelta * _simulationSpeed;
 
             _physicsEngine.Simulate(scaledTimeDelta.TotalSeconds);
-            _visualizationEngine.Update();
+            _visualizationEngine.Update(true);
 
             UpdateShownSimulationTime();
         };

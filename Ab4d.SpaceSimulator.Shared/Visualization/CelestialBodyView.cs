@@ -85,7 +85,7 @@ public class CelestialBodyView
         }
 
         // Perform initial update
-        Update();
+        Update(true);
     }
 
     public void RegisterNodes(GroupNode RootNode)
@@ -101,29 +101,35 @@ public class CelestialBodyView
         }
     }
 
-    public void Update()
+    public void Update(bool dataChange)
     {
-        // Update position from the underlying physical object
-        SphereNode.CenterPosition = ScalePosition(_celestialBody.Position);
+        // Update properties to reflect the change in underlying physical object properties (e.g., position).
+        if (dataChange)
+        {
+            // Update position from the underlying physical object
+            SphereNode.CenterPosition = ScalePosition(_celestialBody.Position);
+
+            // Rotate around body's axis
+            SphereNode.Transform = ComputeTiltAndRotationTransform();
+
+            // Update orbit ellipse - its position
+            if (OrbitNode != null && _celestialBody.Parent != null)
+            {
+                // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
+                // parameters..
+                OrbitNode.CenterPosition = ScalePosition(_celestialBody.Parent.Position);
+            }
+
+            // Update trajectory tracker to obtain celestial body's trail
+            if (_trajectoryTracker != null && TrajectoryNode != null)
+            {
+                _trajectoryTracker.UpdatePosition(_celestialBody);
+                TrajectoryNode.Positions = GetTrajectoryTrail();
+            }
+        }
+
+        // Dynamic size change - can be triggered by other changes, such as viewport
         SphereNode.Radius = ScaleSize(_celestialBody.Radius);
-
-        // Rotate around body's axis
-        SphereNode.Transform = ComputeTiltAndRotationTransform();
-
-        // Update orbit ellipse - its position
-        if (OrbitNode != null && _celestialBody.Parent != null)
-        {
-            // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
-            // parameters..
-            OrbitNode.CenterPosition = ScalePosition(_celestialBody.Parent.Position);
-        }
-
-        // Update trajectory tracker to obtain celestial body's trail
-        if (_trajectoryTracker != null && TrajectoryNode != null)
-        {
-            _trajectoryTracker.UpdatePosition(_celestialBody);
-            TrajectoryNode.Positions = GetTrajectoryTrail();
-        }
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()

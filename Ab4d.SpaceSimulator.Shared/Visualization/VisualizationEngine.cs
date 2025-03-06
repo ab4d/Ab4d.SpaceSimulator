@@ -28,11 +28,11 @@ public class VisualizationEngine
         celestialBodyVisualization.RegisterNodes(RootNode);
     }
 
-    public void Update()
+    public void Update(bool dataChange = false)
     {
         foreach (var visualization in _celestialBodyVisualizations)
         {
-            visualization.Update();
+            visualization.Update(dataChange);
         }
     }
 }
