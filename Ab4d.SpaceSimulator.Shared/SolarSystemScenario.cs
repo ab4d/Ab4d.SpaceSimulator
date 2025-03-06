@@ -393,9 +393,13 @@ public class SolarSystemScenario
                 var moonVisualization = new CelestialBodyView(
                     visualizationEngine,
                     moonMassBody,
-                    moonMaterial);
+                    moonMaterial)
+                {
+                    Parent = visualization, // parent visualization
+                };
 
                 visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
+                visualization.Children.Add(moonVisualization); // register as child visualization
             }
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
@@ -13,6 +14,10 @@ public class CelestialBodyView
 {
     private readonly VisualizationEngine _visualizationEngine;
     private readonly CelestialBody _celestialBody;
+
+    // Parent / child hierarchy
+    public CelestialBodyView? Parent = null;
+    public readonly List<CelestialBodyView> Children = [];
 
     // Celestial body sphere
     public readonly SphereModelNode SphereNode;
@@ -98,6 +103,19 @@ public class CelestialBodyView
         }
     }
 
+    public void SetVisible(bool visible)
+    {
+        SphereNode.Visibility = visible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        if (OrbitNode != null)
+        {
+            OrbitNode.Visibility = visible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
+        if (TrajectoryNode != null)
+        {
+            TrajectoryNode.Visibility = visible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
+    }
+
     public void Update(bool dataChange)
     {
         // Update properties to reflect the change in underlying physical object properties (e.g., position).
@@ -129,6 +147,7 @@ public class CelestialBodyView
         SphereNode.Radius = ScaleSize(_celestialBody.Radius);
 
         var camera = _visualizationEngine.Camera;
+        var showChildren = true;
         if (_visualizationEngine.EnableMinimumPixelSize && camera.SceneView is { Width: > 0 })
         {
             // Adapted from CameraUtils.GetPerspectiveScreenSize()
@@ -145,7 +164,14 @@ public class CelestialBodyView
             {
                 var correctedSize = (lookDirectionDistance * xScale * 2f) * minSize / viewSizeX; // Inverted eq. for displayedSize
                 SphereNode.Radius = correctedSize;
+                showChildren = false;
             }
+        }
+
+        // Modify the child visibility
+        foreach (var child in Children)
+        {
+            child.SetVisible(showChildren);
         }
     }
 
