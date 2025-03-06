@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Ab4d.SpaceSimulator.PhysicsEngine;
+namespace Ab4d.SpaceSimulator.Physics;
 
 // Basic three-dimensional vector with double-precision fields.
 public struct Vector3d

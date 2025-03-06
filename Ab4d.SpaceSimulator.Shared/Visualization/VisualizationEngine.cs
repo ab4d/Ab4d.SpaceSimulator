@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ab4d.SharpEngine.SceneNodes;
 
-namespace Ab4d.SpaceSimulator.VisualizationEngine;
+namespace Ab4d.SpaceSimulator.Visualization;
 
 public class VisualizationEngine
 {

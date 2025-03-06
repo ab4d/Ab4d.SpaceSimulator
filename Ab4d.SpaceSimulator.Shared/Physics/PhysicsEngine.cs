@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Ab4d.SpaceSimulator.PhysicsEngine;
+namespace Ab4d.SpaceSimulator.Physics;
 
 public class PhysicsEngine
 {

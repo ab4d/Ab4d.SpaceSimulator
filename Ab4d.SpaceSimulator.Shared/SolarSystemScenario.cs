@@ -4,7 +4,8 @@ using System.Diagnostics;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.Utilities;
-using Ab4d.SpaceSimulator.PhysicsEngine;
+using Ab4d.SpaceSimulator.Physics;
+using Ab4d.SpaceSimulator.Visualization;
 
 namespace Ab4d.SpaceSimulator;
 
@@ -308,14 +309,14 @@ public class SolarSystemScenario
         return orbitalVelocity * directionVector;
     }
 
-    public void SetupScenario(PhysicsEngine.PhysicsEngine physicsEngine, VisualizationEngine.VisualizationEngine visualizationEngine)
+    public void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine)
     {
-        PhysicsEngine.CelestialBody? sunObject = null; // Used to set parent object for planets
+        Physics.CelestialBody? sunObject = null; // Used to set parent object for planets
 
         foreach (var entity in _entities)
         {
             // Mass body for the physics engine
-            var massBody = new PhysicsEngine.CelestialBody()
+            var massBody = new Physics.CelestialBody()
             {
                 Name = entity.Name,
                 Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
@@ -337,14 +338,14 @@ public class SolarSystemScenario
             var textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", entity.TextureName);
             Debug.Assert(System.IO.Path.Exists(textureFilename), $"Texture file {textureFilename} does not exist!");
             var material = new StandardMaterial(textureFilename, _imageReader, name: $"Texture-{entity.Name}");
-            var visualization = new VisualizationEngine.CelestialBodyView(massBody, material, entity.MinimumVisualizationSize);
+            var visualization = new CelestialBodyView(massBody, material, entity.MinimumVisualizationSize);
 
             visualizationEngine.AddCelestialBodyVisualization(visualization);
 
             // Create moon(s)
             foreach (var moonEntity in entity.Moons ?? [])
             {
-                var moonMassBody = new PhysicsEngine.CelestialBody()
+                var moonMassBody = new Physics.CelestialBody()
                 {
                     Name = moonEntity.Name,
                     Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
@@ -360,7 +361,7 @@ public class SolarSystemScenario
                 textureFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", moonEntity.TextureName);
                 Debug.Assert(System.IO.Path.Exists(textureFilename), $"Texture file {textureFilename} does not exist!");
                 var moonMaterial = new StandardMaterial(textureFilename, _imageReader, name: $"Texture-{moonEntity.Name}");
-                var moonVisualization = new VisualizationEngine.CelestialBodyView(moonMassBody, moonMaterial, moonEntity.MinimumVisualizationSize);
+                var moonVisualization = new CelestialBodyView(moonMassBody, moonMaterial, moonEntity.MinimumVisualizationSize);
 
                 visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
             }

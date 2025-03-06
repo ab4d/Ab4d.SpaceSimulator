@@ -7,6 +7,7 @@ using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
 using Ab4d.SharpEngine.Transformations;
 using System.Numerics;
+using Ab4d.SpaceSimulator.Physics;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -14,6 +15,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Colors = Avalonia.Media.Colors;
 using Ab4d.SpaceSimulator.Utilities;
+using Ab4d.SpaceSimulator.Visualization;
 
 namespace Ab4d.SpaceSimulator.Shared;
 
@@ -33,8 +35,8 @@ public partial class MainView : UserControl
     private List<TextBlock> _allMessages = new();
     private const int MaxShownInfoMessagesCount = 5;
 
-    private readonly PhysicsEngine.PhysicsEngine _physicsEngine = new();
-    private readonly VisualizationEngine.VisualizationEngine _visualizationEngine = new();
+    private readonly PhysicsEngine _physicsEngine = new();
+    private readonly VisualizationEngine _visualizationEngine = new();
 
     public MainView()
     {
@@ -238,13 +240,13 @@ public partial class MainView : UserControl
         var simulationTime = _physicsEngine.SimulationTime;
         var timeText = "Time: ";
 
-        if (simulationTime >= PhysicsEngine.Constants.SecondsInDay)
+        if (simulationTime >= Physics.Constants.SecondsInDay)
         {
-            var days = (int)Math.Floor(simulationTime / PhysicsEngine.Constants.SecondsInDay);
+            var days = (int)Math.Floor(simulationTime / Physics.Constants.SecondsInDay);
             timeText += $"+{days:0} day(s) ";
         }
 
-        var timeWithinDay = (int)simulationTime % (PhysicsEngine.Constants.SecondsInDay);
+        var timeWithinDay = (int)simulationTime % (Physics.Constants.SecondsInDay);
         var hours = timeWithinDay / (60 * 60);
         var minutes = (timeWithinDay % (60 * 60)) / 60;
         var seconds = timeWithinDay % 60;
