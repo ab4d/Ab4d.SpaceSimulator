@@ -1,12 +1,16 @@
 using System.Collections.Generic;
+using System.Numerics;
 using Ab4d.SharpEngine.Cameras;
+using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.SceneNodes;
+using Ab4d.SpaceSimulator.Utilities;
 
 namespace Ab4d.SpaceSimulator.Visualization;
 
 public class VisualizationEngine
 {
-    public readonly Camera Camera;
+    public readonly TargetPositionCamera Camera;
+    public readonly GesturesCameraController CameraController;
 
     public readonly GroupNode RootNode = new();
     public readonly List<CelestialBodyView> CelestialBodyViews = [];
@@ -18,9 +22,13 @@ public class VisualizationEngine
     private bool _enableMinimumPixelSize = true;
     private float _minimumPixelSize = 20f;
 
-    public VisualizationEngine(Camera camera)
+    // Tracked celestial body
+    private CelestialBodyView? _trackedCelestialBody = null;
+
+    public VisualizationEngine(TargetPositionCamera camera, GesturesCameraController cameraController)
     {
         Camera = camera;
+        CameraController = cameraController;
     }
 
     public float CelestialBodyScaleFactor
@@ -65,6 +73,52 @@ public class VisualizationEngine
         foreach (var celestialBodyView in CelestialBodyViews)
         {
             celestialBodyView.Update(dataChange);
+        }
+
+        // If we are tracking a celestial body, update the zoom/rotation center and the camera target position
+        if (_trackedCelestialBody != null)
+        {
+            var center = _trackedCelestialBody.SphereNode.CenterPosition;
+            Camera.RotationCenterPosition = center;
+            Camera.TargetPosition = center;
+        }
+    }
+
+    public void TrackCelestialBody(string? name)
+    {
+        _trackedCelestialBody = null;
+
+        // Look up by name...
+        if (name != null)
+        {
+            // TODO: keep a dictionary and perform a dictionary look-up
+            foreach (var celestialBodyView in CelestialBodyViews)
+            {
+                if (name == celestialBodyView.CelestialBody.Name)
+                {
+                    _trackedCelestialBody = celestialBodyView;
+                    break;
+                }
+            }
+        }
+
+        if (_trackedCelestialBody == null)
+        {
+            // Free mode
+            Camera.RotationCenterPosition = null;
+
+            CameraController.ZoomMode = CameraZoomMode.PointerPosition;
+            CameraController.RotateAroundPointerPosition = true;
+        }
+        else
+        {
+            // Centered to tracked celestial body
+            var center = _trackedCelestialBody.SphereNode.CenterPosition;
+            Camera.RotationCenterPosition = center;
+            Camera.TargetPosition = center;
+
+            CameraController.ZoomMode = CameraZoomMode.CameraRotationCenterPosition;
+            CameraController.RotateAroundPointerPosition = false;
         }
     }
 }

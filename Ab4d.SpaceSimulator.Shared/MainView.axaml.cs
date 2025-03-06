@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Ab4d.SharpEngine.AvaloniaUI;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
@@ -35,8 +36,10 @@ public partial class MainView : UserControl
     private List<TextBlock> _allMessages = new();
     private const int MaxShownInfoMessagesCount = 5;
 
-    private readonly PhysicsEngine _physicsEngine;
-    private readonly VisualizationEngine _visualizationEngine;
+    private readonly PhysicsEngine? _physicsEngine;
+    private readonly VisualizationEngine? _visualizationEngine;
+
+    private string[] _selectionNames = ["none"]; // Populated once scenario is set up
 
     private PlanetTextureLoader? _planetTextureLoader;
 
@@ -49,7 +52,7 @@ public partial class MainView : UserControl
         //ScaleTypeComboBox.SelectionChanged += ScaleTypeComboBoxOnSelectionChanged;
         //ScaleTypeComboBox.SelectedIndex = 2;
 
-        ViewCenterComboBox.ItemsSource = new string[] { "Sol", "Earth", "Moon" }; //
+        ViewCenterComboBox.ItemsSource = _selectionNames;
         ViewCenterComboBox.SelectionChanged += ViewCenterComboBox_OnSelectionChanged;
         ViewCenterComboBox.SelectedIndex = 0;
 
@@ -64,7 +67,8 @@ public partial class MainView : UserControl
 
         // Create physics and visualization engine
         _physicsEngine = new PhysicsEngine();
-        _visualizationEngine = new VisualizationEngine(_camera);
+        Debug.Assert(_camera != null, nameof(_camera) + " != null");
+        _visualizationEngine = new VisualizationEngine(_camera, _cameraController);
 
         // Create scene
         var solarSystem = new SolarSystemScenario();
@@ -75,6 +79,16 @@ public partial class MainView : UserControl
         {
             _planetTextureLoader = new PlanetTextureLoader(args.GpuDevice);
             solarSystem.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
+
+            // Populate the list for ViewCenterComboBox
+            _selectionNames = new string[_visualizationEngine.CelestialBodyViews.Count + 1];
+            var idx = 1;
+            foreach (var bodyView in _visualizationEngine.CelestialBodyViews)
+            {
+                _selectionNames[idx++] = bodyView.CelestialBody.Name;
+            }
+            _selectionNames[0] = "none";
+            ViewCenterComboBox.ItemsSource = _selectionNames;
         };
 
         MainSceneView.SceneUpdating += (sender, args) =>
@@ -363,7 +377,14 @@ public partial class MainView : UserControl
 
     private void ViewCenterComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
+        int idx = ViewCenterComboBox.SelectedIndex;
+        string? name = null;
+        if (idx > 0 && idx <= _selectionNames.Length)
+        {
+            name = _selectionNames[idx];
+        }
 
+        _visualizationEngine?.TrackCelestialBody(name);
     }
 
     private void Scenario1Button_OnClick(object? sender, RoutedEventArgs e)

@@ -13,7 +13,7 @@ namespace Ab4d.SpaceSimulator.Visualization;
 public class CelestialBodyView
 {
     private readonly VisualizationEngine _visualizationEngine;
-    private readonly CelestialBody _celestialBody;
+    public readonly CelestialBody CelestialBody;
 
     // Parent / child hierarchy
     public CelestialBodyView? Parent = null;
@@ -34,32 +34,32 @@ public class CelestialBodyView
         _visualizationEngine = engine;
 
         // Store reference to object from physics engine
-        _celestialBody = physicsObject;
+        CelestialBody = physicsObject;
 
         // Create sphere node
-        SphereNode = new SphereModelNode(name: $"{_celestialBody.Name}-Sphere")
+        SphereNode = new SphereModelNode(name: $"{CelestialBody.Name}-Sphere")
         {
             Material = material,
         };
 
         // Orbit ellipse
-        if (_celestialBody.HasOrbit && _celestialBody.Parent != null)
+        if (CelestialBody.HasOrbit && CelestialBody.Parent != null)
         {
             var orbitColor = new Color3(0.2f, 0.2f, 0.2f);
 
-            var majorSemiAxis = (float)ScaleDistance(_celestialBody.OrbitRadius);
+            var majorSemiAxis = (float)ScaleDistance(CelestialBody.OrbitRadius);
             var majorSemiAxisDir = Vector3.UnitZ;
 
             var minorSemiAxis = majorSemiAxis; // Approximate circular orbit
-            var phi = (float)_celestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
+            var phi = (float)CelestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
             var minorSemiAxisDir = new Vector3(MathF.Cos(phi), MathF.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
 
             OrbitNode = new EllipseLineNode(
                 orbitColor,
                 1,
-                name: $"{_celestialBody.Name}-OrbitEllipse")
+                name: $"{CelestialBody.Name}-OrbitEllipse")
             {
-                CenterPosition = ScalePosition(_celestialBody.Parent.Position),
+                CenterPosition = ScalePosition(CelestialBody.Parent.Position),
                 WidthDirection = majorSemiAxisDir,
                 Width = majorSemiAxis * 2,
                 HeightDirection = minorSemiAxisDir,
@@ -69,11 +69,11 @@ public class CelestialBodyView
         }
 
         // Trail / trajectory for objects with parent (planets and moons)
-        if (_celestialBody.Parent != null)
+        if (CelestialBody.Parent != null)
         {
             // Create trajectory tracker
             _trajectoryTracker = new TrajectoryTracker();
-            _trajectoryTracker.UpdatePosition(_celestialBody);
+            _trajectoryTracker.UpdatePosition(CelestialBody);
 
             // Create trajectory multi-line node
             var trajectoryColor = new Color3(0.25f, 0.25f, 0.25f);
@@ -83,7 +83,7 @@ public class CelestialBodyView
                 true,
                 trajectoryColor,
                 2,
-                name: $"{_celestialBody.Name}-Trajectory");
+                name: $"{CelestialBody.Name}-Trajectory");
         }
 
         // Perform initial update
@@ -122,29 +122,29 @@ public class CelestialBodyView
         if (dataChange)
         {
             // Update position from the underlying physical object
-            SphereNode.CenterPosition = ScalePosition(_celestialBody.Position);
+            SphereNode.CenterPosition = ScalePosition(CelestialBody.Position);
 
             // Rotate around body's axis
             SphereNode.Transform = ComputeTiltAndRotationTransform();
 
             // Update orbit ellipse - its position
-            if (OrbitNode != null && _celestialBody.Parent != null)
+            if (OrbitNode != null && CelestialBody.Parent != null)
             {
                 // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
                 // parameters...
-                OrbitNode.CenterPosition = ScalePosition(_celestialBody.Parent.Position);
+                OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position);
             }
 
             // Update trajectory tracker to obtain celestial body's trail
             if (_trajectoryTracker != null && TrajectoryNode != null)
             {
-                _trajectoryTracker.UpdatePosition(_celestialBody);
+                _trajectoryTracker.UpdatePosition(CelestialBody);
                 TrajectoryNode.Positions = GetTrajectoryTrail();
             }
         }
 
         // Dynamic size change - can be triggered by other changes, such as viewport
-        SphereNode.Radius = ScaleSize(_celestialBody.Radius);
+        SphereNode.Radius = ScaleSize(CelestialBody.Radius);
 
         var camera = _visualizationEngine.Camera;
         var showChildren = true;
@@ -180,8 +180,8 @@ public class CelestialBodyView
         var center = SphereNode.CenterPosition;
         var matrix = (
             Matrix4x4.CreateTranslation(-center) *
-            Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathUtils.DegreesToRadians((float)_celestialBody.Rotation)) *
-            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, MathUtils.DegreesToRadians((float)_celestialBody.AxialTilt)) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathUtils.DegreesToRadians((float)CelestialBody.Rotation)) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, MathUtils.DegreesToRadians((float)CelestialBody.AxialTilt)) *
             Matrix4x4.CreateTranslation(center)
         );
 
@@ -222,10 +222,10 @@ public class CelestialBodyView
         var trajectory = new Vector3[data.Count + 1]; // Always append current position
 
         var idx = 0;
-        if (_celestialBody.Parent != null /* && !forceHeliocentricTrajectories */)
+        if (CelestialBody.Parent != null /* && !forceHeliocentricTrajectories */)
         {
             // Parent-centric trajectory
-            var currentParentPosition = _celestialBody.Parent.Position;
+            var currentParentPosition = CelestialBody.Parent.Position;
             foreach (var entry in data)
             {
                 var position = currentParentPosition + (entry.Position - entry.ParentPosition);
@@ -244,7 +244,7 @@ public class CelestialBodyView
         // Add current position - this prevents "gaps" between the last tracked position and the current position
         // (current position might not be tracked due to its revolution angle being below the threshold), and makes
         // the trajectory update appear to be smooth.
-        trajectory[idx++] = ScalePosition(_celestialBody.Position);
+        trajectory[idx++] = ScalePosition(CelestialBody.Position);
 
         return trajectory;
     }
