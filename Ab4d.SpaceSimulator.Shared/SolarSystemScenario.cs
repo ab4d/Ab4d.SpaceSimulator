@@ -322,6 +322,9 @@ public class SolarSystemScenario
                 Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
+                HasOrbit = true,
+                OrbitRadius = entity.DistanceFromParent, // meters
+                OrbitalInclination = entity.OrbitalInclination, // deg
                 Velocity = TiltOrbitalVelocity(entity.OrbitalVelocity, entity.OrbitalInclination), // m/s
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
                 AxialTilt = entity.AxialTilt, // degrees
@@ -351,6 +354,9 @@ public class SolarSystemScenario
                     Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters
+                    HasOrbit = true,
+                    OrbitRadius = moonEntity.DistanceFromParent, // meters
+                    OrbitalInclination = moonEntity.OrbitalInclination, // deg
                     Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + massBody.Velocity, // m/s
                     Parent = massBody, // parent mass body
                 };
