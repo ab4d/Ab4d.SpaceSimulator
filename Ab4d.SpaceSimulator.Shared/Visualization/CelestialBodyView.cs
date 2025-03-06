@@ -13,11 +13,16 @@ public class CelestialBodyView
 {
     private readonly CelestialBody _celestialBody;
 
-    public readonly SphereModelNode SceneNode;
+    // Celestial body sphere
+    public readonly SphereModelNode SpehereNode;
     public float MinimumSize;
 
-    private readonly TrajectoryTracker? _trajectoryTracker = null;
-    public readonly MultiLineNode? TrajectoryNode = null;
+    // Fixed trajectory / orbit
+    public readonly EllipseLineNode? OrbitNode;
+
+    // Dynamic trajectory / trail
+    private readonly TrajectoryTracker? _trajectoryTracker;
+    public readonly MultiLineNode? TrajectoryNode;
 
     public CelestialBodyView(CelestialBody physicsObject, StandardMaterial material, float minimumSize)
     {
@@ -27,10 +32,36 @@ public class CelestialBodyView
         _celestialBody = physicsObject;
 
         // Create sphere node
-        SceneNode = new SphereModelNode(name: $"{_celestialBody.Name}-Sphere")
+        SpehereNode = new SphereModelNode(name: $"{_celestialBody.Name}-Sphere")
         {
             Material = material,
         };
+
+        // Orbit ellipse
+        if (_celestialBody.HasOrbit && _celestialBody.Parent != null)
+        {
+            var orbitColor = new Color3(0.1f, 0.1f, 0.1f);
+
+            var majorSemiAxis = (float)ScaleDistance(_celestialBody.OrbitRadius);
+            var majorSemiAxisDir = Vector3.UnitZ;
+
+            var minorSemiAxis = majorSemiAxis; // Approximate circular orbit
+            var phi = (float)_celestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
+            var minorSemiAxisDir = new Vector3(MathF.Cos(phi), MathF.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
+
+            OrbitNode = new EllipseLineNode(
+                orbitColor,
+                1,
+                name: $"{_celestialBody.Name}-OrbitEllipse")
+            {
+                CenterPosition = ScalePosition(_celestialBody.Parent.Position),
+                WidthDirection = majorSemiAxisDir,
+                Width = majorSemiAxis * 2,
+                HeightDirection = minorSemiAxisDir,
+                Height = majorSemiAxis * 2,
+                Segments = 359, // 1-degree resolution
+            };
+        }
 
         // Trail / trajectory for objects with parent (planets and moons)
         if (_celestialBody.Parent != null)
@@ -40,7 +71,7 @@ public class CelestialBodyView
             _trajectoryTracker.UpdatePosition(_celestialBody);
 
             // Create trajectory multi-line node
-            var trajectoryColor = new Color4(Colors.White, .25f);
+            var trajectoryColor = new Color3(0.25f, 0.25f, 0.25f);
             var initialTrajectory = GetTrajectoryTrail();
             TrajectoryNode = new MultiLineNode(
                 initialTrajectory,
@@ -54,14 +85,35 @@ public class CelestialBodyView
         Update();
     }
 
+    public void RegisterNodes(GroupNode RootNode)
+    {
+        RootNode.Add(SpehereNode);
+        if (OrbitNode != null)
+        {
+            RootNode.Add(OrbitNode);
+        }
+        if (TrajectoryNode != null)
+        {
+            RootNode.Add(TrajectoryNode);
+        }
+    }
+
     public void Update()
     {
         // Update position from the underlying physical object
-        SceneNode.CenterPosition = ScalePosition(_celestialBody.Position);
-        SceneNode.Radius = ScaleSize(_celestialBody.Radius);
+        SpehereNode.CenterPosition = ScalePosition(_celestialBody.Position);
+        SpehereNode.Radius = ScaleSize(_celestialBody.Radius);
 
         // Rotate around body's axis
-        SceneNode.Transform = ComputeTiltAndRotationTransform();
+        SpehereNode.Transform = ComputeTiltAndRotationTransform();
+
+        // Update orbit ellipse - its position
+        if (OrbitNode != null && _celestialBody.Parent != null)
+        {
+            // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
+            // parameters..
+            OrbitNode.CenterPosition = ScalePosition(_celestialBody.Parent.Position);
+        }
 
         // Update trajectory tracker to obtain celestial body's trail
         if (_trajectoryTracker != null && TrajectoryNode != null)
@@ -73,7 +125,7 @@ public class CelestialBodyView
 
     private MatrixTransform ComputeTiltAndRotationTransform()
     {
-        var center = SceneNode.CenterPosition;
+        var center = SpehereNode.CenterPosition;
         var matrix = (
             Matrix4x4.CreateTranslation(-center) *
             Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathUtils.DegreesToRadians((float)_celestialBody.Rotation)) *
@@ -84,10 +136,15 @@ public class CelestialBodyView
         return new MatrixTransform(matrix);
     }
 
+    private double ScaleDistance(double distance)
+    {
+        return distance / Constants.AstronomicalUnit;
+    }
+
     private Vector3 ScalePosition(Vector3d realPosition)
     {
         var length = realPosition.Length();
-        var scaledLength = length / Constants.AstronomicalUnit;
+        var scaledLength = ScaleDistance(length);
 
         var scaledPosition = scaledLength > 0 ? scaledLength * Vector3d.Normalize(realPosition) : Vector3d.Zero;
         return new Vector3((float)scaledPosition.X, (float)scaledPosition.Y, (float)scaledPosition.Z);
