@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Ab4d.SharpEngine.Common;
+using Ab4d.SharpEngine.Lights;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.Physics;
@@ -348,7 +349,12 @@ public class SolarSystemScenario
                 sunObject = massBody;
 
             // Visualization
-            var material = new StandardMaterial(entity.BaseColor, name: $"{entity.Name}Material");
+            StandardMaterialBase material;
+
+            if (entity.Type == EntityType.Star)
+                material = new SolidColorMaterial(entity.BaseColor, name: $"{entity.Name}Material");
+            else
+                material = new StandardMaterial(entity.BaseColor, name: $"{entity.Name}Material");
 
             if (entity.TextureName != null)
             {
@@ -360,6 +366,9 @@ public class SolarSystemScenario
                 visualizationEngine,
                 massBody,
                 material);
+
+            if (entity.Type == EntityType.Star)
+                visualizationEngine.Lights.Add(new PointLight(visualization.SphereNode.CenterPosition));
 
             visualizationEngine.AddCelestialBodyVisualization(visualization);
 

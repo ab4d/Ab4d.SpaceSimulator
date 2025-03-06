@@ -29,7 +29,7 @@ public class CelestialBodyView
     private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryNode;
 
-    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, StandardMaterial material)
+    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material)
     {
         _visualizationEngine = engine;
 

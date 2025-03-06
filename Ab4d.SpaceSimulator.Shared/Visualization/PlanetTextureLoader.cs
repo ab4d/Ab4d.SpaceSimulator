@@ -9,7 +9,7 @@ namespace Ab4d.SpaceSimulator.Visualization;
 
 public class PlanetTextureLoader
 {
-    public static Action<string, VulkanDevice, StandardMaterial>? CustomAsyncTextureLoader;
+    public static Action<string, VulkanDevice, StandardMaterialBase>? CustomAsyncTextureLoader;
 
     private readonly VulkanDevice _gpuDevice;
 
@@ -18,7 +18,7 @@ public class PlanetTextureLoader
         _gpuDevice = gpuDevice;
     }
 
-    public void LoadPlanetTextureAsync(string textureFileName, StandardMaterial planetMaterial)
+    public void LoadPlanetTextureAsync(string textureFileName, StandardMaterialBase planetMaterial)
     {
         if (CustomAsyncTextureLoader != null)
         {

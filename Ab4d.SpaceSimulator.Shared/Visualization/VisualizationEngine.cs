@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
+using Ab4d.SharpEngine.Lights;
 using Ab4d.SharpEngine.SceneNodes;
 using Ab4d.SpaceSimulator.Utilities;
 
@@ -13,6 +14,7 @@ public class VisualizationEngine
     public readonly GesturesCameraController CameraController;
 
     public readonly GroupNode RootNode = new();
+    public readonly List<Light> Lights = new();
     public readonly List<CelestialBodyView> CelestialBodyViews = [];
 
     // Scale factor for scaling celestial body dimensions

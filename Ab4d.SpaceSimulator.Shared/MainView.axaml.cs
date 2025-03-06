@@ -80,6 +80,14 @@ public partial class MainView : UserControl
             _planetTextureLoader = new PlanetTextureLoader(args.GpuDevice);
             solarSystem.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
 
+
+            // Setup lights
+            MainSceneView.Scene.SetAmbientLight(0.2f);
+
+            foreach (var oneLight in _visualizationEngine.Lights)
+                MainSceneView.Scene.Lights.Add(oneLight);
+
+
             // Populate the list for ViewCenterComboBox
             _selectionNames = new string[_visualizationEngine.CelestialBodyViews.Count + 1];
             var idx = 1;
@@ -143,7 +151,7 @@ public partial class MainView : UserControl
             Distance = 5,
             ViewWidth = 500,
             TargetPosition = new Vector3(0, 0, 0),
-            ShowCameraLight = ShowCameraLightType.Always,
+            ShowCameraLight = ShowCameraLightType.Never,
 
             // TODO: this breaks the zoom on Linux
             //NearPlaneDistance = 100_000f / (float)Physics.Constants.AstronomicalUnit, // 100 km in AU
@@ -161,7 +169,7 @@ public partial class MainView : UserControl
             MoveCameraConditions   = PointerAndKeyboardConditions.Disabled,
             QuickZoomConditions    = PointerAndKeyboardConditions.LeftPointerButtonPressed | PointerAndKeyboardConditions.RightPointerButtonPressed, // quick zoom is disabled by default
 
-            ZoomMode = CameraZoomMode.PointerPosition,
+            ZoomMode = CameraZoomMode.ViewCenter,
             RotateAroundPointerPosition = true,
 
             IsPinchGestureEnabled         = true,
