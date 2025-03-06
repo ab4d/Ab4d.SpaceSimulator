@@ -9,7 +9,7 @@ public class VisualizationEngine
     public readonly Camera Camera;
 
     public readonly GroupNode RootNode = new();
-    private readonly List<CelestialBodyView> _celestialBodyVisualizations = [];
+    public readonly List<CelestialBodyView> CelestialBodyViews = [];
 
     // Scale factor for scaling celestial body dimensions
     private float _celestialBodyScaleFactor = 20f;
@@ -53,17 +53,18 @@ public class VisualizationEngine
         }
     }
 
-    public void AddCelestialBodyVisualization(CelestialBodyView celestialBodyVisualization)
+    public void AddCelestialBodyVisualization(CelestialBodyView celestialBodyView)
     {
-        _celestialBodyVisualizations.Add(celestialBodyVisualization);
-        celestialBodyVisualization.RegisterNodes(RootNode);
+        CelestialBodyViews.Add(celestialBodyView);
+        celestialBodyView.RegisterNodes(RootNode);
     }
 
     public void Update(bool dataChange)
     {
-        foreach (var visualization in _celestialBodyVisualizations)
+        // Update celestial body views / visualizations
+        foreach (var celestialBodyView in CelestialBodyViews)
         {
-            visualization.Update(dataChange);
+            celestialBodyView.Update(dataChange);
         }
     }
 }
