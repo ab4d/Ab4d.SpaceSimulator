@@ -35,8 +35,8 @@ public partial class MainView : UserControl
     private List<TextBlock> _allMessages = new();
     private const int MaxShownInfoMessagesCount = 5;
 
-    private readonly PhysicsEngine _physicsEngine = new();
-    private readonly VisualizationEngine _visualizationEngine = new();
+    private readonly PhysicsEngine _physicsEngine;
+    private readonly VisualizationEngine _visualizationEngine;
 
     private PlanetTextureLoader? _planetTextureLoader;
 
@@ -62,6 +62,10 @@ public partial class MainView : UserControl
 
         SetupCameraController();
 
+        // Create physics and visualization engine
+        _physicsEngine = new PhysicsEngine();
+        _visualizationEngine = new VisualizationEngine(_camera);
+
         // Create scene
         var solarSystem = new SolarSystemScenario();
 
@@ -80,6 +84,7 @@ public partial class MainView : UserControl
             if (!_isPlaying)
             {
                 _previousUpdateTime = now;
+                _visualizationEngine.Update(false); // Update without data change
                 return;
             }
 
@@ -101,7 +106,10 @@ public partial class MainView : UserControl
         SetSimulationSpeed(GetSimulationSpeed());
 
         ScaleFactorSlider.Value = _visualizationEngine.CelestialBodyScaleFactor;
+        MinimumSizeCheckBox.IsChecked = _visualizationEngine.EnableMinimumPixelSize;
+        MinimumSizeSlider.Value = _visualizationEngine.MinimumPixelSize;
         UpdateShownScaleFactor();
+        UpdateShownMinimumPixelSize();
 
         // In case when VulkanDevice cannot be created, show an error message
         // If this is not handled by the user, then SharpEngineSceneView will show its own error message
@@ -271,7 +279,13 @@ public partial class MainView : UserControl
     private void UpdateShownScaleFactor()
     {
         var value = _visualizationEngine.CelestialBodyScaleFactor;
-        ScaleFactorTextBlock.Text = $"Dimension scaling: {value:F0}x";
+        ScaleFactorTextBlock.Text = $"Dimension scaling: {value:F0} x";
+    }
+
+    private void UpdateShownMinimumPixelSize()
+    {
+        var value = _visualizationEngine.MinimumPixelSize;
+        MinimumSizeTextBlock.Text = $"Size: {value:F0} pixels";
     }
 
     private void AddInfoMessage(string message)
@@ -334,7 +348,7 @@ public partial class MainView : UserControl
             ShowOptionPanels(ScenariosBorder);
     }
 
-    private void SettingButton_OnClick(object? sender, RoutedEventArgs e)
+    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e)
     {
         if (SettingBorder.IsVisible)
             SettingBorder.IsVisible = false;
@@ -362,5 +376,18 @@ public partial class MainView : UserControl
         var value = ScaleFactorSlider.Value;
         _visualizationEngine.CelestialBodyScaleFactor = (float)value;
         UpdateShownScaleFactor();
+    }
+
+    private void MinimumSizeSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        var value = MinimumSizeSlider.Value;
+        _visualizationEngine.MinimumPixelSize = (float)value;
+        UpdateShownMinimumPixelSize();
+    }
+
+    private void MinimumSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (MinimumSizeCheckBox.IsChecked != null)
+            _visualizationEngine.EnableMinimumPixelSize = MinimumSizeCheckBox.IsChecked.Value;
     }
 }

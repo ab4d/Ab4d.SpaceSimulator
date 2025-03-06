@@ -88,16 +88,16 @@ public class CelestialBodyView
         Update(true);
     }
 
-    public void RegisterNodes(GroupNode RootNode)
+    public void RegisterNodes(GroupNode rootNode)
     {
-        RootNode.Add(SphereNode);
+        rootNode.Add(SphereNode);
         if (OrbitNode != null)
         {
-            RootNode.Add(OrbitNode);
+            rootNode.Add(OrbitNode);
         }
         if (TrajectoryNode != null)
         {
-            RootNode.Add(TrajectoryNode);
+            rootNode.Add(TrajectoryNode);
         }
     }
 
@@ -116,7 +116,7 @@ public class CelestialBodyView
             if (OrbitNode != null && _celestialBody.Parent != null)
             {
                 // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
-                // parameters..
+                // parameters...
                 OrbitNode.CenterPosition = ScalePosition(_celestialBody.Parent.Position);
             }
 
@@ -130,6 +130,26 @@ public class CelestialBodyView
 
         // Dynamic size change - can be triggered by other changes, such as viewport
         SphereNode.Radius = ScaleSize(_celestialBody.Radius);
+
+        var camera = _visualizationEngine.Camera;
+        if (_visualizationEngine.EnableMinimumPixelSize && camera.SceneView is { Width: > 0 })
+        {
+            // Adapted from CameraUtils.GetPerspectiveScreenSize()
+            var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
+            var lookDirection = Vector3.Normalize(camera.GetLookDirection());
+            var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
+
+            var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
+            var viewSizeX = camera.SceneView.Width;
+            var displayedSize = viewSizeX * SphereNode.Radius / (lookDirectionDistance * xScale * 2f);
+
+            var minSize = _visualizationEngine.MinimumPixelSize;
+            if (displayedSize < minSize)
+            {
+                var correctedSize = (lookDirectionDistance * xScale * 2f) * minSize / viewSizeX; // Inverted eq. for displayedSize
+                SphereNode.Radius = correctedSize;
+            }
+        }
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()

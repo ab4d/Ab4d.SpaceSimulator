@@ -37,16 +37,9 @@
           <ComboBox Name="ScaleTypeComboBox" Width="100" Margin="10 0 0 0" VerticalAlignment="Center" />
         </StackPanel>
 
-        <StackPanel Name="BottomCenterOptionsPanel" Grid.Column="1" Orientation="Horizontal">
-          <Slider Name="ScaleFactorSlider" Minimum="1" Maximum="50" Width="200" Margin="25 0 0 0"
-                  TickFrequency="5" TickPlacement="BottomRight"
-                  ValueChanged="ScaleFactorSlider_OnValueChanged"/>
-          <TextBlock Name="ScaleFactorTextBlock" Text="Dimension scaling: NNx" Width="200" Margin="5 0 0 0" VerticalAlignment="Center" />
-        </StackPanel>
-
         <StackPanel Name="BottomRightOptionsPanel" Grid.Column="2" Orientation="Horizontal">
           <ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />
-          <ToggleButton Name="SettingButton" Content="Setting" Margin="5 0 5 0" VerticalAlignment="Center" Click="SettingButton_OnClick" />
+          <ToggleButton Name="SettingButton" Content="Settings" Margin="5 0 5 0" VerticalAlignment="Center" Click="SettingsButton_OnClick" />
         </StackPanel>
       </Grid>
     </Border>
@@ -66,9 +59,21 @@
 
     <Border Name="SettingBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
       <StackPanel Orientation="Vertical" Margin="8 10">
-        <TextBlock Text="Settings:" FontWeight="Bold"></TextBlock>
+        <TextBlock Text="Settings" FontWeight="Bold" TextAlignment="Center"></TextBlock>
 
-        <CheckBox Name="CheckBox1" Content="Demo checkbox" IsChecked="True" />
+        <Separator/>
+
+        <TextBlock Name="ScaleFactorTextBlock" Text="Dimension scaling: NN x" Width="200" Margin="0 0 0 0" VerticalAlignment="Center" />
+        <Slider Name="ScaleFactorSlider" Minimum="1" Maximum="50" Width="200" Margin="0 0 0 0"
+                TickFrequency="5" TickPlacement="BottomRight"
+                ValueChanged="ScaleFactorSlider_OnValueChanged"/>
+        <Separator/>
+
+        <CheckBox Name="MinimumSizeCheckBox" Content="Force minimum pixel size" IsChecked="True" IsCheckedChanged="MinimumSizeCheckBox_OnIsCheckedChanged" />
+        <TextBlock Name="MinimumSizeTextBlock" Text="Minimum size: NN px" Width="200" Margin="0 0 0 0" VerticalAlignment="Center" />
+        <Slider Name="MinimumSizeSlider" Minimum="1" Maximum="100" Width="200" Margin="0 0 0 0"
+                TickFrequency="5" TickPlacement="BottomRight"
+                ValueChanged="MinimumSizeSlider_OnValueChanged"/>
       </StackPanel>
     </Border>
 
