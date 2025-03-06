@@ -51,8 +51,6 @@ public class SolarSystemScenario
         // Base color name
         public required Color3 BaseColor;
 
-        public float MinimumVisualizationSize = 0.001f;
-
         // Moons
         public List<Entity>? Moons;
 
@@ -161,8 +159,6 @@ public class SolarSystemScenario
 
                 TextureName = "moonmap1k.png",
                 BaseColor = Colors.Gray,
-
-                MinimumVisualizationSize = 0.0001f,
             },
         ],
     };
@@ -363,8 +359,7 @@ public class SolarSystemScenario
             var visualization = new CelestialBodyView(
                 visualizationEngine,
                 massBody,
-                material,
-                entity.MinimumVisualizationSize);
+                material);
 
             visualizationEngine.AddCelestialBodyVisualization(visualization);
 
@@ -398,8 +393,7 @@ public class SolarSystemScenario
                 var moonVisualization = new CelestialBodyView(
                     visualizationEngine,
                     moonMassBody,
-                    moonMaterial,
-                    moonEntity.MinimumVisualizationSize);
+                    moonMaterial);
 
                 visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
             }

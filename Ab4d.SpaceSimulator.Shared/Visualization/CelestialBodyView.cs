@@ -16,7 +16,6 @@ public class CelestialBodyView
 
     // Celestial body sphere
     public readonly SphereModelNode SphereNode;
-    public float MinimumSize;
 
     // Fixed trajectory / orbit
     public readonly EllipseLineNode? OrbitNode;
@@ -25,11 +24,9 @@ public class CelestialBodyView
     private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryNode;
 
-    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, StandardMaterial material, float minimumSize)
+    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, StandardMaterial material)
     {
         _visualizationEngine = engine;
-
-        MinimumSize = minimumSize;
 
         // Store reference to object from physics engine
         _celestialBody = physicsObject;
