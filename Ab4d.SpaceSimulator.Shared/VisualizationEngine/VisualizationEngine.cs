@@ -6,9 +6,9 @@ namespace Ab4d.SpaceSimulator.VisualizationEngine;
 public class VisualizationEngine
 {
     public readonly GroupNode RootNode = new();
-    private readonly List<CelestialBodyVisualization> _celestialBodyVisualizations = [];
+    private readonly List<CelestialBodyView> _celestialBodyVisualizations = [];
 
-    public void AddCelestialBodyVisualization(CelestialBodyVisualization celestialBodyVisualization)
+    public void AddCelestialBodyVisualization(CelestialBodyView celestialBodyVisualization)
     {
         _celestialBodyVisualizations.Add(celestialBodyVisualization);
         RootNode.Add(celestialBodyVisualization.SceneNode);
