@@ -37,6 +37,13 @@
           <ComboBox Name="ScaleTypeComboBox" Width="100" Margin="10 0 0 0" VerticalAlignment="Center" />
         </StackPanel>
 
+        <StackPanel Name="BottomCenterOptionsPanel" Grid.Column="1" Orientation="Horizontal">
+          <Slider Name="ScaleFactorSlider" Minimum="1" Maximum="50" Width="200" Margin="25 0 0 0"
+                  TickFrequency="5" TickPlacement="BottomRight"
+                  ValueChanged="ScaleFactorSlider_OnValueChanged"/>
+          <TextBlock Name="ScaleFactorTextBlock" Text="Dimension scaling: NNx" Width="200" Margin="5 0 0 0" VerticalAlignment="Center" />
+        </StackPanel>
+
         <StackPanel Name="BottomRightOptionsPanel" Grid.Column="2" Orientation="Horizontal">
           <ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />
           <ToggleButton Name="SettingButton" Content="Setting" Margin="5 0 5 0" VerticalAlignment="Center" Click="SettingButton_OnClick" />

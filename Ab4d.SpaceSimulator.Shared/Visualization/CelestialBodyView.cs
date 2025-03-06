@@ -11,6 +11,7 @@ namespace Ab4d.SpaceSimulator.Visualization;
 
 public class CelestialBodyView
 {
+    private readonly VisualizationEngine _visualizationEngine;
     private readonly CelestialBody _celestialBody;
 
     // Celestial body sphere
@@ -24,8 +25,10 @@ public class CelestialBodyView
     private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryNode;
 
-    public CelestialBodyView(CelestialBody physicsObject, StandardMaterial material, float minimumSize)
+    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, StandardMaterial material, float minimumSize)
     {
+        _visualizationEngine = engine;
+
         MinimumSize = minimumSize;
 
         // Store reference to object from physics engine
@@ -152,8 +155,13 @@ public class CelestialBodyView
 
     private float ScaleSize(double realSize)
     {
-        // TODO: we can accurately show distances OR sizes, but not both at the same time...
-        return MathF.Max(MinimumSize, (float)(realSize / Constants.AstronomicalUnit));
+        // Scale with one astronomical unit by default - same as with distances
+        var scaledSize = (float)(realSize / Constants.AstronomicalUnit);
+
+        // Scale by global scale factor
+        scaledSize *= _visualizationEngine.CelestialBodyScaleFactor;
+
+        return scaledSize;
     }
 
     private Vector3[] GetTrajectoryTrail()

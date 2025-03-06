@@ -100,6 +100,9 @@ public partial class MainView : UserControl
         UpdateShownSimulationTime();
         SetSimulationSpeed(GetSimulationSpeed());
 
+        ScaleFactorSlider.Value = _visualizationEngine.CelestialBodyScaleFactor;
+        UpdateShownScaleFactor();
+
         // In case when VulkanDevice cannot be created, show an error message
         // If this is not handled by the user, then SharpEngineSceneView will show its own error message
         MainSceneView.GpuDeviceCreationFailed += delegate (object sender, DeviceCreateFailedEventArgs args)
@@ -135,7 +138,7 @@ public partial class MainView : UserControl
             RotateCameraConditions = PointerAndKeyboardConditions.LeftPointerButtonPressed,                                                          // this is already the default value but is still set up here for clarity
             MoveCameraConditions   = PointerAndKeyboardConditions.Disabled,
             QuickZoomConditions    = PointerAndKeyboardConditions.LeftPointerButtonPressed | PointerAndKeyboardConditions.RightPointerButtonPressed, // quick zoom is disabled by default
-                
+
             ZoomMode = CameraZoomMode.PointerPosition,
             RotateAroundPointerPosition = true,
 
@@ -265,6 +268,12 @@ public partial class MainView : UserControl
         SimulationTimeTextBlock.Text = timeText;
     }
 
+    private void UpdateShownScaleFactor()
+    {
+        var value = _visualizationEngine.CelestialBodyScaleFactor;
+        ScaleFactorTextBlock.Text = $"Dimension scaling: {value:F0}x";
+    }
+
     private void AddInfoMessage(string message)
     {
         AddInfoMessage(message, Avalonia.Media.Colors.White, isBold: false);
@@ -346,5 +355,12 @@ public partial class MainView : UserControl
     private void Scenario1Button_OnClick(object? sender, RoutedEventArgs e)
     {
         AddInfoMessage("Scenario 1 started", Colors.Orange);
+    }
+
+    private void ScaleFactorSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        var value = ScaleFactorSlider.Value;
+        _visualizationEngine.CelestialBodyScaleFactor = (float)value;
+        UpdateShownScaleFactor();
     }
 }

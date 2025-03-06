@@ -326,12 +326,12 @@ public class SolarSystemScenario
 
     public void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine, PlanetTextureLoader planetTextureLoader)
     {
-        Physics.CelestialBody? sunObject = null; // Used to set parent object for planets
+        CelestialBody? sunObject = null; // Used to set parent object for planets
 
         foreach (var entity in _entities)
         {
             // Mass body for the physics engine
-            var massBody = new Physics.CelestialBody()
+            var massBody = new CelestialBody()
             {
                 Name = entity.Name,
                 Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
@@ -360,14 +360,18 @@ public class SolarSystemScenario
                 planetTextureLoader.LoadPlanetTextureAsync(textureFileName, material);
             }
 
-            var visualization = new CelestialBodyView(massBody, material, entity.MinimumVisualizationSize);
+            var visualization = new CelestialBodyView(
+                visualizationEngine,
+                massBody,
+                material,
+                entity.MinimumVisualizationSize);
 
             visualizationEngine.AddCelestialBodyVisualization(visualization);
 
             // Create moon(s)
             foreach (var moonEntity in entity.Moons ?? [])
             {
-                var moonMassBody = new Physics.CelestialBody()
+                var moonMassBody = new CelestialBody()
                 {
                     Name = moonEntity.Name,
                     Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
@@ -391,7 +395,11 @@ public class SolarSystemScenario
                     planetTextureLoader.LoadPlanetTextureAsync(textureFileName, moonMaterial);
                 }
 
-                var moonVisualization = new CelestialBodyView(moonMassBody, moonMaterial, moonEntity.MinimumVisualizationSize);
+                var moonVisualization = new CelestialBodyView(
+                    visualizationEngine,
+                    moonMassBody,
+                    moonMaterial,
+                    moonEntity.MinimumVisualizationSize);
 
                 visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
             }
