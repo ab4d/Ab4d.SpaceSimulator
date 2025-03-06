@@ -14,7 +14,7 @@ public class CelestialBodyView
     private readonly CelestialBody _celestialBody;
 
     // Celestial body sphere
-    public readonly SphereModelNode SpehereNode;
+    public readonly SphereModelNode SphereNode;
     public float MinimumSize;
 
     // Fixed trajectory / orbit
@@ -32,7 +32,7 @@ public class CelestialBodyView
         _celestialBody = physicsObject;
 
         // Create sphere node
-        SpehereNode = new SphereModelNode(name: $"{_celestialBody.Name}-Sphere")
+        SphereNode = new SphereModelNode(name: $"{_celestialBody.Name}-Sphere")
         {
             Material = material,
         };
@@ -87,7 +87,7 @@ public class CelestialBodyView
 
     public void RegisterNodes(GroupNode RootNode)
     {
-        RootNode.Add(SpehereNode);
+        RootNode.Add(SphereNode);
         if (OrbitNode != null)
         {
             RootNode.Add(OrbitNode);
@@ -101,11 +101,11 @@ public class CelestialBodyView
     public void Update()
     {
         // Update position from the underlying physical object
-        SpehereNode.CenterPosition = ScalePosition(_celestialBody.Position);
-        SpehereNode.Radius = ScaleSize(_celestialBody.Radius);
+        SphereNode.CenterPosition = ScalePosition(_celestialBody.Position);
+        SphereNode.Radius = ScaleSize(_celestialBody.Radius);
 
         // Rotate around body's axis
-        SpehereNode.Transform = ComputeTiltAndRotationTransform();
+        SphereNode.Transform = ComputeTiltAndRotationTransform();
 
         // Update orbit ellipse - its position
         if (OrbitNode != null && _celestialBody.Parent != null)
@@ -125,7 +125,7 @@ public class CelestialBodyView
 
     private MatrixTransform ComputeTiltAndRotationTransform()
     {
-        var center = SpehereNode.CenterPosition;
+        var center = SphereNode.CenterPosition;
         var matrix = (
             Matrix4x4.CreateTranslation(-center) *
             Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathUtils.DegreesToRadians((float)_celestialBody.Rotation)) *
