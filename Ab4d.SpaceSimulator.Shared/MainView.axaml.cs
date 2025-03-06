@@ -38,6 +38,8 @@ public partial class MainView : UserControl
     private readonly PhysicsEngine _physicsEngine = new();
     private readonly VisualizationEngine _visualizationEngine = new();
 
+    private PlanetTextureLoader? _planetTextureLoader;
+
     public MainView()
     {
         InitializeComponent();
@@ -60,9 +62,14 @@ public partial class MainView : UserControl
 
         // Create scene
         var solarSystem = new SolarSystemScenario();
-        solarSystem.SetupScenario(_physicsEngine, _visualizationEngine);
 
         MainSceneView.Scene.RootNode.Add(_visualizationEngine.RootNode);
+
+        MainSceneView.GpuDeviceCreated += (sender, args) =>
+        {
+            _planetTextureLoader = new PlanetTextureLoader(args.GpuDevice);
+            solarSystem.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
+        };
 
         MainSceneView.SceneUpdating += (sender, args) =>
         {
@@ -112,8 +119,8 @@ public partial class MainView : UserControl
             ShowCameraLight = ShowCameraLightType.Always,
 
             // TODO: this breaks the zoom on Linux
-            /*NearPlaneDistance = 100_000f / (float)PhysicsEngine.Constants.AstronomicalUnit, // 100 km in AU
-            IsAutomaticNearPlaneDistanceCalculation = false,*/
+            //NearPlaneDistance = 100_000f / (float)Physics.Constants.AstronomicalUnit, // 100 km in AU
+            //IsAutomaticNearPlaneDistanceCalculation = false,
         };
 
         MainSceneView.SceneView.Camera = _camera;
