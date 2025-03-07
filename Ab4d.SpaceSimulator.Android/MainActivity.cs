@@ -34,15 +34,31 @@ namespace Ab4d.SpaceSimulator.Android
             // TOOD: Is there a better pattern to use custom per platform code than using static properties?
             Ab4d.SpaceSimulator.Visualization.PlanetTextureLoader.CustomAsyncTextureLoader = (imageName, gpuDevice, standardMaterial) =>
                 {
-                    if (!imageName.Contains("earth", StringComparison.OrdinalIgnoreCase) || this.Resources == null)
-                        return;
+                    imageName = System.IO.Path.GetFileName(imageName);
 
-                    // TODO: Add support for other planets
+                    int drawableId = imageName switch
+                    {
+                        "earthmap1k.png"    => ResourceConstant.Drawable.earthmap1k,
+                        "jupitermap.png"    => ResourceConstant.Drawable.jupitermap,
+                        "mars_1k_color.png" => ResourceConstant.Drawable.mars_1k_color,
+                        "mercurymap.png"    => ResourceConstant.Drawable.mercurymap,
+                        "moonmap1k.png"     => ResourceConstant.Drawable.moonmap1k,
+                        "neptunemap.png"    => ResourceConstant.Drawable.neptunemap,
+                        "plutomap1k.png"    => ResourceConstant.Drawable.plutomap1k,
+                        "saturnmap.png"     => ResourceConstant.Drawable.saturnmap,
+                        "sunmap.png"        => ResourceConstant.Drawable.sunmap,
+                        "uranusmap.png"     => ResourceConstant.Drawable.uranusmap,
+                        "venusmap.png"      => ResourceConstant.Drawable.venusmap,
+                        _                   => -1
+                    };
+
+                    if (drawableId == -1 || this.Resources == null)
+                        return;
 
                     // Start running async task from sync context and continue execution in this method
                     // When the texture is loaded, the material will be automatically updated
                     _ = AndroidTextureLoader.LoadTextureAsync(this.Resources,
-                                                              ResourceConstant.Drawable.earthmap1k,
+                                                              drawableId,
                                                               standardMaterial,
                                                               androidBitmapIO,
                                                               gpuDevice);

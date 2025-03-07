@@ -128,7 +128,7 @@ public class AndroidTextureLoader
 
     public static async Task LoadTextureAsync(Resources resources,
                                               int drawableId,
-                                              StandardMaterial material,
+                                              StandardMaterialBase material,
                                               AndroidBitmapIO bitmapIO,
                                               VulkanDevice gpuDevice,
                                               CommonSamplerTypes samplerType = CommonSamplerTypes.Wrap,
