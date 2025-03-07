@@ -30,9 +30,4 @@
     <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine\Ab4d.SharpEngine.csproj" />
     <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine.AvaloniaUI\Ab4d.SharpEngine.AvaloniaUI.csproj" />
   </ItemGroup>
-
-  <!-- Textures -->
-  <ItemGroup>
-    <Content Include="Resources\*" CopyToOutputDirectory="PreserveNewest" LinkBase="Resources\" />
-  </ItemGroup>
 </Project>
