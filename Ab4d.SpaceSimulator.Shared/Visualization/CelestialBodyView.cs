@@ -191,7 +191,7 @@ public class CelestialBodyView
     private double ScaleDistance(double distance)
     {
         // Scale so 1 unit in 3D view space is 1 million km = 1e9 m
-        return distance / VisualizationEngine.ViewUnitScale;
+        return distance * VisualizationEngine.ViewUnitScale;
     }
 
     private Vector3 ScalePosition(Vector3d realPosition)
