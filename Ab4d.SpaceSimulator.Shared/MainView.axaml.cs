@@ -146,16 +146,15 @@ public partial class MainView : UserControl
     {
         _camera = new TargetPositionCamera()
         {
-            Heading = -40,
+            Heading = -115,
             Attitude = -30,
-            Distance = 5,
+            Distance = 850,
             ViewWidth = 500,
             TargetPosition = new Vector3(0, 0, 0),
             ShowCameraLight = ShowCameraLightType.Never,
-
-            // TODO: this breaks the zoom on Linux
-            //NearPlaneDistance = 100_000f / (float)Physics.Constants.AstronomicalUnit, // 100 km in AU
-            //IsAutomaticNearPlaneDistanceCalculation = false,
+            
+            NearPlaneDistance = 10_000_000f * VisualizationEngine.ViewUnitScale,    // 10.000 km
+            IsAutomaticNearPlaneDistanceCalculation = false,
         };
 
         MainSceneView.SceneView.Camera = _camera;
@@ -169,7 +168,7 @@ public partial class MainView : UserControl
             MoveCameraConditions   = PointerAndKeyboardConditions.Disabled,
             QuickZoomConditions    = PointerAndKeyboardConditions.LeftPointerButtonPressed | PointerAndKeyboardConditions.RightPointerButtonPressed, // quick zoom is disabled by default
 
-            ZoomMode = CameraZoomMode.ViewCenter,
+            ZoomMode = CameraZoomMode.PointerPosition,
             RotateAroundPointerPosition = true,
 
             IsPinchGestureEnabled         = true,

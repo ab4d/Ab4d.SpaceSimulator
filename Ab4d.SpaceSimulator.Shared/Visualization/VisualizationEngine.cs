@@ -10,6 +10,8 @@ namespace Ab4d.SpaceSimulator.Visualization;
 
 public class VisualizationEngine
 {
+    public const float ViewUnitScale = 1f / 1e9f; // 1 unit in 3D view space is 1 million km = 1e9 m
+    
     public readonly TargetPositionCamera Camera;
     public readonly GesturesCameraController CameraController;
 

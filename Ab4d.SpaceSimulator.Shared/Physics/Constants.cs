@@ -3,7 +3,7 @@ namespace Ab4d.SpaceSimulator.Physics;
 public static class Constants
 {
     // Astronomical unit (AU);
-    public const double AstronomicalUnit = 149597870700; // [m]
+    public const double AstronomicalUnit = 149_597_870_700; // [m]
 
     // Gravitational constant - recommended value from year 2022.
     // https://en.wikipedia.org/wiki/Gravitational_constant

@@ -190,7 +190,8 @@ public class CelestialBodyView
 
     private double ScaleDistance(double distance)
     {
-        return distance / Constants.AstronomicalUnit;
+        // Scale so 1 unit in 3D view space is 1 million km = 1e9 m
+        return distance / VisualizationEngine.ViewUnitScale;
     }
 
     private Vector3 ScalePosition(Vector3d realPosition)
@@ -204,8 +205,8 @@ public class CelestialBodyView
 
     private float ScaleSize(double realSize)
     {
-        // Scale with one astronomical unit by default - same as with distances
-        var scaledSize = (float)(realSize / Constants.AstronomicalUnit);
+        // Scale so 1 unit in 3D view space is 1 million km = 1e9 m
+        var scaledSize = (float)(realSize * VisualizationEngine.ViewUnitScale); 
 
         // Scale by global scale factor
         scaledSize *= _visualizationEngine.CelestialBodyScaleFactor;
