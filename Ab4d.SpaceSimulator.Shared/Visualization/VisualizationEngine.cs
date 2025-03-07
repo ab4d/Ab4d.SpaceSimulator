@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
@@ -94,23 +95,14 @@ public class VisualizationEngine
 
         // Look up by name...
         if (name != null)
-        {
-            // TODO: keep a dictionary and perform a dictionary look-up
-            foreach (var celestialBodyView in CelestialBodyViews)
-            {
-                if (name == celestialBodyView.CelestialBody.Name)
-                {
-                    _trackedCelestialBody = celestialBodyView;
-                    break;
-                }
-            }
-        }
+            _trackedCelestialBody = CelestialBodyViews.FirstOrDefault(c => c.CelestialBody.Name == name);
 
         if (_trackedCelestialBody == null)
         {
             // Free mode
             Camera.RotationCenterPosition = null;
 
+            // Zoom to and rotate around the position behind the mouse / pointer.
             CameraController.ZoomMode = CameraZoomMode.PointerPosition;
             CameraController.RotateAroundPointerPosition = true;
         }
@@ -121,7 +113,12 @@ public class VisualizationEngine
             Camera.RotationCenterPosition = center;
             Camera.TargetPosition = center;
 
-            CameraController.ZoomMode = CameraZoomMode.CameraRotationCenterPosition;
+            var distanceFactor = _trackedCelestialBody.CelestialBody.Name == "Sun" ? 1000 : 300; // TODO: Add CelestialBodyType enum to CelestialBody and then check for Star
+
+            Camera.Distance = (float)_trackedCelestialBody.CelestialBody.Radius * distanceFactor * ViewUnitScale;
+
+            // Zoom to and rotate around selected celestial body
+            CameraController.ZoomMode = CameraZoomMode.ViewCenter;
             CameraController.RotateAroundPointerPosition = false;
         }
     }
