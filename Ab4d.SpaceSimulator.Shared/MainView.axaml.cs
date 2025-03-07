@@ -200,7 +200,7 @@ public partial class MainView : UserControl
         else
         {
             ScenariosBorder.IsVisible = false;
-            ScenariosButton.IsChecked = false;
+            //ScenariosButton.IsChecked = false;
         }
 
         if (panelToShow == SettingBorder)
@@ -306,7 +306,7 @@ public partial class MainView : UserControl
     private void UpdateShownMinimumPixelSize()
     {
         var value = _visualizationEngine.MinimumPixelSize;
-        MinimumSizeTextBlock.Text = $"Size: {value:F0} pixels";
+        MinimumSizeTextBlock.Text = $"View size: {value:F0}";
     }
 
     private void AddInfoMessage(string message)
