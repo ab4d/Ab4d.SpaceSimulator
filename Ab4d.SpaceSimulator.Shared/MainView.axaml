@@ -17,29 +17,33 @@
       <Grid Name="BottomOptionsGrid">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Name="BottomLeftOptionsPanel" Grid.Column="0" Orientation="Horizontal">
+        <StackPanel Name="TimePanel" Grid.Column="0" Orientation="Horizontal">
           <TextBlock Name="SimulationTimeTextBlock" Text="Time: +1000 day(s) 00:00:00" Width="200" Margin="5 0 0 0" VerticalAlignment="Center" />
 
           <Button Name="PlayPauseButton" Content="Start" Width="100" VerticalAlignment="Center" HorizontalContentAlignment="Center" Margin="5 0 0 0" Click="PlayPauseButton_OnClick" />
-
+        </StackPanel>
+        <StackPanel Name="SpeedTimerPanel" Grid.Column="1" Orientation="Horizontal">
           <Slider Name="SimulationSpeedSlider" Minimum="0" Maximum="9" Width="200" Margin="10 0 0 0"
               TickFrequency="1" TickPlacement="BottomRight"
               ValueChanged="SimulationSpeedSlider_OnValueChanged"/>
 
-          <TextBlock Name="SpeedInfoTextBlock" Text="+123.4 days" Margin="3 0 0 0" VerticalAlignment="Center" MinWidth="150"/>
-
+          <TextBlock Name="SpeedInfoTextBlock" Text="+123.4 days/s" Margin="3 0 0 0" VerticalAlignment="Center" MinWidth="100"/>
+        </StackPanel>
+        <StackPanel Name="ViewCenterPanel" Grid.Column="2" Orientation="Horizontal">
           <TextBlock Text="Center:" Margin="10 0 0 0" VerticalAlignment="Center"/>
           <ComboBox Name="ViewCenterComboBox" Width="100" Margin="3 0 0 0" VerticalAlignment="Center" />
           <!--<ComboBox Name="ScaleTypeComboBox" Width="100" Margin="10 0 0 0" VerticalAlignment="Center" />-->
         </StackPanel>
 
-        <StackPanel Name="BottomRightOptionsPanel" Grid.Column="2" Orientation="Horizontal">
+        <StackPanel Name="SettingsPanel" Grid.Column="4" Orientation="Horizontal">
           <!--<ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />-->
-          <ToggleButton Name="SettingButton" Content="Settings" Margin="5 0 5 0" VerticalAlignment="Center" Click="SettingsButton_OnClick" />
+          <ToggleButton Name="SettingButton" Content="Settings" Margin="5" VerticalAlignment="Center" Click="SettingsButton_OnClick" />
         </StackPanel>
       </Grid>
     </Border>

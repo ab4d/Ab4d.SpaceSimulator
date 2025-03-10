@@ -43,6 +43,8 @@ public partial class MainView : UserControl
 
     private PlanetTextureLoader? _planetTextureLoader;
 
+    private bool _isVerticalView;
+
     public MainView()
     {
         InitializeComponent();
@@ -140,6 +142,58 @@ public partial class MainView : UserControl
             ShowDeviceCreateFailedError(args.Exception); // Show error message
             args.IsHandled = true;                       // Prevent showing error by SharpEngineSceneView
         };
+
+        this.SizeChanged += (sender, args) => OnViewSizeChanged(args);
+    }
+
+    private void OnViewSizeChanged(SizeChangedEventArgs args)
+    {
+        bool isVerticalView = args.NewSize.Width < 900 && args.NewSize.Height > 500;
+
+        if (isVerticalView != _isVerticalView)
+        {
+            BottomOptionsGrid.ColumnDefinitions.Clear();
+            BottomOptionsGrid.RowDefinitions.Clear();
+
+            if (isVerticalView)
+            {
+                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
+                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
+
+                Grid.SetColumn(TimePanel, 0);
+                Grid.SetColumn(SpeedTimerPanel, 0);
+                Grid.SetColumn(ViewCenterPanel, 0);
+                Grid.SetColumn(SettingsPanel, 0);
+                
+                Grid.SetRow(TimePanel, 0);
+                Grid.SetRow(SpeedTimerPanel, 1);
+                Grid.SetRow(ViewCenterPanel, 2);
+                Grid.SetRow(SettingsPanel, 4);
+            }
+            else
+            {
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));      
+                
+                Grid.SetRow(TimePanel, 0);
+                Grid.SetRow(SpeedTimerPanel, 0);
+                Grid.SetRow(ViewCenterPanel, 0);
+                Grid.SetRow(SettingsPanel, 0);
+                
+                Grid.SetColumn(TimePanel, 0);
+                Grid.SetColumn(SpeedTimerPanel, 1);
+                Grid.SetColumn(ViewCenterPanel, 2);
+                Grid.SetColumn(SettingsPanel, 4);
+            }
+
+            _isVerticalView = isVerticalView;
+        }
     }
 
     private void SetupCameraController()
@@ -220,7 +274,7 @@ public partial class MainView : UserControl
 
         if (simulationSpeed <= 0)
         {
-            SpeedInfoTextBlock.Text = "Speed: paused";
+            SpeedInfoTextBlock.Text = "Paused";
         }
         else
         {
@@ -248,7 +302,7 @@ public partial class MainView : UserControl
                 infoUnit = "days";
             }
 
-            SpeedInfoTextBlock.Text = $"Speed: +{infoValue:0.0} {infoUnit}/s";
+            SpeedInfoTextBlock.Text = $"+{infoValue:0.0} {infoUnit}/s";
         }
     }
 
