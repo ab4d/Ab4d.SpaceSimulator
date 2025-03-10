@@ -226,8 +226,8 @@ public partial class MainView : UserControl
             RotateAroundPointerPosition = true,
 
             IsPinchGestureEnabled         = true,
-            IsScrollGestureEnabled        = false,
-            RotateCameraWithScrollGesture = false, // When true, then dragging with one finger will rotate the camera (this is the default)
+            IsScrollGestureEnabled        = true,
+            RotateCameraWithScrollGesture = true, // When true, then dragging with one finger will rotate the camera (this is the default)
             RotateWithPinchGesture        = true,  // When true, we can rotate the camera with two fingers (false by default)
         };
     }
