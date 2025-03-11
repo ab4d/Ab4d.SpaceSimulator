@@ -13,4 +13,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Ab4d.SpaceSimulator.Shared\Ab4d.SpaceSimulator.Shared.csproj" />
   </ItemGroup>
+
+  <!-- iOS require libMoltenVK.dylib to be able to use SharpEngine with Vulkan -->
+  <!-- When starting iOS simulator, use the dylib from lib/MoltenVK/ios-arm64_x86_64-simulator folder from Ab4d.SharpEngine.Samples repo. -->
+  <ItemGroup>
+    <Content Include="libMoltenVK.dylib">
+      <Link>libMoltenVK.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>  
 </Project>
