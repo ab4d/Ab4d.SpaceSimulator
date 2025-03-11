@@ -61,7 +61,8 @@ namespace Ab4d.SpaceSimulator.Android
                                                               drawableId,
                                                               standardMaterial,
                                                               androidBitmapIO,
-                                                              gpuDevice);
+                                                              gpuDevice,
+                                                              name: imageName);
                 };
 
             return base.CustomizeAppBuilder(builder)
