@@ -1,6 +1,7 @@
 # Ab4d.SpaceSimulator
 
-![Ab4d.SpaceSimulator screenshot](docs/2025-03-07-SpaceSimulator-Android.jpg)
+![Ab4d.SpaceSimulator screenshot](docs/SpaceSimulator-animation-v0_8.png)
+(Screenshots on different platforms: Windows, Ubuntu, macOS, Android, iPad)
 
 Ab4d.SpaceSimulator is a simple solar system simulator that uses Newton's equation to calculate the gravitation force: 
 
