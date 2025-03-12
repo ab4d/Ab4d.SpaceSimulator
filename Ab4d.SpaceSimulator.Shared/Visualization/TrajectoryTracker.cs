@@ -14,7 +14,7 @@ public class TrajectoryTracker
     };
 
     public double MinimumAngleIncrement = 1; // minimum angle increment w.r.t. previous location, in degrees
-    public double MaxAngle = 270;            // maximum angle w.r.t. last entry, in degrees
+    public double MaxAngle = 90;             // maximum angle w.r.t. last entry, in degrees
 
     // Axis of the celestial body's revolution. Inferred on the very first update from the initial position.
     public Vector3d? RevolutionAxis = null;
