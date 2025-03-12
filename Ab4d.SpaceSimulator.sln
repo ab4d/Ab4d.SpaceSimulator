@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SpaceSimulator.Shared", "Ab4d.SpaceSimulator.Shared\Ab4d.SpaceSimulator.Shared.csproj", "{DF982584-0BBB-4429-8CBF-A2A4F34C1591}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SpaceSimulator.Android", "Ab4d.SpaceSimulator.Android\Ab4d.SpaceSimulator.Android.csproj", "{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SpaceSimulator.Desktop", "Ab4d.SpaceSimulator.Desktop\Ab4d.SpaceSimulator.Desktop.csproj", "{0DADBFE2-AF05-4D45-8952-DAF1DE65E3F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SpaceSimulator.iOS", "Ab4d.SpaceSimulator.iOS\Ab4d.SpaceSimulator.iOS.csproj", "{87EB1845-B2E6-46D6-9246-08BC386E165D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab4d.SpaceSimulator.Android", "Ab4d.SpaceSimulator.Android\Ab4d.SpaceSimulator.Android.csproj", "{D00664EE-565E-42A7-8031-F5C58AAEEBDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,12 +21,6 @@ Global
 		{DF982584-0BBB-4429-8CBF-A2A4F34C1591}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF982584-0BBB-4429-8CBF-A2A4F34C1591}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF982584-0BBB-4429-8CBF-A2A4F34C1591}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F9B0B24-83C9-4AC2-A04B-4A6C8CAA2ABC}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{0DADBFE2-AF05-4D45-8952-DAF1DE65E3F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0DADBFE2-AF05-4D45-8952-DAF1DE65E3F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DADBFE2-AF05-4D45-8952-DAF1DE65E3F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,6 +31,10 @@ Global
 		{87EB1845-B2E6-46D6-9246-08BC386E165D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87EB1845-B2E6-46D6-9246-08BC386E165D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{87EB1845-B2E6-46D6-9246-08BC386E165D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D00664EE-565E-42A7-8031-F5C58AAEEBDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D00664EE-565E-42A7-8031-F5C58AAEEBDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D00664EE-565E-42A7-8031-F5C58AAEEBDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D00664EE-565E-42A7-8031-F5C58AAEEBDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

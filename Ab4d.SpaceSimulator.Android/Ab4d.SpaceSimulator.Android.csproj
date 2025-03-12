@@ -18,20 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\earthmap1k.png" Link="Resources\drawable\earthmap1k.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\jupitermap.png" Link="Resources\drawable\jupitermap.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\mars_1k_color.png" Link="Resources\drawable\mars_1k_color.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\mercurymap.png" Link="Resources\drawable\mercurymap.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\moonmap1k.png" Link="Resources\drawable\moonmap1k.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\neptunemap.png" Link="Resources\drawable\neptunemap.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\plutomap1k.png" Link="Resources\drawable\plutomap1k.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\saturnmap.png" Link="Resources\drawable\saturnmap.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\sunmap.png" Link="Resources\drawable\sunmap.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\uranusmap.png" Link="Resources\drawable\uranusmap.png" />
-    <AndroidResource Include="..\Ab4d.SpaceSimulator.Desktop\Resources\venusmap.png" Link="Resources\drawable\venusmap.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1" />
   </ItemGroup>

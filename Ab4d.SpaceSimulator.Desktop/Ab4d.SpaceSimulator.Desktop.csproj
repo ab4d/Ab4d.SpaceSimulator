@@ -25,9 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Ab4d.SpaceSimulator.Shared\Ab4d.SpaceSimulator.Shared.csproj" />
   </ItemGroup>
-
-  <!-- Textures -->
-  <ItemGroup>
-    <Content Include="Resources\*" CopyToOutputDirectory="PreserveNewest" LinkBase="Resources\" />
-  </ItemGroup>
 </Project>

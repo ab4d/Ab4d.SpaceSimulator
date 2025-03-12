@@ -357,10 +357,7 @@ public class SolarSystemScenario
                 material = new StandardMaterial(entity.BaseColor, name: $"{entity.Name}Material");
 
             if (entity.TextureName != null)
-            {
-                var textureFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", entity.TextureName);
-                planetTextureLoader.LoadPlanetTextureAsync(textureFileName, material);
-            }
+                planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
 
             var visualization = new CelestialBodyView(
                 visualizationEngine,
@@ -394,10 +391,7 @@ public class SolarSystemScenario
                 StandardMaterial moonMaterial = new StandardMaterial(Colors.Gray, name: $"{entity.Name}Material");
 
                 if (moonEntity.TextureName != null)
-                {
-                    var textureFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", moonEntity.TextureName);
-                    planetTextureLoader.LoadPlanetTextureAsync(textureFileName, moonMaterial);
-                }
+                    planetTextureLoader.LoadPlanetTextureAsync(moonEntity.TextureName, moonMaterial);
 
                 var moonVisualization = new CelestialBodyView(
                     visualizationEngine,
