@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Ab4d.SharpEngine.AvaloniaUI;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
@@ -27,7 +28,6 @@ public partial class MainView : UserControl
     private TargetPositionCamera? _camera;
 
     private bool _isPlaying;
-    private bool _isInternalChange;
     private readonly int[] _simulationSpeedIntervals;
     private double _simulationSpeed;
 
@@ -196,6 +196,8 @@ public partial class MainView : UserControl
         }
     }
 
+    [MemberNotNull(nameof(_camera))]
+    [MemberNotNull(nameof(_cameraController))]
     private void SetupCameraController()
     {
         _camera = new TargetPositionCamera()
@@ -332,6 +334,9 @@ public partial class MainView : UserControl
 
     private void UpdateShownSimulationTime()
     {
+        if (_physicsEngine == null)
+            return;
+
         var simulationTime = _physicsEngine.SimulationTime;
         var timeText = "Time: ";
 
@@ -353,12 +358,18 @@ public partial class MainView : UserControl
 
     private void UpdateShownScaleFactor()
     {
+        if (_visualizationEngine == null)
+            return;
+
         var value = _visualizationEngine.CelestialBodyScaleFactor;
         ScaleFactorTextBlock.Text = $"Dimension scaling: {value:F0} x";
     }
 
     private void UpdateShownMinimumPixelSize()
     {
+        if (_visualizationEngine == null)
+            return;
+
         var value = _visualizationEngine.MinimumPixelSize;
         MinimumSizeTextBlock.Text = $"View size: {value:F0}";
     }
@@ -390,7 +401,7 @@ public partial class MainView : UserControl
 
     private void SimulationSpeedSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (!this.IsLoaded || _isInternalChange)
+        if (!this.IsLoaded)
             return;
 
         var simulationSpeed = GetSimulationSpeed();
@@ -455,6 +466,9 @@ public partial class MainView : UserControl
 
     private void ScaleFactorSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
+        if (_visualizationEngine == null)
+            return;
+
         var value = ScaleFactorSlider.Value;
         _visualizationEngine.CelestialBodyScaleFactor = (float)value;
         UpdateShownScaleFactor();
@@ -462,6 +476,9 @@ public partial class MainView : UserControl
 
     private void MinimumSizeSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
+        if (_visualizationEngine == null)
+            return;
+
         var value = MinimumSizeSlider.Value;
         _visualizationEngine.MinimumPixelSize = (float)value;
         UpdateShownMinimumPixelSize();
@@ -469,7 +486,9 @@ public partial class MainView : UserControl
 
     private void MinimumSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        if (MinimumSizeCheckBox.IsChecked != null)
-            _visualizationEngine.EnableMinimumPixelSize = MinimumSizeCheckBox.IsChecked.Value;
+        if (_visualizationEngine == null)
+            return;
+
+        _visualizationEngine.EnableMinimumPixelSize = MinimumSizeCheckBox.IsChecked ?? false;
     }
 }

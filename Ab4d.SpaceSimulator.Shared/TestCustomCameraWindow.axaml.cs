@@ -24,11 +24,11 @@ public partial class TestCustomCameraWindow : Window
     private RenderingLayer? _customRenderingLayer;
     private TargetPositionCamera? _spaceshipCamera;
 
-    private TranslateTransform _spaceshipCenterTransform;
+    private TranslateTransform? _spaceshipCenterTransform;
     private Vector3 _spaceshipPosition;
-    private SphereModelNode _sun;
-    private SphereModelNode _earth;
-    private SphereModelNode _moon;
+    private SphereModelNode? _sun;
+    private SphereModelNode? _earth;
+    private SphereModelNode? _moon;
 
     public TestCustomCameraWindow()
     {
