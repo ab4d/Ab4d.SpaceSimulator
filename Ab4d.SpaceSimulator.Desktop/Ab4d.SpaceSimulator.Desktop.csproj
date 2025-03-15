@@ -25,4 +25,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Ab4d.SpaceSimulator.Shared\Ab4d.SpaceSimulator.Shared.csproj" />
   </ItemGroup>
+
+  <!-- Mac Catalyst and iOS require libMoltenVK.dylib to be able to use SharpEngine with Vulkan -->
+  <!-- When VulkanSDK is installed on the macOS, then this is not needed for Mac Catalyst -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <None Include="libMoltenVK.dylib" PublishFolderType="Assembly">
+      <Link>libMoltenVK.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
