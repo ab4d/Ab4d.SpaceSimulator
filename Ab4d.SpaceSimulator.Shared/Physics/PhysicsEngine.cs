@@ -44,28 +44,35 @@ public class PhysicsEngine
     {
         // Compute pair-wise gravitational interactions between mass bodies in the system, and compute total gravitational
         // force on each of them.
-        foreach (var body in _massBodies)
-        {
-            body.TotalGravitationalForce = Vector3d.Zero;
-        }
+        var massBodiesCount = _massBodies.Count;
 
         for (var i = 0; i < _massBodies.Count; i++)
+            _massBodies[i].TotalGravitationalForce = Vector3d.Zero;
+
+        for (var i = 0; i < massBodiesCount; i++)
         {
             var body1 = _massBodies[i];
-            for (var j = i + 1; j < _massBodies.Count; j++)
+            var position1 = body1.Position;
+            var gravitationalConstantByMass1 = Constants.GravitationalConstant * body1.Mass;
+
+            for (var j = i + 1; j < massBodiesCount; j++)
             {
                 var body2 = _massBodies[j];
 
-                var vectorFromFirstToSecond = body2.Position - body1.Position;
+                var vectorFromFirstToSecond = body2.Position - position1;
+
+                // Normalize (prevent dividing by 0 in case pos1 == pos2)
                 var distanceSquared = vectorFromFirstToSecond.LengthSquared();
                 var direction = distanceSquared > 0 ? vectorFromFirstToSecond / Math.Sqrt(distanceSquared) : Vector3d.Zero;
 
                 // force = gravitational constant * mass1 * mass2 / distance^2
-                var force = Constants.GravitationalConstant * body1.Mass * body2.Mass / distanceSquared;
+                var force = gravitationalConstantByMass1 * body2.Mass / distanceSquared;
                 Debug.Assert(double.IsFinite(force), $"Gravitational force between {body1.Name} and {body2.Name} is non-finite!");
 
-                body1.TotalGravitationalForce += direction * force;
-                body2.TotalGravitationalForce -= direction * force;
+                var forceVector = direction * force;
+
+                body1.TotalGravitationalForce += forceVector;
+                body2.TotalGravitationalForce -= forceVector;
             }
         }
 
