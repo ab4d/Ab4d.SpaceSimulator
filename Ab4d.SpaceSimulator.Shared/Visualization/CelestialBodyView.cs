@@ -148,7 +148,7 @@ public class CelestialBodyView
 
         var camera = _visualizationEngine.Camera;
         var showChildren = true;
-        if (_visualizationEngine.EnableMinimumPixelSize && camera.SceneView is { Width: > 0 })
+        if (_visualizationEngine.IsMinSizeLimited && camera.SceneView is { Width: > 0 })
         {
             // Adapted from CameraUtils.GetPerspectiveScreenSize()
             var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
@@ -157,13 +157,16 @@ public class CelestialBodyView
 
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
             var viewSizeX = camera.SceneView.Width;
-            var displayedSize = viewSizeX * SphereNode.Radius / (lookDirectionDistance * xScale * 2f);
+            var displayedSize = viewSizeX * SphereNode.Radius / lookDirectionDistance * xScale;
 
-            var minSize = _visualizationEngine.MinimumPixelSize;
+            var minSize = _visualizationEngine.MinScreenSize;
             if (displayedSize < minSize)
             {
-                var correctedSize = (lookDirectionDistance * xScale * 2f) * minSize / viewSizeX; // Inverted eq. for displayedSize
-                SphereNode.Radius = correctedSize;
+                var correctedSize = lookDirectionDistance * xScale * minSize / viewSizeX; // Inverted eq. for displayedSize
+                
+                if (correctedSize > 0)
+                    SphereNode.Radius = correctedSize;
+
                 showChildren = false;
             }
         }

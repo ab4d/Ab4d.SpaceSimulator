@@ -50,11 +50,6 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
 
-        // Uncomment when ObjectsScaleMethods enum is available:
-        //ScaleTypeComboBox.ItemsSource = Enum.GetNames(typeof(ObjectsScaleMethods));
-        //ScaleTypeComboBox.SelectionChanged += ScaleTypeComboBoxOnSelectionChanged;
-        //ScaleTypeComboBox.SelectedIndex = 2;
-
         ViewCenterComboBox.ItemsSource = _selectionNames;
         ViewCenterComboBox.SelectionChanged += ViewCenterComboBox_OnSelectionChanged;
         ViewCenterComboBox.SelectedIndex = 0;
@@ -135,15 +130,20 @@ public partial class MainView : UserControl
             UpdateShownSimulationTime();
         };
 
+
         // Initial UI update
         UpdateShownSimulationTime();
         SetSimulationSpeed(GetSimulationSpeed());
+        
+        if (_visualizationEngine.IsMinSizeLimited)
+            MinScreenSizeSlider.Value = _visualizationEngine.MinScreenSize;
+        else
+            MinScreenSizeSlider.Value = 0;
 
-        ScaleFactorSlider.Value = _visualizationEngine.CelestialBodyScaleFactor;
-        MinimumSizeCheckBox.IsChecked = _visualizationEngine.EnableMinimumPixelSize;
-        MinimumSizeSlider.Value = _visualizationEngine.MinimumPixelSize;
-        UpdateShownScaleFactor();
-        UpdateShownMinimumPixelSize();
+        UseActualSizeCheckBox.IsChecked = !_visualizationEngine.IsMinSizeLimited;
+
+        UpdateMinScreenSizeTextBlock();
+
 
         // In case when VulkanDevice cannot be created, show an error message
         // If this is not handled by the user, then SharpEngineSceneView will show its own error message
@@ -381,22 +381,13 @@ public partial class MainView : UserControl
         SimulationTimeTextBlock.Text = timeText;
     }
 
-    private void UpdateShownScaleFactor()
+    private void UpdateMinScreenSizeTextBlock()
     {
         if (_visualizationEngine == null)
             return;
 
-        var value = _visualizationEngine.CelestialBodyScaleFactor;
-        ScaleFactorTextBlock.Text = $"Dimension scaling: {value:F0} x";
-    }
-
-    private void UpdateShownMinimumPixelSize()
-    {
-        if (_visualizationEngine == null)
-            return;
-
-        var value = _visualizationEngine.MinimumPixelSize;
-        MinimumSizeTextBlock.Text = $"View size: {value:F0}";
+        var value = _visualizationEngine.MinScreenSize;
+        MinScreenSizeTextBlock.Text = $"Min screen size: {value:F0} px";
     }
 
     private void AddInfoMessage(string message)
@@ -451,36 +442,6 @@ public partial class MainView : UserControl
         UpdateShownSimulationTime();
     }
 
-    //private void ScenariosButton_OnClick(object? sender, RoutedEventArgs e)
-    //{
-    //    if (ScenariosBorder.IsVisible)
-    //        ScenariosBorder.IsVisible = false;
-    //    else
-    //        ShowOptionPanels(ScenariosBorder);
-    //}
-
-    //private void ViewSettingsButton_OnClick(object? sender, RoutedEventArgs e)
-    //{
-    //    if (SimulationSettingsButton.IsChecked ?? false)
-    //        SimulationSettingsButton.IsChecked = false;
-
-    //    if (SettingBorder.IsVisible)
-    //        SettingBorder.IsVisible = false;
-    //    else
-    //        ShowOptionPanels(ViewSettingsPanel);
-    //}
-    
-    //private void SimulationSettingsButton_OnClick(object? sender, RoutedEventArgs e)
-    //{
-    //    if (ViewSettingsButton.IsChecked ?? false)
-    //        ViewSettingsButton.IsChecked = false;
-
-    //    if (SettingBorder.IsVisible)
-    //        SettingBorder.IsVisible = false;
-    //    else
-    //        ShowOptionPanels(SimulationSettingsPanel);
-    //}
-
     private void ScaleTypeComboBoxOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
 
@@ -502,33 +463,47 @@ public partial class MainView : UserControl
     {
         AddInfoMessage("Scenario 1 started", Colors.Orange);
     }
-
-    private void ScaleFactorSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    
+    private void UseActualSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine == null)
             return;
 
-        var value = ScaleFactorSlider.Value;
-        _visualizationEngine.CelestialBodyScaleFactor = (float)value;
-        UpdateShownScaleFactor();
+        if (UseActualSizeCheckBox.IsChecked ?? false)
+        {
+            MinScreenSizeTextBlock.IsVisible = false;
+            MinScreenSizeSlider.IsVisible = false;
+        }
+        else
+        {
+            MinScreenSizeTextBlock.IsVisible = true;
+            MinScreenSizeSlider.IsVisible = true;
+        }
+
+        UpdateMinScreenSize();
     }
 
-    private void MinimumSizeSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    private void MinScreenSizeSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
         if (_visualizationEngine == null)
             return;
 
-        var value = MinimumSizeSlider.Value;
-        _visualizationEngine.MinimumPixelSize = (float)value;
-        UpdateShownMinimumPixelSize();
+        UpdateMinScreenSize();
     }
 
-    private void MinimumSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    private void UpdateMinScreenSize()
     {
         if (_visualizationEngine == null)
             return;
 
-        _visualizationEngine.EnableMinimumPixelSize = MinimumSizeCheckBox.IsChecked ?? false;
+
+        var sliderValue = (float)MinScreenSizeSlider.Value;
+        bool useMinScreenSize = sliderValue > 1 && !(UseActualSizeCheckBox.IsChecked ?? false);
+
+        _visualizationEngine.IsMinSizeLimited = useMinScreenSize;
+        _visualizationEngine.MinScreenSize = useMinScreenSize ? sliderValue : 0;
+
+        UpdateMinScreenSizeTextBlock();
     }
 
     private void AutoMaxSimulationTimeStepCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)

@@ -22,11 +22,9 @@ public class VisualizationEngine
     public readonly List<CelestialBodyView> CelestialBodyViews = [];
 
     // Scale factor for scaling celestial body dimensions
-    private float _celestialBodyScaleFactor = 20f;
+    private float _celestialBodyScaleFactor = 1f;
 
-    // Minimum pixel size for displayed celestial bodies
-    private bool _enableMinimumPixelSize = true;
-    private float _minimumPixelSize = 20f;
+
 
     // Tracked celestial body
     private CelestialBodyView? _trackedCelestialBody = null;
@@ -47,22 +45,26 @@ public class VisualizationEngine
         }
     }
 
-    public bool EnableMinimumPixelSize
+
+    private bool _isMinSizeLimited = true;
+    public bool IsMinSizeLimited
     {
-        get => _enableMinimumPixelSize;
+        get => _isMinSizeLimited;
         set
         {
-            _enableMinimumPixelSize = value;
+            _isMinSizeLimited = value;
             Update(false);
         }
     }
 
-    public float MinimumPixelSize
+    // Minimum pixel size for displayed celestial bodies
+    private float _minScreenSize = 40f;
+    public float MinScreenSize
     {
-        get => _minimumPixelSize;
+        get => _minScreenSize;
         set
         {
-            _minimumPixelSize = value;
+            _minScreenSize = value;
             Update(false);
         }
     }
