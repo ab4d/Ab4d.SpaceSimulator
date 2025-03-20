@@ -209,7 +209,7 @@ public partial class MainView : UserControl
             TargetPosition = new Vector3(0, 0, 0),
             ShowCameraLight = ShowCameraLightType.Never,
             
-            NearPlaneDistance = 10_000_000f * VisualizationEngine.ViewUnitScale,    // 10.000 km
+            MinNearPlaneDistance = 100_000_000f * VisualizationEngine.ViewUnitScale,    // 100.000 km
             IsAutomaticNearPlaneDistanceCalculation = false,
         };
 
