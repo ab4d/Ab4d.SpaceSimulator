@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Ab4d.SharpEngine.AvaloniaUI;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
@@ -256,27 +257,21 @@ public partial class MainView : UserControl
         RootGrid.Children.Add(errorTextBlock);
     }
 
-    private void ShowOptionPanels(Border panelToShow)
+    private void ShowSettingsPanels(StackPanel panelToShow)
     {
-        if (panelToShow == ScenariosBorder)
-        {
-            ScenariosBorder.IsVisible = true;
-        }
-        else
-        {
-            ScenariosBorder.IsVisible = false;
-            //ScenariosButton.IsChecked = false;
-        }
+        SettingBorder.IsVisible = true;
 
-        if (panelToShow == SettingBorder)
-        {
-            SettingBorder.IsVisible = true;
-        }
-        else
-        {
-            SettingBorder.IsVisible = false;
-            SettingButton.IsChecked = false;
-        }
+        // First hide all panels
+        foreach (var childPanel in SettingsGrid.Children.OfType<StackPanel>())
+            childPanel.IsVisible = false;
+
+        // Now show selected panel
+        panelToShow.IsVisible = true;
+    }
+
+    private void HideSettingsPanel()
+    {
+        SettingBorder.IsVisible = false;
     }
 
     private void SetSimulationSpeed(double simulationSpeed)
@@ -316,8 +311,26 @@ public partial class MainView : UserControl
             SpeedInfoTextBlock.Text = $"+{infoValue:0.0} {infoUnit}/s";
         }
 
-        if (_physicsEngine != null)
-            _physicsEngine.MaxSimulationTimeStep = Math.Max(3600, simulationSpeed / 100); // Use 1 hour (3600 s) or run at least 100 sub-steps if simulationSpeed is bigger than 100 hours
+        SetMaxSimulationStep();
+    }
+
+    private void SetMaxSimulationStep()
+    {
+        if (_physicsEngine == null)
+            return;
+
+        if (AutoMaxSimulationTimeStepCheckBox.IsChecked ?? false)
+        {
+            _physicsEngine.MaxSimulationTimeStep = Math.Max(3600, _simulationSpeed / 100); // Use 1 hour (3600 s) or run at least 100 sub-steps if simulationSpeed is bigger than 100 hours
+
+            var usedTimeStep = Math.Min(_simulationSpeed, _physicsEngine.MaxSimulationTimeStep);
+            SimulationTimeStepValueTextBlock.Text = usedTimeStep.ToString("N0"); // number with thousands separator and no decimals
+        }
+        else
+        {
+            if (Int32.TryParse(SimulationTimeStepTextBox.Text, out var simulationTime))
+                _physicsEngine.MaxSimulationTimeStep = simulationTime;
+        }
     }
 
     private double GetSimulationSpeed()
@@ -438,21 +451,35 @@ public partial class MainView : UserControl
         UpdateShownSimulationTime();
     }
 
-    private void ScenariosButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (ScenariosBorder.IsVisible)
-            ScenariosBorder.IsVisible = false;
-        else
-            ShowOptionPanels(ScenariosBorder);
-    }
+    //private void ScenariosButton_OnClick(object? sender, RoutedEventArgs e)
+    //{
+    //    if (ScenariosBorder.IsVisible)
+    //        ScenariosBorder.IsVisible = false;
+    //    else
+    //        ShowOptionPanels(ScenariosBorder);
+    //}
 
-    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (SettingBorder.IsVisible)
-            SettingBorder.IsVisible = false;
-        else
-            ShowOptionPanels(SettingBorder);
-    }
+    //private void ViewSettingsButton_OnClick(object? sender, RoutedEventArgs e)
+    //{
+    //    if (SimulationSettingsButton.IsChecked ?? false)
+    //        SimulationSettingsButton.IsChecked = false;
+
+    //    if (SettingBorder.IsVisible)
+    //        SettingBorder.IsVisible = false;
+    //    else
+    //        ShowOptionPanels(ViewSettingsPanel);
+    //}
+    
+    //private void SimulationSettingsButton_OnClick(object? sender, RoutedEventArgs e)
+    //{
+    //    if (ViewSettingsButton.IsChecked ?? false)
+    //        ViewSettingsButton.IsChecked = false;
+
+    //    if (SettingBorder.IsVisible)
+    //        SettingBorder.IsVisible = false;
+    //    else
+    //        ShowOptionPanels(SimulationSettingsPanel);
+    //}
 
     private void ScaleTypeComboBoxOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
@@ -502,5 +529,47 @@ public partial class MainView : UserControl
             return;
 
         _visualizationEngine.EnableMinimumPixelSize = MinimumSizeCheckBox.IsChecked ?? false;
+    }
+
+    private void AutoMaxSimulationTimeStepCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        bool isAutoTimeStep = AutoMaxSimulationTimeStepCheckBox.IsChecked ?? false;
+        
+        SimulationTimeStepValueTextBlock.IsVisible = isAutoTimeStep;
+        SimulationTimeStepTextBox.IsVisible = !isAutoTimeStep;
+
+        if (isAutoTimeStep)
+            SetMaxSimulationStep();
+    }
+
+    private void ViewSettingsButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (ViewSettingsButton.IsChecked ?? false)
+        {
+            SimulationSettingsButton.IsChecked = false;
+            ShowSettingsPanels(ViewSettingsPanel);
+        }
+        else
+        {
+            HideSettingsPanel();
+        }
+    }
+
+    private void SimulationSettingsButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (SimulationSettingsButton.IsChecked ?? false)
+        {
+            ViewSettingsButton.IsChecked = false;
+            ShowSettingsPanels(SimulationSettingsPanel);
+        }
+        else
+        {
+            HideSettingsPanel();
+        }
+    }
+
+    private void SimulationTimeStepTextBox_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        SetMaxSimulationStep();
     }
 }

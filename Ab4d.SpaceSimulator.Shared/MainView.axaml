@@ -5,82 +5,96 @@
              xmlns:sharpEngine="clr-namespace:Ab4d.SharpEngine.AvaloniaUI;assembly=Ab4d.SharpEngine.AvaloniaUI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ab4d.SpaceSimulator.Shared.MainView">
-  <Grid Name="RootGrid">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
+    <Grid Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-    <sharpEngine:SharpEngineSceneView x:Name="MainSceneView" Grid.Row="0" PresentationType="SharedTexture" BackgroundColor="Black" />
+        <sharpEngine:SharpEngineSceneView x:Name="MainSceneView" Grid.Row="0" PresentationType="SharedTexture" BackgroundColor="Black" />
 
-    <Border Name="BottomOptionsBorder" Grid.Row="1" Background="Black" BorderThickness="0 2 0 0" BorderBrush="DimGray">
-      <Grid Name="BottomOptionsGrid">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+        <Border Name="BottomOptionsBorder" Grid.Row="1" Background="Black" BorderThickness="0 2 0 0" BorderBrush="DimGray">
+            <Grid Name="BottomOptionsGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <StackPanel Name="TimePanel" Grid.Column="0" Orientation="Horizontal">
-          <TextBlock Name="SimulationTimeTextBlock" Text="Time: +1000 day(s) 00:00:00" Width="200" Margin="5 0 0 0" VerticalAlignment="Center" />
+                <StackPanel Name="TimePanel" Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Name="SimulationTimeTextBlock" Text="Time: +1000 day(s) 00:00:00" Width="200" Margin="5 0 0 0" VerticalAlignment="Center" />
 
-          <Button Name="PlayPauseButton" Content="Start" Width="100" VerticalAlignment="Center" HorizontalContentAlignment="Center" Margin="5 0 0 0" Click="PlayPauseButton_OnClick" />
+                    <Button Name="PlayPauseButton" Content="Start" Width="100" VerticalAlignment="Center" HorizontalContentAlignment="Center" Margin="5 0 0 0" Click="PlayPauseButton_OnClick" />
+                </StackPanel>
+                <StackPanel Name="SpeedTimerPanel" Grid.Column="1" Orientation="Horizontal">
+                    <Slider Name="SimulationSpeedSlider" Minimum="0" Maximum="9" Width="200" Margin="10 0 0 0"
+                        TickFrequency="1" TickPlacement="BottomRight"
+                        ValueChanged="SimulationSpeedSlider_OnValueChanged"/>
+
+                    <TextBlock Name="SpeedInfoTextBlock" Text="+123.4 days/s" Margin="3 0 0 0" VerticalAlignment="Center" MinWidth="100"/>
+                </StackPanel>
+                <StackPanel Name="ViewCenterPanel" Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="Center:" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                    <ComboBox Name="ViewCenterComboBox" Width="100" Margin="3 0 0 0" VerticalAlignment="Center" />
+                    <!--<ComboBox Name="ScaleTypeComboBox" Width="100" Margin="10 0 0 0" VerticalAlignment="Center" />-->
+                </StackPanel>
+
+                <StackPanel Name="SettingsPanel" Grid.Column="4" Orientation="Horizontal">
+                    <TextBlock Text="Settings:" Margin="10 0 5 0" VerticalAlignment="Center"/>
+                    <ToggleButton Name="ViewSettingsButton" Content="View" Margin="5" VerticalAlignment="Center" IsCheckedChanged="ViewSettingsButton_OnIsCheckedChanged" />
+                    <ToggleButton Name="SimulationSettingsButton" Content="Simulation" Margin="5" VerticalAlignment="Center" IsCheckedChanged="SimulationSettingsButton_OnIsCheckedChanged" />
+                    <!--<ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />-->
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Name="InfoMessagesBorder" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5">
+            <StackPanel Name="InfoMessagesPanel" Orientation="Vertical" />
+        </Border>
+
+        <Border Name="ScenariosBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
+            <StackPanel Orientation="Vertical" Margin="8 10">
+                <TextBlock Text="Select scenario:" FontWeight="Bold"></TextBlock>
+
+                <Button Name="Scenario1Button" Content="Scenario 1" Margin="0 5 0 0" Click="Scenario1Button_OnClick"
+                                               ToolTip.Tip="Additional info about scenario 1"/>
+            </StackPanel>
+        </Border>
+
+        <Border Name="SettingBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
+            <Grid Name="SettingsGrid">
+                <StackPanel Name="ViewSettingsPanel" IsVisible="False" Orientation="Vertical" Margin="8 10">
+                    <TextBlock Text="Scale settings:" FontWeight="Bold" Margin="0 0 0 10" />
+
+                    <TextBlock Name="ScaleFactorTextBlock" Text="Dimension scaling: NN x" Width="200" Margin="0 0 0 0" VerticalAlignment="Center" />
+                    <Slider Name="ScaleFactorSlider" Minimum="1" Maximum="50" Width="200" Margin="0 0 0 0"
+                                                     TickFrequency="5" TickPlacement="BottomRight"
+                                                     ValueChanged="ScaleFactorSlider_OnValueChanged"/>
+
+                    <CheckBox Name="MinimumSizeCheckBox" Content="Force minimum view size" IsChecked="True" Margin="0 10 0 0" IsCheckedChanged="MinimumSizeCheckBox_OnIsCheckedChanged" />
+                    <TextBlock Name="MinimumSizeTextBlock" Text="View size: NN px" Width="200" Margin="0 7 0 0" VerticalAlignment="Center" />
+                    <Slider Name="MinimumSizeSlider" Minimum="1" Maximum="100" Width="200" Margin="0 0 0 0"
+                                                     TickFrequency="5" TickPlacement="BottomRight"
+                                                     ValueChanged="MinimumSizeSlider_OnValueChanged"/>
+                </StackPanel>
+                <StackPanel Name="SimulationSettingsPanel" IsVisible="False" Orientation="Vertical" Margin="8 10">
+                  <TextBlock Text="Simulation time step:" FontWeight="Bold" Margin="0 0 0 3" />
+                  <StackPanel Name="SimulationTimeStepPanel" Orientation="Horizontal" Height="26">
+                      <TextBlock Name="SimulationTimeStepValueTextBlock" Text="3600" VerticalAlignment="Center" />
+                      <TextBox Name="SimulationTimeStepTextBox" Text="3600" IsVisible="False" Width="80" VerticalAlignment="Center" TextChanged="SimulationTimeStepTextBox_OnTextChanged" />
+                      <TextBlock Text="seconds" VerticalAlignment="Center" Margin="3 0 0 0" />
+                  </StackPanel>
+
+                  <CheckBox Name="AutoMaxSimulationTimeStepCheckBox" Content="Is automatic" IsChecked="True" IsCheckedChanged="AutoMaxSimulationTimeStepCheckBox_OnIsCheckedChanged"></CheckBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Vertical" Margin="10">
+            <TextBlock Name="TitleTextBlock" Text="Space Simulator" FontSize="20" FontWeight="Bold" Foreground="#CCC" />
+            <TextBlock Name="SubtitleTextBlock" Text="Space simulator in .Net that uses Ab4d.SharpEngine rendering engine" FontSize="14" Foreground="#CCC" Margin="0 3 0 0" />
         </StackPanel>
-        <StackPanel Name="SpeedTimerPanel" Grid.Column="1" Orientation="Horizontal">
-          <Slider Name="SimulationSpeedSlider" Minimum="0" Maximum="9" Width="200" Margin="10 0 0 0"
-              TickFrequency="1" TickPlacement="BottomRight"
-              ValueChanged="SimulationSpeedSlider_OnValueChanged"/>
-
-          <TextBlock Name="SpeedInfoTextBlock" Text="+123.4 days/s" Margin="3 0 0 0" VerticalAlignment="Center" MinWidth="100"/>
-        </StackPanel>
-        <StackPanel Name="ViewCenterPanel" Grid.Column="2" Orientation="Horizontal">
-          <TextBlock Text="Center:" Margin="10 0 0 0" VerticalAlignment="Center"/>
-          <ComboBox Name="ViewCenterComboBox" Width="100" Margin="3 0 0 0" VerticalAlignment="Center" />
-          <!--<ComboBox Name="ScaleTypeComboBox" Width="100" Margin="10 0 0 0" VerticalAlignment="Center" />-->
-        </StackPanel>
-
-        <StackPanel Name="SettingsPanel" Grid.Column="4" Orientation="Horizontal">
-          <!--<ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />-->
-          <ToggleButton Name="SettingButton" Content="Settings" Margin="5" VerticalAlignment="Center" Click="SettingsButton_OnClick" />
-        </StackPanel>
-      </Grid>
-    </Border>
-
-    <Border Name="InfoMessagesBorder" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5">
-      <StackPanel Name="InfoMessagesPanel" Orientation="Vertical" />
-    </Border>
-
-    <Border Name="ScenariosBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
-      <StackPanel Orientation="Vertical" Margin="8 10">
-        <TextBlock Text="Select scenario:" FontWeight="Bold"></TextBlock>
-
-        <Button Name="Scenario1Button" Content="Scenario 1" Margin="0 5 0 0" Click="Scenario1Button_OnClick"
-            ToolTip.Tip="Additional info about scenario 1"/>
-      </StackPanel>
-    </Border>
-
-    <Border Name="SettingBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
-      <StackPanel Orientation="Vertical" Margin="8 10">
-        <TextBlock Text="Scale settings:" FontWeight="Bold" Margin="0 0 0 10" />
-
-        <TextBlock Name="ScaleFactorTextBlock" Text="Dimension scaling: NN x" Width="200" Margin="0 0 0 0" VerticalAlignment="Center" />
-        <Slider Name="ScaleFactorSlider" Minimum="1" Maximum="50" Width="200" Margin="0 0 0 0"
-                TickFrequency="5" TickPlacement="BottomRight"
-                ValueChanged="ScaleFactorSlider_OnValueChanged"/>
-        
-        <CheckBox Name="MinimumSizeCheckBox" Content="Force minimum view size" IsChecked="True" Margin="0 10 0 0" IsCheckedChanged="MinimumSizeCheckBox_OnIsCheckedChanged" />
-        <TextBlock Name="MinimumSizeTextBlock" Text="View size: NN px" Width="200" Margin="0 7 0 0" VerticalAlignment="Center" />
-        <Slider Name="MinimumSizeSlider" Minimum="1" Maximum="100" Width="200" Margin="0 0 0 0"
-                TickFrequency="5" TickPlacement="BottomRight"
-                ValueChanged="MinimumSizeSlider_OnValueChanged"/>
-      </StackPanel>
-    </Border>
-
-    <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Vertical" Margin="10">
-      <TextBlock Name="TitleTextBlock" Text="Space Simulator" FontSize="20" FontWeight="Bold" Foreground="#CCC" />
-      <TextBlock Name="SubtitleTextBlock" Text="Space simulator in .Net that uses Ab4d.SharpEngine rendering engine" FontSize="14" Foreground="#CCC" Margin="0 3 0 0" />
-    </StackPanel>
-  </Grid>
+    </Grid>
 </UserControl>
