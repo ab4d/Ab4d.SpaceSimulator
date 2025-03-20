@@ -66,7 +66,7 @@ public partial class MainView : UserControl
         // Create physics and visualization engine
         _physicsEngine = new PhysicsEngine();
         Debug.Assert(_camera != null, nameof(_camera) + " != null");
-        _visualizationEngine = new VisualizationEngine(_camera, _cameraController);
+        _visualizationEngine = new VisualizationEngine(MainSceneView.SceneView, _camera, _cameraController);
 
         // Create scene
         var solarSystem = new SolarSystemScenario();
@@ -95,10 +95,10 @@ public partial class MainView : UserControl
             for (var i = 0; i < _visualizationEngine.CelestialBodyViews.Count; i++)
             {
                 var bodyView = _visualizationEngine.CelestialBodyViews[i];
-                if (selectedIndex == 0 && bodyView.CelestialBody.Type == CelestialBodyType.Star)
+                if (selectedIndex == 0 && bodyView.Type == CelestialBodyType.Star)
                     selectedIndex = i + 1; // skip 'custom'
                         
-                selectionNames.Add(bodyView.CelestialBody.Name);
+                selectionNames.Add(bodyView.Name);
             }
 
             _selectionNames = selectionNames.ToArray();
@@ -219,7 +219,7 @@ public partial class MainView : UserControl
             TargetPosition = new Vector3(0, 0, 0),
             ShowCameraLight = ShowCameraLightType.Never,
             
-            MinNearPlaneDistance = 100_000_000f * VisualizationEngine.ViewUnitScale,    // 100.000 km
+            MinNearPlaneDistance = 10_000_000f * VisualizationEngine.ViewUnitScale,    // 10.000 km
             IsAutomaticNearPlaneDistanceCalculation = false,
         };
 

@@ -317,6 +317,7 @@ public class SolarSystemScenario
     public void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine, PlanetTextureLoader planetTextureLoader)
     {
         CelestialBody? sunObject = null; // Used to set parent object for planets
+        CelestialBodyView? sunView = null;
 
         foreach (var entity in _entities)
         {
@@ -339,9 +340,6 @@ public class SolarSystemScenario
 
             physicsEngine.AddBody(massBody);
 
-            if (entity.Name == "Sun")
-                sunObject = massBody;
-
             // Visualization
             StandardMaterialBase material;
 
@@ -357,6 +355,16 @@ public class SolarSystemScenario
                 visualizationEngine,
                 massBody,
                 material);
+            
+            if (entity.Name == "Sun")
+            {
+                sunObject = massBody;
+                sunView = visualization;
+            }
+            else
+            {
+                visualization.Parent = sunView; 
+            }
 
             if (entity.Type == CelestialBodyType.Star)
                 visualizationEngine.Lights.Add(new PointLight(visualization.SphereNode.CenterPosition));

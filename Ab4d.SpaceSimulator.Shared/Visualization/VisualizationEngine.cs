@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Ab4d.SharpEngine;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Lights;
@@ -14,6 +15,7 @@ public class VisualizationEngine
 {
     public const float ViewUnitScale = 1f / 1e9f; // 1 unit in 3D view space is 1 million km = 1e9 m
     
+    public readonly SceneView SceneView;
     public readonly TargetPositionCamera Camera;
     public readonly GesturesCameraController CameraController;
 
@@ -29,8 +31,9 @@ public class VisualizationEngine
     // Tracked celestial body
     private CelestialBodyView? _trackedCelestialBody = null;
 
-    public VisualizationEngine(TargetPositionCamera camera, GesturesCameraController cameraController)
+    public VisualizationEngine(SceneView sceneView, TargetPositionCamera camera, GesturesCameraController cameraController)
     {
+        SceneView = sceneView;
         Camera = camera;
         CameraController = cameraController;
     }
@@ -98,7 +101,7 @@ public class VisualizationEngine
 
         // Look up by name...
         if (name != null)
-            _trackedCelestialBody = CelestialBodyViews.FirstOrDefault(c => c.CelestialBody.Name == name);
+            _trackedCelestialBody = CelestialBodyViews.FirstOrDefault(c => c.Name == name);
 
         if (_trackedCelestialBody == null)
         {

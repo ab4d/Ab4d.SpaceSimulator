@@ -14,6 +14,9 @@ public class CelestialBodyView
 {
     private readonly VisualizationEngine _visualizationEngine;
     public readonly CelestialBody CelestialBody;
+    
+    public string Name => CelestialBody.Name;
+    public CelestialBodyType Type => CelestialBody.Type;
 
     // Parent / child hierarchy
     public CelestialBodyView? Parent = null;
@@ -29,6 +32,7 @@ public class CelestialBodyView
     private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryNode;
 
+
     public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material)
     {
         _visualizationEngine = engine;
@@ -37,7 +41,7 @@ public class CelestialBodyView
         CelestialBody = physicsObject;
 
         // Create sphere node
-        SphereNode = new SphereModelNode(name: $"{CelestialBody.Name}-Sphere")
+        SphereNode = new SphereModelNode(name: $"{this.Name}-Sphere")
         {
             Material = material,
         };
@@ -57,7 +61,7 @@ public class CelestialBodyView
             OrbitNode = new EllipseLineNode(
                 orbitColor,
                 1,
-                name: $"{CelestialBody.Name}-OrbitEllipse")
+                name: $"{this.Name}-OrbitEllipse")
             {
                 CenterPosition = ScalePosition(CelestialBody.Parent.Position),
                 WidthDirection = majorSemiAxisDir,
@@ -83,7 +87,7 @@ public class CelestialBodyView
                 true,
                 trajectoryColor,
                 2,
-                name: $"{CelestialBody.Name}-Trajectory");
+                name: $"{this.Name}-Trajectory");
         }
 
         // Perform initial update
@@ -100,19 +104,6 @@ public class CelestialBodyView
         if (TrajectoryNode != null)
         {
             rootNode.Add(TrajectoryNode);
-        }
-    }
-
-    public void SetVisible(bool visible)
-    {
-        SphereNode.Visibility = visible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-        if (OrbitNode != null)
-        {
-            OrbitNode.Visibility = visible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-        }
-        if (TrajectoryNode != null)
-        {
-            TrajectoryNode.Visibility = visible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
         }
     }
 
@@ -143,12 +134,29 @@ public class CelestialBodyView
             }
         }
 
+        if (this.Parent != null && this.Parent.SphereNode != null)
+        {
+            float orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
+
+            var parentRadius = this.Parent.SphereNode.Radius;
+            bool isBodyVisible = orbitRadius > (parentRadius + this.SphereNode.Radius);
+            bool isOrbitVisible = orbitRadius > parentRadius;
+
+            SphereNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            if (OrbitNode != null)
+                OrbitNode.Visibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            
+            if (TrajectoryNode != null)
+                TrajectoryNode.Visibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
+
         // Dynamic size change - can be triggered by other changes, such as viewport
         SphereNode.Radius = ScaleSize(CelestialBody.Radius);
 
         var camera = _visualizationEngine.Camera;
-        var showChildren = true;
-        if (_visualizationEngine.IsMinSizeLimited && camera.SceneView is { Width: > 0 })
+        var viewWidth = _visualizationEngine.SceneView.Width;
+        
+        if (_visualizationEngine.IsMinSizeLimited && viewWidth > 0)
         {
             // Adapted from CameraUtils.GetPerspectiveScreenSize()
             var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
@@ -156,25 +164,16 @@ public class CelestialBodyView
             var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
 
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
-            var viewSizeX = camera.SceneView.Width;
-            var displayedSize = viewSizeX * SphereNode.Radius / lookDirectionDistance * xScale;
+            var displayedSize = viewWidth * SphereNode.Radius / lookDirectionDistance * xScale;
 
             var minSize = _visualizationEngine.MinScreenSize;
             if (displayedSize < minSize)
             {
-                var correctedSize = lookDirectionDistance * xScale * minSize / viewSizeX; // Inverted eq. for displayedSize
+                var correctedSize = lookDirectionDistance * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
                 
                 if (correctedSize > 0)
                     SphereNode.Radius = correctedSize;
-
-                showChildren = false;
             }
-        }
-
-        // Modify the child visibility
-        foreach (var child in Children)
-        {
-            child.SetVisible(showChildren);
         }
     }
 
