@@ -37,11 +37,13 @@ public class PlanetTextureLoader
                 
                 if (bitmapStream != null)
                 {
-                    var gpuImage = TextureLoader.CreateTexture(bitmapStream, textureFileName, _gpuDevice);
-                    planetMaterial.DiffuseTexture = gpuImage;
-                    planetMaterial.DiffuseColor = Colors.White; // no texture filter color
+                    TextureLoader.CreateTextureAsync(bitmapStream, textureFileName, _gpuDevice, gpuImage =>
+                    {
+                        planetMaterial.DiffuseTexture = gpuImage;
+                        planetMaterial.DiffuseColor = Colors.White; // no texture filter color
                         
-                    bitmapStream.Close();
+                        bitmapStream.Close();
+                    });
                 }
             }
             catch (FileNotFoundException)
