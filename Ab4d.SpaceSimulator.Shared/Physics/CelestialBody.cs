@@ -5,6 +5,8 @@ namespace Ab4d.SpaceSimulator.Physics;
 
 public class CelestialBody : MassBody
 {
+    public CelestialBodyType Type;
+
     public double Radius; // meters
 
     // Angular velocity of rotation around the body's axis.

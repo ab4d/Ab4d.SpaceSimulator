@@ -12,18 +12,11 @@ namespace Ab4d.SpaceSimulator;
 
 public class SolarSystemScenario
 {
-    enum EntityType
-    {
-        Star = 1,
-        Planet = 2,
-        Moon = 3,
-    };
-
     private struct Entity
     {
         // ** Basic info **
         public required string Name;
-        public required EntityType Type;
+        public required CelestialBodyType Type;
 
         // ** Basic dimension properties required for the mass/gravity interaction model **
         // Available from NASA planetary fact sheet:
@@ -64,7 +57,7 @@ public class SolarSystemScenario
     private readonly Entity Sun = new()
     {
         Name = "Sun",
-        Type = EntityType.Star,
+        Type = CelestialBodyType.Star,
 
         Mass = 1_988_550 * 1e24,
         Diameter = 1_392_700 * 1e3,
@@ -83,7 +76,7 @@ public class SolarSystemScenario
     private readonly Entity Mercury = new()
     {
         Name = "Mercury",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 0.330 * 1e24,
         Diameter = 4_879 * 1e3,
@@ -104,7 +97,7 @@ public class SolarSystemScenario
     private readonly Entity Venus = new()
     {
         Name = "Venus",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 4.87 * 1e24,
         Diameter = 12_104 * 1e3,
@@ -126,7 +119,7 @@ public class SolarSystemScenario
     private readonly Entity Earth = new()
     {
         Name = "Earth",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 5.97 * 1e24,
         Diameter = 12_756 * 1e3,
@@ -145,7 +138,7 @@ public class SolarSystemScenario
         Moons = [
             new Entity {
                 Name = "Moon",
-                Type = EntityType.Moon,
+                Type = CelestialBodyType.Moon,
 
                 Mass = 0.073 * 1e24,
                 Diameter = 3_475 * 1e3,
@@ -168,7 +161,7 @@ public class SolarSystemScenario
     private readonly Entity Mars = new()
     {
         Name = "Mars",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 0.642 * 1e24,
         Diameter = 6_792 * 1e3,
@@ -189,7 +182,7 @@ public class SolarSystemScenario
     private readonly Entity Jupiter = new()
     {
         Name = "Jupiter",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 1_898 * 1e24,
         Diameter = 142_984 * 1e3,
@@ -210,7 +203,7 @@ public class SolarSystemScenario
     private readonly Entity Saturn = new()
     {
         Name = "Saturn",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 568 * 1e24,
         Diameter = 120_536 * 1e3,
@@ -231,7 +224,7 @@ public class SolarSystemScenario
     private readonly Entity Uranus = new()
     {
         Name = "Uranus",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 86.8 * 1e24,
         Diameter = 51_118 * 1e3,
@@ -252,7 +245,7 @@ public class SolarSystemScenario
     private readonly Entity Neptune = new()
     {
         Name = "Nepute",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 102 * 1e24,
         Diameter = 49_528 * 1e3,
@@ -273,7 +266,7 @@ public class SolarSystemScenario
     private readonly Entity Pluto = new()
     {
         Name = "Pluto",
-        Type = EntityType.Planet,
+        Type = CelestialBodyType.Planet,
 
         Mass = 0.0130 * 1e24,
         Diameter = 2_376 * 1e3,
@@ -331,6 +324,7 @@ public class SolarSystemScenario
             var massBody = new CelestialBody()
             {
                 Name = entity.Name,
+                Type = entity.Type,
                 Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
@@ -351,7 +345,7 @@ public class SolarSystemScenario
             // Visualization
             StandardMaterialBase material;
 
-            if (entity.Type == EntityType.Star)
+            if (entity.Type == CelestialBodyType.Star)
                 material = new SolidColorMaterial(entity.BaseColor, name: $"{entity.Name}Material");
             else
                 material = new StandardMaterial(entity.BaseColor, name: $"{entity.Name}Material");
@@ -364,7 +358,7 @@ public class SolarSystemScenario
                 massBody,
                 material);
 
-            if (entity.Type == EntityType.Star)
+            if (entity.Type == CelestialBodyType.Star)
                 visualizationEngine.Lights.Add(new PointLight(visualization.SphereNode.CenterPosition));
 
             visualizationEngine.AddCelestialBodyVisualization(visualization);
@@ -375,6 +369,7 @@ public class SolarSystemScenario
                 var moonMassBody = new CelestialBody()
                 {
                     Name = moonEntity.Name,
+                    Type = moonEntity.Type,
                     Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters

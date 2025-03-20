@@ -99,7 +99,7 @@ public partial class MainView : UserControl
             for (var i = 0; i < _visualizationEngine.CelestialBodyViews.Count; i++)
             {
                 var bodyView = _visualizationEngine.CelestialBodyViews[i];
-                if (selectedIndex == 0 && bodyView.CelestialBody.Name == "Sun")
+                if (selectedIndex == 0 && bodyView.CelestialBody.Type == CelestialBodyType.Star)
                     selectedIndex = i + 1; // skip 'custom'
                         
                 selectionNames.Add(bodyView.CelestialBody.Name);

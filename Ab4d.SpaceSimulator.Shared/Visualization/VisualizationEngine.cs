@@ -5,6 +5,7 @@ using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Lights;
 using Ab4d.SharpEngine.SceneNodes;
+using Ab4d.SpaceSimulator.Physics;
 using Ab4d.SpaceSimulator.Utilities;
 
 namespace Ab4d.SpaceSimulator.Visualization;
@@ -113,7 +114,7 @@ public class VisualizationEngine
             Camera.RotationCenterPosition = center;
             Camera.TargetPosition = center;
 
-            var distanceFactor = _trackedCelestialBody.CelestialBody.Name == "Sun" ? 1000 : 300; // TODO: Add CelestialBodyType enum to CelestialBody and then check for Star
+            var distanceFactor = _trackedCelestialBody.CelestialBody.Type == CelestialBodyType.Star ? 1000 : 300;
 
             Camera.Distance = (float)_trackedCelestialBody.CelestialBody.Radius * distanceFactor * ViewUnitScale;
 
