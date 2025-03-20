@@ -306,6 +306,9 @@ public partial class MainView : UserControl
 
             SpeedInfoTextBlock.Text = $"+{infoValue:0.0} {infoUnit}/s";
         }
+
+        if (_physicsEngine != null)
+            _physicsEngine.MaxSimulationTimeStep = Math.Max(3600, simulationSpeed / 100); // Use 1 hour (3600 s) or run at least 100 sub-steps if simulationSpeed is bigger than 100 hours
     }
 
     private double GetSimulationSpeed()

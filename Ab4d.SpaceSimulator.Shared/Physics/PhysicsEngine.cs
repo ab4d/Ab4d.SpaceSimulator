@@ -7,7 +7,9 @@ namespace Ab4d.SpaceSimulator.Physics;
 public class PhysicsEngine
 {
     // Simulation time, in seconds since the start of simulation
-    public double SimulationTime;
+    public double SimulationTime { get; set; }
+
+    public double MaxSimulationTimeStep { get; set; } = 3600; // in seconds: 3600 = 1 hour by default (can be changed when simulation speed is changed)
 
     // Mass bodies in the system
     private readonly List<MassBody> _massBodies = [];
@@ -23,17 +25,11 @@ public class PhysicsEngine
 
     public void Simulate(double timeDelta)
     {
-        // TODO: allow discrete time step to be specified from the outside; this would allow application to operate
-        // either with fixed discrete time step that is independent from simulation speed, or with fixed number of
-        // discrete time steps per simulation cycle.
-        //const double discreteTimeStep = 1; // 1 second
-        const double discreteTimeStep = 3600; // 1 hour
+        var timeStep = Math.Min(timeDelta, MaxSimulationTimeStep);
 
         // Break the given time interval into multiple discrete time steps, if necessary
         while (timeDelta > 0)
         {
-            var timeStep = Math.Min(timeDelta, discreteTimeStep);
-
             RunSimulationStep(timeStep);
 
             timeDelta -= timeStep;
