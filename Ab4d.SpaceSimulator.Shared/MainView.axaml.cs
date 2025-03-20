@@ -39,7 +39,7 @@ public partial class MainView : UserControl
     private readonly PhysicsEngine? _physicsEngine;
     private readonly VisualizationEngine? _visualizationEngine;
 
-    private string[] _selectionNames = ["none"]; // Populated once scenario is set up
+    private string[] _selectionNames = ["custom"]; // Populated once scenario is set up
 
     private PlanetTextureLoader? _planetTextureLoader;
 
@@ -91,14 +91,23 @@ public partial class MainView : UserControl
 
 
             // Populate the list for ViewCenterComboBox
-            _selectionNames = new string[_visualizationEngine.CelestialBodyViews.Count + 1];
-            var idx = 1;
-            foreach (var bodyView in _visualizationEngine.CelestialBodyViews)
+            var selectionNames = new List<string>();
+            selectionNames.Add("custom");
+
+            int selectedIndex = 0;
+
+            for (var i = 0; i < _visualizationEngine.CelestialBodyViews.Count; i++)
             {
-                _selectionNames[idx++] = bodyView.CelestialBody.Name;
+                var bodyView = _visualizationEngine.CelestialBodyViews[i];
+                if (selectedIndex == 0 && bodyView.CelestialBody.Name == "Sun")
+                    selectedIndex = i + 1; // skip 'custom'
+                        
+                selectionNames.Add(bodyView.CelestialBody.Name);
             }
-            _selectionNames[0] = "none";
+
+            _selectionNames = selectionNames.ToArray();
             ViewCenterComboBox.ItemsSource = _selectionNames;
+            ViewCenterComboBox.SelectedIndex = selectedIndex;
         };
 
         MainSceneView.SceneUpdating += (sender, args) =>
