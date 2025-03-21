@@ -36,8 +36,8 @@ public class CelestialBodyView
 
     public SceneNode? NameSceneNode { get; set; }
 
-    private Color3 _orbitColor;
 
+    private Color3 _orbitColor;
     public Color3 OrbitColor
     {
         get => _orbitColor;
@@ -158,57 +158,64 @@ public class CelestialBodyView
         var camera = _visualizationEngine.Camera;
         var viewWidth = _visualizationEngine.SceneView.Width;
 
-        // Dynamic size change - can be triggered by other changes, such as viewport
-        float sphereRadius = ScaleSize(CelestialBody.Radius);
-        
-        if (_visualizationEngine.IsMinSizeLimited && viewWidth > 0)
+        if (viewWidth > 0)
         {
+            // Dynamic size change - can be triggered by other changes, such as viewport
+            float sphereRadius = ScaleSize(CelestialBody.Radius);
+
             // Adapted from CameraUtils.GetPerspectiveScreenSize()
             var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
             var lookDirection = Vector3.Normalize(camera.GetLookDirection());
             var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
-
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
-            var displayedSize = viewWidth * sphereRadius / (lookDirectionDistance * xScale);
 
-            var minSize = _visualizationEngine.MinScreenSize;
-            if (displayedSize < minSize)
+            if (_visualizationEngine.IsMinSizeLimited)
             {
-                var correctedSize = lookDirectionDistance * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
+                var displayedSize = viewWidth * sphereRadius / (lookDirectionDistance * xScale); // We would also need to multiply sphereRadius * 2, and also multiply xScale * 2; but in this case we can skip that
 
-                if (correctedSize > 0)
-                    sphereRadius = correctedSize;
+                var minSize = _visualizationEngine.MinScreenSize;
+                if (displayedSize < minSize)
+                {
+                    var correctedSize = lookDirectionDistance * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
+
+                    if (correctedSize > 0)
+                        sphereRadius = correctedSize;
+                }
             }
+
+            SphereNode.Radius = sphereRadius;
+
+
+            bool isBodyVisible;
+
+            if (this.Parent != null && this.Parent.SphereNode != null)
+            {
+                var orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
+                var orbitRadiusScreenSize = (orbitRadius * viewWidth) / (lookDirectionDistance * xScale * 2);
+
+                var parentRadius = this.Parent.SphereNode.Radius;
+
+                isBodyVisible = orbitRadius > (parentRadius + sphereRadius) * 1.1 &&            // If orbit is too close to parent, then hide the planet or moon
+                                orbitRadiusScreenSize > VisualizationEngine.MinOrbitScreenSize; // If moon or planet's orbit is smaller than 20 pixels, then hide the planet or moon 
+
+                bool isOrbitVisible = isBodyVisible && (orbitRadius > parentRadius * 1.1);
+
+                SphereNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+                if (OrbitNode != null)
+                    OrbitNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowOrbits) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+                if (TrajectoryNode != null)
+                    TrajectoryNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowTrajectories) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            }
+            else
+            {
+                isBodyVisible = true;
+            }
+
+            if (NameSceneNode != null)
+                NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
         }
-
-        SphereNode.Radius = sphereRadius;
-
-
-        bool isBodyVisible;
-
-        if (this.Parent != null && this.Parent.SphereNode != null)
-        {
-            float orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
-
-            var parentRadius = this.Parent.SphereNode.Radius;
-            isBodyVisible = orbitRadius > (parentRadius + sphereRadius);
-            bool isOrbitVisible = orbitRadius > parentRadius * 1.1;
-
-            SphereNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-
-            if (OrbitNode != null)
-                OrbitNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowOrbits) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-            
-            if (TrajectoryNode != null)
-                TrajectoryNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowTrajectories) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-        }
-        else
-        {
-            isBodyVisible = true;
-        }
-
-        if (NameSceneNode != null)
-            NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
 
 
         UpdateNameSceneNode();

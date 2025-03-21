@@ -15,7 +15,9 @@ namespace Ab4d.SpaceSimulator.Visualization;
 public class VisualizationEngine
 {
     public const float ViewUnitScale = 1f / 1e9f; // 1 unit in 3D view space is 1 million km = 1e9 m
-    
+
+    public const float MinOrbitScreenSize = 20; // If moon or planet's orbit is smaller than 20 pixels, then hide the planet or moon. This is used when using actual body sizes.
+
     public readonly SceneView SceneView;
     public readonly TargetPositionCamera Camera;
     public readonly GesturesCameraController CameraController;
@@ -32,7 +34,6 @@ public class VisualizationEngine
     public bool IsSimulationPaused { get; set; } = true; // Initially paused
 
     private bool _showOrbits = true;
-
     public bool ShowOrbits
     {
         get => _showOrbits;
@@ -44,7 +45,6 @@ public class VisualizationEngine
     }
 
     private bool _showTrajectories = true;
-
     public bool ShowTrajectories
     {
         get => _showTrajectories;
@@ -56,7 +56,6 @@ public class VisualizationEngine
     }
 
     private bool _showNames = true;
-
     public bool ShowNames
     {
         get => _showNames;
@@ -215,17 +214,6 @@ public class VisualizationEngine
     private void UpdateVisibleObjects()
     {
         foreach (var celestialBodyView in CelestialBodyViews)
-        {
             celestialBodyView.Update(dataChange: false);
-
-            //if (celestialBodyView.OrbitNode != null)
-            //    celestialBodyView.OrbitNode.Visibility = ShowOrbits ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-
-            //if (celestialBodyView.TrajectoryNode != null)
-            //    celestialBodyView.TrajectoryNode.Visibility = ShowTrajectories ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-
-            //if (celestialBodyView.NameSceneNode != null)
-            //    celestialBodyView.NameSceneNode.Visibility = ShowNames ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-        }
     }
 }
