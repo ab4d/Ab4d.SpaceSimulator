@@ -177,19 +177,19 @@ public partial class MainView : UserControl
             {
                 BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
                 BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
-                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
-                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
-                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
+
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
 
                 Grid.SetColumn(TimePanel, 0);
-                Grid.SetColumn(SpeedTimerPanel, 0);
+                Grid.SetColumnSpan(TimePanel, 3);
                 Grid.SetColumn(ViewCenterPanel, 0);
-                Grid.SetColumn(SettingsPanel, 0);
+                Grid.SetColumn(SettingsPanel, 2);
                 
                 Grid.SetRow(TimePanel, 0);
-                Grid.SetRow(SpeedTimerPanel, 1);
-                Grid.SetRow(ViewCenterPanel, 2);
-                Grid.SetRow(SettingsPanel, 4);
+                Grid.SetRow(ViewCenterPanel, 1);
+                Grid.SetRow(SettingsPanel, 1);
             }
             else
             {
@@ -200,18 +200,19 @@ public partial class MainView : UserControl
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));      
                 
                 Grid.SetRow(TimePanel, 0);
-                Grid.SetRow(SpeedTimerPanel, 0);
                 Grid.SetRow(ViewCenterPanel, 0);
                 Grid.SetRow(SettingsPanel, 0);
                 
                 Grid.SetColumn(TimePanel, 0);
-                Grid.SetColumn(SpeedTimerPanel, 1);
-                Grid.SetColumn(ViewCenterPanel, 2);
-                Grid.SetColumn(SettingsPanel, 4);
+                Grid.SetColumnSpan(TimePanel, 0);
+                Grid.SetColumn(ViewCenterPanel, 1);
+                Grid.SetColumn(SettingsPanel, 3);
             }
 
             _isVerticalView = isVerticalView;
         }
+
+        _visualizationEngine?.Update(false);
     }
 
     [MemberNotNull(nameof(_camera))]
