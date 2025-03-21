@@ -322,7 +322,7 @@ public class SolarSystemScenario
         foreach (var entity in _entities)
         {
             // Mass body for the physics engine
-            var massBody = new CelestialBody()
+            var celestialBody = new CelestialBody()
             {
                 Name = entity.Name,
                 Type = entity.Type,
@@ -338,7 +338,7 @@ public class SolarSystemScenario
                 Parent = sunObject,
             };
 
-            physicsEngine.AddBody(massBody);
+            physicsEngine.AddBody(celestialBody);
 
             // Visualization
             StandardMaterialBase material;
@@ -351,25 +351,24 @@ public class SolarSystemScenario
             if (entity.TextureName != null)
                 planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
 
-            var visualization = new CelestialBodyView(
-                visualizationEngine,
-                massBody,
-                material);
+            var celestialBodyView = new CelestialBodyView(visualizationEngine, celestialBody, material);
             
+            celestialBodyView.OrbitColor = entity.BaseColor;
+
             if (entity.Name == "Sun")
             {
-                sunObject = massBody;
-                sunView = visualization;
+                sunObject = celestialBody;
+                sunView = celestialBodyView;
             }
             else
             {
-                visualization.Parent = sunView; 
+                celestialBodyView.Parent = sunView; 
             }
 
             if (entity.Type == CelestialBodyType.Star)
-                visualizationEngine.Lights.Add(new PointLight(visualization.SphereNode.CenterPosition));
+                visualizationEngine.Lights.Add(new PointLight(celestialBodyView.SphereNode.CenterPosition));
 
-            visualizationEngine.AddCelestialBodyVisualization(visualization);
+            visualizationEngine.AddCelestialBodyVisualization(celestialBodyView);
 
             // Create moon(s)
             foreach (var moonEntity in entity.Moons ?? [])
@@ -378,14 +377,14 @@ public class SolarSystemScenario
                 {
                     Name = moonEntity.Name,
                     Type = moonEntity.Type,
-                    Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + massBody.Position, // meters
+                    Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + celestialBody.Position, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters
                     HasOrbit = true,
                     OrbitRadius = moonEntity.DistanceFromParent, // meters
                     OrbitalInclination = moonEntity.OrbitalInclination, // deg
-                    Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + massBody.Velocity, // m/s
-                    Parent = massBody, // parent mass body
+                    Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + celestialBody.Velocity, // m/s
+                    Parent = celestialBody, // parent mass body
                 };
 
                 physicsEngine.AddBody(moonMassBody);
@@ -401,11 +400,11 @@ public class SolarSystemScenario
                     moonMassBody,
                     moonMaterial)
                 {
-                    Parent = visualization, // parent visualization
+                    Parent = celestialBodyView, // parent visualization
                 };
 
                 visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
-                visualization.Children.Add(moonVisualization); // register as child visualization
+                celestialBodyView.Children.Add(moonVisualization); // register as child visualization
             }
         }
     }

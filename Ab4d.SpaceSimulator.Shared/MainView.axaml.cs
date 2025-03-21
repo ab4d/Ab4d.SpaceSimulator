@@ -289,7 +289,7 @@ public partial class MainView : UserControl
 
         if (simulationSpeed <= 0)
         {
-            SpeedInfoTextBlock.Text = "Paused";
+            SpeedInfoTextBlock.Text = "  Paused";
         }
         else
         {

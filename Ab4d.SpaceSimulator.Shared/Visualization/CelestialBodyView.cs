@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Ab4d.SharpEngine;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
@@ -32,6 +33,23 @@ public class CelestialBodyView
     private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryNode;
 
+    private Color3 _orbitColor;
+
+    public Color3 OrbitColor
+    {
+        get => _orbitColor;
+        set
+        {
+            _orbitColor = value;
+
+            if (OrbitNode != null)
+                OrbitNode.LineColor = (value * 0.5f).ToColor4(); // Make orbit color darker
+
+            if (TrajectoryNode != null)
+                TrajectoryNode.LineColor = (value * 0.7f).ToColor4();  // Trajectory color is lighter than orbit's color
+        }
+    }
+
 
     public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material)
     {
@@ -49,7 +67,7 @@ public class CelestialBodyView
         // Orbit ellipse
         if (CelestialBody.HasOrbit && CelestialBody.Parent != null)
         {
-            var orbitColor = new Color3(0.2f, 0.2f, 0.2f);
+            var orbitColor = new Color3(0.2f, 0.2f, 0.2f);  // This is the default color that can be changed by setting OrbitColor
 
             var majorSemiAxis = (float)ScaleDistance(CelestialBody.OrbitRadius);
             var majorSemiAxisDir = Vector3.UnitZ;
@@ -80,7 +98,7 @@ public class CelestialBodyView
             _trajectoryTracker.UpdatePosition(CelestialBody);
 
             // Create trajectory multi-line node
-            var trajectoryColor = new Color3(0.25f, 0.25f, 0.25f);
+            var trajectoryColor = new Color3(0.25f, 0.25f, 0.25f); // This is the default color that can be changed by setting OrbitColor
             var initialTrajectory = GetTrajectoryTrail();
             TrajectoryNode = new MultiLineNode(
                 initialTrajectory,
