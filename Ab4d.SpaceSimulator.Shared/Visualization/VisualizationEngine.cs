@@ -6,6 +6,7 @@ using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Lights;
 using Ab4d.SharpEngine.SceneNodes;
+using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.Physics;
 using Ab4d.SpaceSimulator.Utilities;
 
@@ -26,6 +27,10 @@ public class VisualizationEngine
     // Scale factor for scaling celestial body dimensions
     private float _celestialBodyScaleFactor = 1f;
 
+    public BitmapTextCreator? BitmapTextCreator { get; set; }
+
+    public bool IsSimulationPaused { get; set; } = true; // Initially paused
+
 
 
     // Tracked celestial body
@@ -36,6 +41,17 @@ public class VisualizationEngine
         SceneView = sceneView;
         Camera = camera;
         CameraController = cameraController;
+
+        camera.CameraChanged += (sender, args) =>
+        {
+            // When simulation is not paused, then on each update we will update the scale of body spheres and positions and alignment of body names.
+            // But when the simulation is paused, then we need to update that on each camera move.
+            if (IsSimulationPaused)
+            {
+                foreach (var celestialBodyView in CelestialBodyViews)
+                    celestialBodyView.Update(dataChange: false);
+            }
+        };
     }
 
     public float CelestialBodyScaleFactor
@@ -127,5 +143,35 @@ public class VisualizationEngine
             CameraController.ZoomMode = CameraZoomMode.ViewCenter;
             CameraController.RotateAroundPointerPosition = false;
         }
+    }
+
+    public void CreateNameSceneNodes()
+    {
+        foreach (var celestialBodyView in CelestialBodyViews)
+            CreateNameSceneNodes(celestialBodyView);
+    }
+
+    private void CreateNameSceneNodes(CelestialBodyView celestialBodyView)
+    {
+        if (BitmapTextCreator == null)
+            return;
+
+        //var textPosition = celestialBodyView.SphereNode.CenterPosition + Vector3.UnitX * celestialBodyView.SphereNode.Radius * 1.5f;
+
+        var textNode = BitmapTextCreator.CreateTextNode(text: celestialBodyView.Name,
+                                                        position: Vector3.Zero, 
+                                                        positionType: PositionTypes.Left, // left align text to the position
+                                                        textDirection: Vector3.UnitX, 
+                                                        upDirection: Vector3.UnitY, 
+                                                        fontSize: 1,
+                                                        textColor: Colors.White,
+                                                        isSolidColorMaterial: true);
+
+        textNode.Visibility = celestialBodyView.SphereNode.Visibility;
+
+        celestialBodyView.NameSceneNode = textNode;
+        celestialBodyView.UpdateNameSceneNode();
+
+        RootNode.Add(textNode);
     }
 }

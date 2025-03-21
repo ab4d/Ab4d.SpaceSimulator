@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Ab4d.SharpEngine;
+using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
@@ -32,6 +33,8 @@ public class CelestialBodyView
     // Dynamic trajectory / trail
     private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryNode;
+
+    public SceneNode? NameSceneNode { get; set; }
 
     private Color3 _orbitColor;
 
@@ -152,22 +155,6 @@ public class CelestialBodyView
             }
         }
 
-        if (this.Parent != null && this.Parent.SphereNode != null)
-        {
-            float orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
-
-            var parentRadius = this.Parent.SphereNode.Radius;
-            bool isBodyVisible = orbitRadius > (parentRadius + this.SphereNode.Radius);
-            bool isOrbitVisible = orbitRadius > parentRadius;
-
-            SphereNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-            if (OrbitNode != null)
-                OrbitNode.Visibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-            
-            if (TrajectoryNode != null)
-                TrajectoryNode.Visibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-        }
-
         var camera = _visualizationEngine.Camera;
         var viewWidth = _visualizationEngine.SceneView.Width;
 
@@ -182,19 +169,46 @@ public class CelestialBodyView
             var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
 
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
-            var displayedSize = viewWidth * sphereRadius / lookDirectionDistance * xScale;
+            var displayedSize = viewWidth * sphereRadius / (lookDirectionDistance * xScale);
 
             var minSize = _visualizationEngine.MinScreenSize;
             if (displayedSize < minSize)
             {
                 var correctedSize = lookDirectionDistance * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
-                
+
                 if (correctedSize > 0)
                     sphereRadius = correctedSize;
             }
         }
 
         SphereNode.Radius = sphereRadius;
+
+        
+        if (this.Parent != null && this.Parent.SphereNode != null)
+        {
+            float orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
+
+            var parentRadius = this.Parent.SphereNode.Radius;
+            bool isBodyVisible = orbitRadius > (parentRadius + sphereRadius);
+            bool isOrbitVisible = orbitRadius > parentRadius * 1.1;
+
+            var sphereVisibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            var orbitVisibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+            SphereNode.Visibility = sphereVisibility;
+            
+            if (NameSceneNode != null)
+                NameSceneNode.Visibility = sphereVisibility;
+
+            if (OrbitNode != null)
+                OrbitNode.Visibility = orbitVisibility;
+            
+            if (TrajectoryNode != null)
+                TrajectoryNode.Visibility = orbitVisibility;
+        }
+
+
+        UpdateNameSceneNode();
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()
@@ -270,5 +284,71 @@ public class CelestialBodyView
         trajectory[idx++] = ScalePosition(CelestialBody.Position);
 
         return trajectory;
+    }
+
+    public void UpdateNameSceneNode()
+    {
+        if (NameSceneNode == null)
+            return;
+
+        var desiredScreenHeight = 30f;
+
+        // If we want to specify the screen size in device independent units, then we need to scale by DPI scale.
+        // If we want to set the size in pixels, the comment the following line.
+        desiredScreenHeight *= _visualizationEngine.SceneView.DpiScaleX;
+
+        var camera = _visualizationEngine.Camera;
+
+        var viewWidth = (float)_visualizationEngine.SceneView.Width;
+        var viewHeight = (float)_visualizationEngine.SceneView.Height;
+
+
+        // Get lookDirectionDistance
+        // If we look directly at the sphere, then we could use: lookDirectionDistance = textPosition - cameraPosition,
+        // but when we look at some other direction, then we need to use the following code that
+        // gets the distance to the text in the look direction:
+        var textCenterPosition = NameSceneNode.WorldBoundingBox.GetCenterPosition();
+        var cameraPosition = camera.GetCameraPosition();
+
+        var distanceVector = textCenterPosition - cameraPosition;
+
+        var lookDirection = Vector3.Normalize(camera.GetLookDirection());
+
+        // To get look direction distance we project the distanceVector to the look direction vector
+        var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
+
+        float aspectRatio = viewWidth / viewHeight;
+        float xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
+
+        float scaleFactor = (2 * lookDirectionDistance * desiredScreenHeight * xScale) / (viewWidth * aspectRatio);
+
+
+        // To align the text with camera, we first need to generate the text
+        // so that its textDirection is set to (1, 0, 0) and upDirection is set to (0, 1, 0).
+        // This will orient the text with the camera when Heading is 0 and Attitude is 0.
+        // After that, we can align the text with the camera by simply negating the camera's 
+        // rotation that is defined by view matrix.
+
+        var invertedView = camera.GetInvertedViewMatrix();
+
+        // Get the right direction vector from the inverted view matrix                
+        var rightDirectionVector = new Vector3(invertedView.M11, invertedView.M12, invertedView.M13);
+
+        // Move the text to the right of the body (for 8 pixels to the right)
+        var textPosition = this.SphereNode.CenterPosition + rightDirectionVector * (this.SphereNode.Radius + ((2 * 8) / viewWidth * xScale * lookDirectionDistance));
+        
+        // and adjust the matrix
+        invertedView.M41 = textPosition.X;
+        invertedView.M42 = textPosition.Y;
+        invertedView.M43 = textPosition.Z;
+
+        // Make sure that NameSceneNode has MatrixTransform
+        if (NameSceneNode.Transform is not MatrixTransform matrixTransform)
+        {
+            matrixTransform = new MatrixTransform();
+            NameSceneNode.Transform = matrixTransform;
+        }
+
+        matrixTransform.SetMatrix(Matrix4x4.CreateScale(scaleFactor, scaleFactor, 1) * invertedView);
     }
 }

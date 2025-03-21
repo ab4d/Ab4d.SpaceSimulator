@@ -10,6 +10,7 @@ using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
 using Ab4d.SharpEngine.Transformations;
 using System.Numerics;
+using System.Threading.Tasks;
 using Ab4d.SpaceSimulator.Physics;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -19,6 +20,8 @@ using Avalonia.Media;
 using Colors = Avalonia.Media.Colors;
 using Ab4d.SpaceSimulator.Utilities;
 using Ab4d.SpaceSimulator.Visualization;
+using Ab4d.SharpEngine.Utilities;
+using Ab4d.SharpEngine;
 
 namespace Ab4d.SpaceSimulator.Shared;
 
@@ -78,6 +81,8 @@ public partial class MainView : UserControl
             _planetTextureLoader = new PlanetTextureLoader(args.GpuDevice);
             solarSystem.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
 
+            // Call async method from sync context:
+            _ = InitializeBitmapTextCreatorAsync();
 
             // Setup lights
             MainSceneView.Scene.SetAmbientLight(0.2f);
@@ -423,6 +428,17 @@ public partial class MainView : UserControl
             _allMessages.RemoveAt(0);
         }
     }
+    
+    private async Task InitializeBitmapTextCreatorAsync()
+    {
+        var bitmapTextCreator = await BitmapTextCreator.GetDefaultBitmapTextCreatorAsync(MainSceneView.Scene);
+
+        if (_visualizationEngine != null)
+        {
+            _visualizationEngine.BitmapTextCreator = bitmapTextCreator;
+            _visualizationEngine.CreateNameSceneNodes();
+        }
+    }
 
     private void SimulationSpeedSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
@@ -432,6 +448,9 @@ public partial class MainView : UserControl
         var simulationSpeed = GetSimulationSpeed();
 
         _isPlaying = simulationSpeed > 0;
+
+        if (_visualizationEngine != null)
+            _visualizationEngine.IsSimulationPaused = !_isPlaying;
 
         SetSimulationSpeed(simulationSpeed);
 
