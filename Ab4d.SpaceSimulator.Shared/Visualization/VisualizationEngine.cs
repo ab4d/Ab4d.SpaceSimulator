@@ -31,6 +31,41 @@ public class VisualizationEngine
 
     public bool IsSimulationPaused { get; set; } = true; // Initially paused
 
+    private bool _showOrbits = true;
+
+    public bool ShowOrbits
+    {
+        get => _showOrbits;
+        set
+        {
+            _showOrbits = value; 
+            UpdateVisibleObjects();
+        }
+    }
+
+    private bool _showTrajectories = true;
+
+    public bool ShowTrajectories
+    {
+        get => _showTrajectories;
+        set
+        {
+            _showTrajectories = value; 
+            UpdateVisibleObjects();
+        }
+    }
+
+    private bool _showNames = true;
+
+    public bool ShowNames
+    {
+        get => _showNames;
+        set
+        {
+            _showNames = value; 
+            UpdateVisibleObjects();
+        }
+    }
 
 
     // Tracked celestial body
@@ -166,12 +201,31 @@ public class VisualizationEngine
                                                         fontSize: 1,
                                                         textColor: Colors.White,
                                                         isSolidColorMaterial: true);
-
-        textNode.Visibility = celestialBodyView.SphereNode.Visibility;
+        if (this.ShowNames)
+            textNode.Visibility = celestialBodyView.SphereNode.Visibility;
+        else
+            textNode.Visibility = SceneNodeVisibility.Hidden;
 
         celestialBodyView.NameSceneNode = textNode;
         celestialBodyView.UpdateNameSceneNode();
 
         RootNode.Add(textNode);
+    }
+
+    private void UpdateVisibleObjects()
+    {
+        foreach (var celestialBodyView in CelestialBodyViews)
+        {
+            celestialBodyView.Update(dataChange: false);
+
+            //if (celestialBodyView.OrbitNode != null)
+            //    celestialBodyView.OrbitNode.Visibility = ShowOrbits ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+            //if (celestialBodyView.TrajectoryNode != null)
+            //    celestialBodyView.TrajectoryNode.Visibility = ShowTrajectories ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+            //if (celestialBodyView.NameSceneNode != null)
+            //    celestialBodyView.NameSceneNode.Visibility = ShowNames ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
     }
 }

@@ -557,4 +557,22 @@ public partial class MainView : UserControl
     {
         SetMaxSimulationStep();
     }
+
+    private void ShowOrbitsCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_visualizationEngine != null)
+            _visualizationEngine.ShowOrbits = ShowOrbitsCheckBox.IsChecked ?? false;
+    }
+
+    private void ShowTrajectoriesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_visualizationEngine != null)
+            _visualizationEngine.ShowTrajectories = ShowTrajectoriesCheckBox.IsChecked ?? false;        
+    }
+
+    private void ShowNamesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_visualizationEngine != null)
+            _visualizationEngine.ShowNames = ShowNamesCheckBox.IsChecked ?? false;        
+    }
 }

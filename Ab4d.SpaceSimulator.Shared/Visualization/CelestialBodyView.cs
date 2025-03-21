@@ -183,29 +183,32 @@ public class CelestialBodyView
 
         SphereNode.Radius = sphereRadius;
 
-        
+
+        bool isBodyVisible;
+
         if (this.Parent != null && this.Parent.SphereNode != null)
         {
             float orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
 
             var parentRadius = this.Parent.SphereNode.Radius;
-            bool isBodyVisible = orbitRadius > (parentRadius + sphereRadius);
+            isBodyVisible = orbitRadius > (parentRadius + sphereRadius);
             bool isOrbitVisible = orbitRadius > parentRadius * 1.1;
 
-            var sphereVisibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-            var orbitVisibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
-
-            SphereNode.Visibility = sphereVisibility;
-            
-            if (NameSceneNode != null)
-                NameSceneNode.Visibility = sphereVisibility;
+            SphereNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
 
             if (OrbitNode != null)
-                OrbitNode.Visibility = orbitVisibility;
+                OrbitNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowOrbits) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
             
             if (TrajectoryNode != null)
-                TrajectoryNode.Visibility = orbitVisibility;
+                TrajectoryNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowTrajectories) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
         }
+        else
+        {
+            isBodyVisible = true;
+        }
+
+        if (NameSceneNode != null)
+            NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
 
 
         UpdateNameSceneNode();
