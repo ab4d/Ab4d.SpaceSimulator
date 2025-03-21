@@ -84,7 +84,7 @@
 
         <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Vertical" Margin="10">
             <TextBlock Name="TitleTextBlock" Text="Space Simulator" FontSize="20" FontWeight="Bold" Foreground="#CCC" />
-            <TextBlock Name="SubtitleTextBlock" Text="Space simulator in .Net that uses Ab4d.SharpEngine rendering engine" FontSize="14" Foreground="#CCC" Margin="0 3 0 0" />
+            <TextBlock Name="SubtitleTextBlock" Text="Space simulator is a .Net app that uses Ab4d.SharpEngine 3D rendering engine" FontSize="14" Foreground="#CCC" Margin="0 3 0 0" />
         </StackPanel>
     </Grid>
 </UserControl>
