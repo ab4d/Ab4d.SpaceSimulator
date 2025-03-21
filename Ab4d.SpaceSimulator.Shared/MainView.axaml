@@ -25,8 +25,6 @@
 
                 <StackPanel Name="TimePanel" Grid.Column="0" Orientation="Horizontal">
                     <TextBlock Name="SimulationTimeTextBlock" Text="Time: +1000 day(s) 00:00:00" Width="200" Margin="5 0 0 0" VerticalAlignment="Center" />
-
-                    <Button Name="PlayPauseButton" Content="Start" Width="100" VerticalAlignment="Center" HorizontalContentAlignment="Center" Margin="5 0 0 0" Click="PlayPauseButton_OnClick" />
                 </StackPanel>
                 <StackPanel Name="SpeedTimerPanel" Grid.Column="1" Orientation="Horizontal">
                     <Slider Name="SimulationSpeedSlider" Minimum="0" Maximum="9" Width="200" Margin="10 0 0 0"

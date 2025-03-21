@@ -56,7 +56,7 @@ public partial class MainView : UserControl
 
         _simulationSpeedIntervals = new int[] { 0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 10 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600 };
 
-        SimulationSpeedSlider.Value = 7; // 10 days / second
+        SimulationSpeedSlider.Value = 0; // initially paused
 
         SimulationSpeedSlider.Maximum = _simulationSpeedIntervals.Length - 1;
         SpeedInfoTextBlock.Text = "";
@@ -429,30 +429,12 @@ public partial class MainView : UserControl
             return;
 
         var simulationSpeed = GetSimulationSpeed();
+
+        _isPlaying = simulationSpeed > 0;
+
         SetSimulationSpeed(simulationSpeed);
 
         UpdateShownSimulationTime();
-    }
-
-    private void PlayPauseButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (_isPlaying)
-        {
-            PlayPauseButton.Content = "Start";
-            _isPlaying = false;
-        }
-        else
-        {
-            PlayPauseButton.Content = "Stop";
-            _isPlaying = true;
-        }
-
-        UpdateShownSimulationTime();
-    }
-
-    private void ScaleTypeComboBoxOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-
     }
 
     private void ViewCenterComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
