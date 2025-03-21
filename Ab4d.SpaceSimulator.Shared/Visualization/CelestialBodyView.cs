@@ -150,11 +150,11 @@ public class CelestialBodyView
                 TrajectoryNode.Visibility = isOrbitVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
         }
 
-        // Dynamic size change - can be triggered by other changes, such as viewport
-        SphereNode.Radius = ScaleSize(CelestialBody.Radius);
-
         var camera = _visualizationEngine.Camera;
         var viewWidth = _visualizationEngine.SceneView.Width;
+
+        // Dynamic size change - can be triggered by other changes, such as viewport
+        float sphereRadius = ScaleSize(CelestialBody.Radius);
         
         if (_visualizationEngine.IsMinSizeLimited && viewWidth > 0)
         {
@@ -164,7 +164,7 @@ public class CelestialBodyView
             var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
 
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
-            var displayedSize = viewWidth * SphereNode.Radius / lookDirectionDistance * xScale;
+            var displayedSize = viewWidth * sphereRadius / lookDirectionDistance * xScale;
 
             var minSize = _visualizationEngine.MinScreenSize;
             if (displayedSize < minSize)
@@ -172,9 +172,11 @@ public class CelestialBodyView
                 var correctedSize = lookDirectionDistance * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
                 
                 if (correctedSize > 0)
-                    SphereNode.Radius = correctedSize;
+                    sphereRadius = correctedSize;
             }
         }
+
+        SphereNode.Radius = sphereRadius;
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()

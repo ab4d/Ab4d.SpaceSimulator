@@ -106,14 +106,22 @@ public partial class MainView : UserControl
             ViewCenterComboBox.SelectedIndex = selectedIndex;
         };
 
+        MainSceneView.SceneViewInitialized += (sender, args) =>
+        {
+            // After the size of SceneView is known, we can set the sizes of the bodies
+            _visualizationEngine.Update(false);
+        };
+
         MainSceneView.SceneUpdating += (sender, args) =>
         {
+            // SceneUpdating is called cca 60 times per second
+
             var now = DateTime.Now;
 
             if (!_isPlaying)
             {
                 _previousUpdateTime = now;
-                _visualizationEngine.Update(false); // Update without data change
+                
                 return;
             }
 
