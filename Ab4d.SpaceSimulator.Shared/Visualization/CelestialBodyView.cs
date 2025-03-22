@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using Ab4d.SharpEngine;
 using Ab4d.SharpEngine.Cameras;
@@ -36,6 +37,8 @@ public class CelestialBodyView
     public readonly MultiLineNode? TrajectoryTrailNode;
 
     public SceneNode? NameSceneNode { get; set; }
+
+    public float DistanceToCamera { get; private set; }
 
 
     private Color3 _orbitColor;
@@ -159,25 +162,30 @@ public class CelestialBodyView
         var camera = _visualizationEngine.Camera;
         var viewWidth = _visualizationEngine.SceneView.Width;
 
+        // Adapted from CameraUtils.GetPerspectiveScreenSize()
+        var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
+        var lookDirection = Vector3.Normalize(camera.GetLookDirection());
+        var distanceToCamera = Vector3.Dot(distanceVector, lookDirection);
+        
+        
+        bool isBodyVisible;
+
         if (viewWidth > 0)
         {
             // Dynamic size change - can be triggered by other changes, such as viewport
             float sphereRadius = ScaleSize(CelestialBody.Radius);
 
-            // Adapted from CameraUtils.GetPerspectiveScreenSize()
-            var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
-            var lookDirection = Vector3.Normalize(camera.GetLookDirection());
-            var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
+
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
 
             if (_visualizationEngine.IsMinSizeLimited)
             {
-                var displayedSize = viewWidth * sphereRadius / (lookDirectionDistance * xScale); // We would also need to multiply sphereRadius * 2, and also multiply xScale * 2; but in this case we can skip that
+                var displayedSize = viewWidth * sphereRadius / (distanceToCamera * xScale); // We would also need to multiply sphereRadius * 2, and also multiply xScale * 2; but in this case we can skip that
 
                 var minSize = _visualizationEngine.MinScreenSize;
                 if (displayedSize < minSize)
                 {
-                    var correctedSize = lookDirectionDistance * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
+                    var correctedSize = distanceToCamera * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
 
                     if (correctedSize > 0)
                         sphereRadius = correctedSize;
@@ -186,13 +194,10 @@ public class CelestialBodyView
 
             SphereNode.Radius = sphereRadius;
 
-
-            bool isBodyVisible;
-
             if (this.Parent != null && this.Parent.SphereNode != null)
             {
                 var orbitRadius = (float)this.CelestialBody.OrbitRadius * VisualizationEngine.ViewUnitScale;
-                var orbitRadiusScreenSize = (orbitRadius * viewWidth) / (lookDirectionDistance * xScale * 2);
+                var orbitRadiusScreenSize = (orbitRadius * viewWidth) / (distanceToCamera * xScale * 2);
 
                 var parentRadius = this.Parent.SphereNode.Radius;
 
@@ -213,11 +218,17 @@ public class CelestialBodyView
             {
                 isBodyVisible = true;
             }
-
-            if (NameSceneNode != null)
-                NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
+        else
+        {
+            isBodyVisible = false; // viewWidth == 0
         }
 
+        
+        if (NameSceneNode != null)
+            NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+        this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
 
         UpdateNameSceneNode();
     }

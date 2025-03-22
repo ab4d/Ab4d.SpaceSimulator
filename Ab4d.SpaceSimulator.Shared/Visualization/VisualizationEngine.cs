@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -84,6 +85,8 @@ public class VisualizationEngine
             {
                 foreach (var celestialBodyView in CelestialBodyViews)
                     celestialBodyView.Update(dataChange: false);
+
+                UpdateCameraNearAndFarPlanes();
             }
         };
     }
@@ -143,6 +146,8 @@ public class VisualizationEngine
             Camera.RotationCenterPosition = center;
             Camera.TargetPosition = center;
         }
+
+        UpdateCameraNearAndFarPlanes();
     }
 
     public void TrackCelestialBody(string? name)
@@ -215,5 +220,49 @@ public class VisualizationEngine
     {
         foreach (var celestialBodyView in CelestialBodyViews)
             celestialBodyView.Update(dataChange: false);
+    }
+
+    private void UpdateCameraNearAndFarPlanes()
+    {
+        // Manually calculate camera's near and far planes
+        SceneView.CalculateCameraPlanes(Camera, out var nearPlaneDistance, out var farPlaneDistance);
+
+        // Now we get the closest celestial body:
+        var cameraPosition = Camera.GetCameraPosition();
+
+        float minDistanceSquared = float.MaxValue;
+        int minDistanceIndex = -1;
+
+        for (var i = 0; i < CelestialBodyViews.Count; i++)
+        {
+            var celestialBodyView = CelestialBodyViews[i];
+            var distanceToCamera = (celestialBodyView.SphereNode.CenterPosition - cameraPosition).LengthSquared();
+            if (distanceToCamera == 0) // skip hidden objects
+                continue;
+
+            if (distanceToCamera > 0 && minDistanceSquared > distanceToCamera)
+            {
+                minDistanceSquared = distanceToCamera;
+                minDistanceIndex = i;
+            }
+        }
+
+
+        if (minDistanceIndex > 0) // Is there any celestial body found
+        {
+            var minDistance = MathF.Sqrt(minDistanceSquared);
+            minDistance -= CelestialBodyViews[minDistanceIndex].SphereNode.Radius;
+
+            // We have two special cases for NearPlaneDistance:
+            // 1) very close to the planet / moon, we set NearPlaneDistance to 1000 km
+            // 2) close to the planet / moon, we set NearPlaneDistance to 100,000 km
+            if (minDistance < 1e9 * ViewUnitScale)  // < 1 mio km
+                nearPlaneDistance = 1_000_000 * ViewUnitScale; // = 1000 km => 0.001
+            else if (minDistance < 1e11 * ViewUnitScale) // < 100 mio km
+                nearPlaneDistance = 100_000_000 * ViewUnitScale; // = 100,000 km => 0.1
+        }
+
+        Camera.NearPlaneDistance = nearPlaneDistance;
+        Camera.FarPlaneDistance = farPlaneDistance;
     }
 }
