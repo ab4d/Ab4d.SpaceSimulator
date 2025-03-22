@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Ab4d.SpaceSimulator.Physics;
 
 // Basic three-dimensional vector with double-precision fields.
+[DebuggerDisplay("Vector3d({X} {Y} {Z})")]
 public struct Vector3d
 {
     public double X;

@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace Ab4d.SpaceSimulator.Physics;
 
+[DebuggerDisplay("CelestialBody('{Name}')")]
 public class CelestialBody : MassBody
 {
     public CelestialBodyType Type;
