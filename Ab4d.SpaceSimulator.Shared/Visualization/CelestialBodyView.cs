@@ -12,7 +12,7 @@ using Ab4d.SpaceSimulator.Physics;
 
 namespace Ab4d.SpaceSimulator.Visualization;
 
-[DebuggerDisplay("CelestialBodyView('{Name}')")]
+[DebuggerDisplay("CelestialBodyView({Name})")]
 public class CelestialBodyView
 {
     private readonly VisualizationEngine _visualizationEngine;
