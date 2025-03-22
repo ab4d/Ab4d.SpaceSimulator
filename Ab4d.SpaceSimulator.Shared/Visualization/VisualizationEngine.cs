@@ -44,13 +44,13 @@ public class VisualizationEngine
         }
     }
 
-    private bool _showTrajectories = true;
-    public bool ShowTrajectories
+    private bool _showTrails = true;
+    public bool ShowTrails
     {
-        get => _showTrajectories;
+        get => _showTrails;
         set
         {
-            _showTrajectories = value; 
+            _showTrails = value; 
             UpdateVisibleObjects();
         }
     }

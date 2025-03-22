@@ -65,7 +65,7 @@
                 
                 <StackPanel Name="ViewSettingsPanel" IsVisible="False" Orientation="Vertical" Margin="8 10">
                     <CheckBox Name="ShowOrbitsCheckBox" Content="Show orbits" IsChecked="True" IsCheckedChanged="ShowOrbitsCheckBox_OnIsCheckedChanged"></CheckBox>
-                    <CheckBox Name="ShowTrajectoriesCheckBox" Content="Show trajectories" IsChecked="True" IsCheckedChanged="ShowTrajectoriesCheckBox_OnIsCheckedChanged"></CheckBox>
+                    <CheckBox Name="ShowTrailsCheckBox" Content="Show trails" IsChecked="True" IsCheckedChanged="ShowTrailsCheckBox_OnIsCheckedChanged"></CheckBox>
                     <CheckBox Name="ShowNamesCheckBox" Content="Show names" IsChecked="True" IsCheckedChanged="ShowNamesCheckBox_OnIsCheckedChanged"></CheckBox>
 
                     <CheckBox Name="UseActualSizeCheckBox" Content="Use actual body sizes" IsChecked="False" Margin="0 14 0 0" IsCheckedChanged="UseActualSizeCheckBox_OnIsCheckedChanged"></CheckBox>

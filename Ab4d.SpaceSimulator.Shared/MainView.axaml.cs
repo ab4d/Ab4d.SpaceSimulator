@@ -564,10 +564,10 @@ public partial class MainView : UserControl
             _visualizationEngine.ShowOrbits = ShowOrbitsCheckBox.IsChecked ?? false;
     }
 
-    private void ShowTrajectoriesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    private void ShowTrailsCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine != null)
-            _visualizationEngine.ShowTrajectories = ShowTrajectoriesCheckBox.IsChecked ?? false;        
+            _visualizationEngine.ShowTrails = ShowTrailsCheckBox.IsChecked ?? false;        
     }
 
     private void ShowNamesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)

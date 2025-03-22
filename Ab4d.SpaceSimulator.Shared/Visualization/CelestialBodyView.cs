@@ -32,7 +32,7 @@ public class CelestialBodyView
 
     // Dynamic trajectory / trail
     private readonly TrajectoryTracker? _trajectoryTracker;
-    public readonly MultiLineNode? TrajectoryNode;
+    public readonly MultiLineNode? TrajectoryTrailNode;
 
     public SceneNode? NameSceneNode { get; set; }
 
@@ -48,8 +48,8 @@ public class CelestialBodyView
             if (OrbitNode != null)
                 OrbitNode.LineColor = (value * 0.5f).ToColor4(); // Make orbit color darker
 
-            if (TrajectoryNode != null)
-                TrajectoryNode.LineColor = (value * 0.7f).ToColor4();  // Trajectory color is lighter than orbit's color
+            if (TrajectoryTrailNode != null)
+                TrajectoryTrailNode.LineColor = (value * 0.7f).ToColor4();  // Trajectory color is lighter than orbit's color
         }
     }
 
@@ -103,7 +103,7 @@ public class CelestialBodyView
             // Create trajectory multi-line node
             var trajectoryColor = new Color3(0.25f, 0.25f, 0.25f); // This is the default color that can be changed by setting OrbitColor
             var initialTrajectory = GetTrajectoryTrail();
-            TrajectoryNode = new MultiLineNode(
+            TrajectoryTrailNode = new MultiLineNode(
                 initialTrajectory,
                 true,
                 trajectoryColor,
@@ -122,9 +122,9 @@ public class CelestialBodyView
         {
             rootNode.Add(OrbitNode);
         }
-        if (TrajectoryNode != null)
+        if (TrajectoryTrailNode != null)
         {
-            rootNode.Add(TrajectoryNode);
+            rootNode.Add(TrajectoryTrailNode);
         }
     }
 
@@ -148,10 +148,10 @@ public class CelestialBodyView
             }
 
             // Update trajectory tracker to obtain celestial body's trail
-            if (_trajectoryTracker != null && TrajectoryNode != null)
+            if (_trajectoryTracker != null && TrajectoryTrailNode != null)
             {
                 _trajectoryTracker.UpdatePosition(CelestialBody);
-                TrajectoryNode.Positions = GetTrajectoryTrail();
+                TrajectoryTrailNode.Positions = GetTrajectoryTrail();
             }
         }
 
@@ -205,8 +205,8 @@ public class CelestialBodyView
                 if (OrbitNode != null)
                     OrbitNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowOrbits) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
 
-                if (TrajectoryNode != null)
-                    TrajectoryNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowTrajectories) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+                if (TrajectoryTrailNode != null)
+                    TrajectoryTrailNode.Visibility = (isOrbitVisible && _visualizationEngine.ShowTrails) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
             }
             else
             {
