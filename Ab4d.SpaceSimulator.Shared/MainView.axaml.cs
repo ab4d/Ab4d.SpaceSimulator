@@ -209,7 +209,7 @@ public partial class MainView : UserControl
                 Grid.SetRow(SettingsPanel, 0);
                 
                 Grid.SetColumn(TimePanel, 0);
-                Grid.SetColumnSpan(TimePanel, 0);
+                Grid.SetColumnSpan(TimePanel, 1);
                 Grid.SetColumn(ViewCenterPanel, 1);
                 Grid.SetColumn(SettingsPanel, 3);
             }
