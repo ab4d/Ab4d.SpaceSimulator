@@ -313,7 +313,7 @@ public class CelestialBodyView
         if (NameSceneNode == null)
             return;
 
-        var desiredScreenHeight = 30f;
+        var desiredScreenHeight = 16f;
 
         // If we want to specify the screen size in device independent units, then we need to scale by DPI scale.
         // If we want to set the size in pixels, the comment the following line.
@@ -342,7 +342,7 @@ public class CelestialBodyView
         float aspectRatio = viewWidth / viewHeight;
         float xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
 
-        float scaleFactor = (2 * lookDirectionDistance * desiredScreenHeight * xScale) / (viewWidth * aspectRatio);
+        float scaleFactor = (2 * lookDirectionDistance * desiredScreenHeight * xScale) / (aspectRatio * viewHeight);
 
 
         // To align the text with camera, we first need to generate the text
