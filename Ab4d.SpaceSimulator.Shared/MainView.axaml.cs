@@ -232,8 +232,8 @@ public partial class MainView : UserControl
         _visualizationEngine?.Update(false);
     }
 
-    [MemberNotNull(nameof(_camera))]
-    [MemberNotNull(nameof(_cameraController))]
+    [MemberNotNull(member: nameof(_camera))]
+    [MemberNotNull(member: nameof(_cameraController))]
     private void SetupCameraController()
     {
         _camera = new TargetPositionCamera()
@@ -242,19 +242,24 @@ public partial class MainView : UserControl
             Attitude = -30,
             Distance = 850,
             ViewWidth = 500,
-            TargetPosition = new Vector3(0, 0, 0),
+            TargetPosition = new Vector3(x: 0, y: 0, z: 0),
             ShowCameraLight = ShowCameraLightType.Never,
             
             IsAutomaticNearPlaneDistanceCalculation = false,
             IsAutomaticFarPlaneDistanceCalculation = false
         };
 
+        // After the "powered by AB4D" logo is hidden, start the camera rotation
+        // This is stopped on first manual camera rotation - see below the CameraRotateStarted event handler
+        MainSceneView.SceneView.OnLicenseLogoRemoved = () => 
+            _camera.StartRotation(headingChangeInSecond: 2, attitudeChangeInSecond: 0, accelerationSpeed: 1.01f, easingFunction: EasingFunctions.QuadraticEaseInFunction);
+
         MainSceneView.SceneView.Camera = _camera;
 
 
         // Create GesturesCameraController that is defined in Common folder.
         // It can also recognize pinch and scroll gestures.
-        _cameraController = new GesturesCameraController(MainSceneView)
+        _cameraController = new GesturesCameraController(sharpEngineSceneView: MainSceneView)
         {
             RotateCameraConditions = PointerAndKeyboardConditions.LeftPointerButtonPressed,                                                          // this is already the default value but is still set up here for clarity
             MoveCameraConditions   = PointerAndKeyboardConditions.Disabled,
@@ -268,6 +273,9 @@ public partial class MainView : UserControl
             RotateCameraWithScrollGesture = true, // When true, then dragging with one finger will rotate the camera (this is the default)
             RotateWithPinchGesture        = true,  // When true, we can rotate the camera with two fingers (false by default)
         };
+
+        // Stop initial camera rotation
+        _cameraController.CameraRotateStarted += (sender, args) => _camera?.StopRotation();
     }
 
     private void ShowDeviceCreateFailedError(Exception ex)
