@@ -64,6 +64,7 @@
             <Grid Name="SettingsGrid">
                 
                 <StackPanel Name="ViewSettingsPanel" IsVisible="False" Orientation="Vertical" Margin="8 10">
+                    <CheckBox Name="ShowMilkyWayCheckBox" Content="Show Milky Way" IsChecked="True" IsCheckedChanged="ShowMilkyWayCheckBox_OnIsCheckedChanged"></CheckBox>
                     <CheckBox Name="ShowOrbitsCheckBox" Content="Show orbits" IsChecked="True" IsCheckedChanged="ShowOrbitsCheckBox_OnIsCheckedChanged"></CheckBox>
                     <CheckBox Name="ShowTrailsCheckBox" Content="Show trails" IsChecked="True" IsCheckedChanged="ShowTrailsCheckBox_OnIsCheckedChanged"></CheckBox>
                     <CheckBox Name="ShowNamesCheckBox" Content="Show names" IsChecked="True" IsCheckedChanged="ShowNamesCheckBox_OnIsCheckedChanged"></CheckBox>

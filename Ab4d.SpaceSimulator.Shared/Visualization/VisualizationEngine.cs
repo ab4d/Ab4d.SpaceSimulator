@@ -1,15 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Ab4d.SharpEngine;
 using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
+using Ab4d.SharpEngine.Core;
 using Ab4d.SharpEngine.Lights;
+using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
+using Ab4d.SharpEngine.Transformations;
 using Ab4d.SharpEngine.Utilities;
+using Ab4d.SharpEngine.Vulkan;
 using Ab4d.SpaceSimulator.Physics;
 using Ab4d.SpaceSimulator.Utilities;
+using Avalonia.Platform;
 
 namespace Ab4d.SpaceSimulator.Visualization;
 
@@ -29,11 +36,26 @@ public class VisualizationEngine
 
     // Scale factor for scaling celestial body dimensions
     private float _celestialBodyScaleFactor = 1f;
+    
+    private bool _isMilkyWayLoadingStarted;
+    private SphereModelNode? _milkyWaySphereNode;
+    private FirstPersonCamera? _milkyWayCamera;
 
     public BitmapTextCreator? BitmapTextCreator { get; set; }
 
     public bool IsSimulationPaused { get; set; } = true; // Initially paused
 
+    private bool _showMilkyWay = true;
+    public bool ShowMilkyWay
+    {
+        get => _showMilkyWay;
+        set
+        {
+            _showMilkyWay = value; 
+            UpdateMilkyWay();
+        }
+    }
+    
     private bool _showOrbits = true;
     public bool ShowOrbits
     {
@@ -87,6 +109,12 @@ public class VisualizationEngine
                     celestialBodyView.Update(dataChange: false);
 
                 UpdateCameraNearAndFarPlanes();
+            }
+
+            if (_milkyWayCamera != null)
+            {
+                _milkyWayCamera.Heading = Camera.Heading;
+                _milkyWayCamera.Attitude = Camera.Attitude;
             }
         };
     }
@@ -264,5 +292,85 @@ public class VisualizationEngine
 
         Camera.NearPlaneDistance = nearPlaneDistance;
         Camera.FarPlaneDistance = farPlaneDistance;
+    }
+
+    public void UpdateMilkyWay()
+    {
+        if (_showMilkyWay)
+        {
+            if (_milkyWaySphereNode != null)
+            {
+                _milkyWaySphereNode.Visibility = SceneNodeVisibility.Visible;
+                return;
+            }
+
+            if (!_isMilkyWayLoadingStarted && SceneView.GpuDevice != null)
+            {
+                _isMilkyWayLoadingStarted = true;
+                _ = LoadMilkyWayTextureAsync(); // call async code from non-async method
+            }
+        }
+        else
+        {
+            if (_milkyWaySphereNode != null)
+                _milkyWaySphereNode.Visibility = SceneNodeVisibility.Hidden;
+        }
+    }
+
+    private async Task LoadMilkyWayTextureAsync()
+    {
+        try
+        {
+            var assetsPath = $"avares://{typeof(PlanetTextureLoader).Assembly.GetName().Name}/Assets/";
+            var textureFileName = "MilkyWay.png";
+
+            var bitmapStream = AssetLoader.Open(new Uri(assetsPath + textureFileName));
+                
+            if (bitmapStream != null && SceneView.GpuDevice != null)
+            {
+                var gpuImage = await TextureLoader.CreateTextureAsync(bitmapStream, textureFileName, SceneView.GpuDevice);
+                    
+                    // When the texture is loaded, create the sphere model node
+                    var textureMaterial = new SolidColorMaterial(gpuImage);
+                    //textureMaterial = new SolidColorMaterial(Colors.SkyBlue);
+
+                    var backgroundRenderingLayer = SceneView.Scene.BackgroundRenderingLayer;
+
+                    _milkyWaySphereNode = new SphereModelNode("BackgroundMilkyWaySphere")
+                    {
+                        Radius = 10,
+                        BackMaterial = textureMaterial,                         // Set milkyway texture as the back material so it is visible from inside the sphere
+                        Transform = new YawPitchRollRotateTransform(0, 0, -75), // Spiral arms of the Milky Way are rotated by 75 degrees to the solar system plane
+                        CustomRenderingLayer = backgroundRenderingLayer         // Pot the sphere in the background rendering layer (See below)                            
+                    };
+
+                    if (backgroundRenderingLayer != null)
+                    {
+                        // The sphere is put into the background rendering layer so it can be rendered first (behind all other objects)
+                        // and this allows using custom camera so we do not need to have very big sphere radius that would "hurt" the camera's depth resolution.
+                        _milkyWayCamera = new FirstPersonCamera("MilkyWayCamera")
+                        {
+                            CameraPosition = new Vector3(0, 0, 0), // Camera is inside the sphere
+                            FieldOfView = 60,                      // Use a little bit wider filed of view to get better details and not to increase the size of the pixels on the Milky Way texture
+                            Heading = Camera.Heading,
+                            Attitude = Camera.Attitude,
+                        };
+
+                        backgroundRenderingLayer.CustomCamera = _milkyWayCamera;
+
+                        // Because we use a different camera, we need to reset the depth buffer (the depth values from the _milkyWaySphereNode are not compatible with the rest of the scene)
+                        backgroundRenderingLayer.ClearDepthStencilBufferAfterRendering = true;
+                    }
+
+                    if (!_showMilkyWay) // Maybe user turned off showing the Milky Way while loading
+                        _milkyWaySphereNode.Visibility = SceneNodeVisibility.Hidden;
+
+                    RootNode.Add(_milkyWaySphereNode);
+            }
+        }
+        catch (FileNotFoundException)
+        {
+            // pass
+        }
     }
 }

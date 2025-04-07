@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using Ab4d.SharpEngine.AvaloniaUI;
 using Ab4d.SharpEngine.Cameras;
@@ -22,6 +23,9 @@ using Ab4d.SpaceSimulator.Utilities;
 using Ab4d.SpaceSimulator.Visualization;
 using Ab4d.SharpEngine.Utilities;
 using Ab4d.SharpEngine;
+using Ab4d.SharpEngine.Core;
+using Ab4d.SharpEngine.Vulkan;
+using Avalonia.Platform;
 
 namespace Ab4d.SpaceSimulator.Shared;
 
@@ -64,6 +68,12 @@ public partial class MainView : UserControl
         SimulationSpeedSlider.Maximum = _simulationSpeedIntervals.Length - 1;
         SpeedInfoTextBlock.Text = "";
 
+
+        MainSceneView.CreateOptions.EnableStandardValidation = true;
+        Log.LogLevel = LogLevels.Warn;
+        Log.IsLoggingToDebugOutput = true;
+
+
         SetupCameraController();
 
         // Create physics and visualization engine
@@ -83,6 +93,8 @@ public partial class MainView : UserControl
 
             // Call async method from sync context:
             _ = InitializeBitmapTextCreatorAsync();
+
+            _visualizationEngine.UpdateMilkyWay();
 
             // Setup lights
             MainSceneView.Scene.SetAmbientLight(0.2f);
@@ -558,6 +570,12 @@ public partial class MainView : UserControl
         SetMaxSimulationStep();
     }
 
+    private void ShowMilkyWayCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_visualizationEngine != null)
+            _visualizationEngine.ShowMilkyWay = ShowMilkyWayCheckBox.IsChecked ?? false;
+    }
+    
     private void ShowOrbitsCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine != null)
