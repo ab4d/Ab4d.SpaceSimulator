@@ -18,7 +18,7 @@ public class CelestialBodyView
 {
     private readonly VisualizationEngine _visualizationEngine;
     public readonly CelestialBody CelestialBody;
-    
+
     public string Name => CelestialBody.Name;
     public CelestialBodyType Type => CelestialBody.Type;
 
@@ -166,8 +166,8 @@ public class CelestialBodyView
         var distanceVector = SphereNode.CenterPosition - camera.GetCameraPosition();
         var lookDirection = Vector3.Normalize(camera.GetLookDirection());
         var distanceToCamera = Vector3.Dot(distanceVector, lookDirection);
-        
-        
+
+
         bool isBodyVisible;
 
         if (viewWidth > 0)
@@ -202,7 +202,7 @@ public class CelestialBodyView
                 var parentRadius = this.Parent.SphereNode.Radius;
 
                 isBodyVisible = orbitRadius > (parentRadius + sphereRadius) * 1.1 &&            // If orbit is too close to parent, then hide the planet or moon
-                                orbitRadiusScreenSize > VisualizationEngine.MinOrbitScreenSize; // If moon or planet's orbit is smaller than 20 pixels, then hide the planet or moon 
+                                orbitRadiusScreenSize > VisualizationEngine.MinOrbitScreenSize; // If moon or planet's orbit is smaller than 20 pixels, then hide the planet or moon
 
                 bool isOrbitVisible = isBodyVisible && (orbitRadius > parentRadius * 1.1);
 
@@ -224,7 +224,7 @@ public class CelestialBodyView
             isBodyVisible = false; // viewWidth == 0
         }
 
-        
+
         if (NameSceneNode != null)
             NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
 
@@ -264,7 +264,7 @@ public class CelestialBodyView
     private float ScaleSize(double realSize)
     {
         // Scale so 1 unit in 3D view space is 1 million km = 1e9 m
-        var scaledSize = (float)(realSize * VisualizationEngine.ViewUnitScale); 
+        var scaledSize = (float)(realSize * VisualizationEngine.ViewUnitScale);
 
         // Scale by global scale factor
         scaledSize *= _visualizationEngine.CelestialBodyScaleFactor;
@@ -348,17 +348,17 @@ public class CelestialBodyView
         // To align the text with camera, we first need to generate the text
         // so that its textDirection is set to (1, 0, 0) and upDirection is set to (0, 1, 0).
         // This will orient the text with the camera when Heading is 0 and Attitude is 0.
-        // After that, we can align the text with the camera by simply negating the camera's 
+        // After that, we can align the text with the camera by simply negating the camera's
         // rotation that is defined by view matrix.
 
         var invertedView = camera.GetInvertedViewMatrix();
 
-        // Get the right direction vector from the inverted view matrix                
+        // Get the right direction vector from the inverted view matrix
         var rightDirectionVector = new Vector3(invertedView.M11, invertedView.M12, invertedView.M13);
 
         // Move the text to the right of the body (for 8 pixels to the right)
         var textPosition = this.SphereNode.CenterPosition + rightDirectionVector * (this.SphereNode.Radius + ((2 * 8) / viewWidth * xScale * lookDirectionDistance));
-        
+
         // and adjust the matrix
         invertedView.M41 = textPosition.X;
         invertedView.M42 = textPosition.Y;
