@@ -41,7 +41,8 @@ public class CelestialBodyView
     public float DistanceToCamera { get; private set; }
 
 
-    private Color3 _orbitColor;
+    private Color3 _orbitColor = new Color3(0.25f, 0.25f, 0.25f);
+
     public Color3 OrbitColor
     {
         get => _orbitColor;
