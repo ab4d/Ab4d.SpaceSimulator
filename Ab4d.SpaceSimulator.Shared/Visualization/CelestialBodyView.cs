@@ -54,17 +54,24 @@ public class CelestialBodyView
                 OrbitNode.LineColor = (value * 0.5f).ToColor4(); // Make orbit color darker
 
             if (TrajectoryTrailNode != null)
-                UpdateTrajectoryTrailColor(); // Trajectory trail will be made lighter
+                UpdateTrajectoryTrailColor(true); // Force the update due to color change
         }
     }
 
 
-    private void UpdateTrajectoryTrailColor()
+    private void UpdateTrajectoryTrailColor(bool force = false)
     {
         if (TrajectoryTrailNode?.Material is not PositionColoredLineMaterial positionColoredLineMaterial)
             return;
 
+        var numColors = positionColoredLineMaterial.PositionColors?.Length ?? 0;
         var numPositions = TrajectoryTrailNode.Positions?.Length ?? 0;
+
+        // Since color alpha is computed based on number of positions (rather the distance or angle between them), we
+        // can avoid an update when the number of positions remains unchanged; unless the update is forced due to
+        // orbit color change.
+        if (numPositions == numColors && !force)
+            return;
 
         var positionColors = new Color4[numPositions];
         for (var i = 0; i < numPositions; i++)
