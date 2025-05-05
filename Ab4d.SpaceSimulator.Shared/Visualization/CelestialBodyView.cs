@@ -53,10 +53,26 @@ public class CelestialBodyView
                 OrbitNode.LineColor = (value * 0.5f).ToColor4(); // Make orbit color darker
 
             if (TrajectoryTrailNode != null)
-                TrajectoryTrailNode.LineColor = (value * 0.7f).ToColor4();  // Trajectory color is lighter than orbit's color
+                UpdateTrajectoryTrailColor(); // Trajectory trail will be made lighter
         }
     }
 
+
+    private void UpdateTrajectoryTrailColor()
+    {
+        if (TrajectoryTrailNode?.Material is not PositionColoredLineMaterial positionColoredLineMaterial)
+            return;
+
+        var numPositions = TrajectoryTrailNode.Positions?.Length ?? 0;
+
+        var positionColors = new Color4[numPositions];
+        for (var i = 0; i < numPositions; i++)
+        {
+            positionColors[i] = new Color4(0.7f * OrbitColor, (float)i / numPositions); // Base color is lighter than orbit's color; alpha is based on position.
+        }
+
+        positionColoredLineMaterial.PositionColors = positionColors;
+    }
 
     public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material)
     {
@@ -105,14 +121,17 @@ public class CelestialBodyView
             _trajectoryTracker.UpdatePosition(CelestialBody);
 
             // Create trajectory multi-line node
-            var trajectoryColor = new Color3(0.25f, 0.25f, 0.25f); // This is the default color that can be changed by setting OrbitColor
             var initialTrajectory = GetTrajectoryTrail();
             TrajectoryTrailNode = new MultiLineNode(
                 initialTrajectory,
                 true,
-                trajectoryColor,
-                2,
+                new PositionColoredLineMaterial($"{this.Name}-PositionColoredLineMaterial")
+                {
+                    LineThickness = 2,
+                },
                 name: $"{this.Name}-Trajectory");
+
+            UpdateTrajectoryTrailColor(); // Initial color update
         }
 
         // Perform initial update
@@ -156,6 +175,7 @@ public class CelestialBodyView
             {
                 _trajectoryTracker.UpdatePosition(CelestialBody);
                 TrajectoryTrailNode.Positions = GetTrajectoryTrail();
+                UpdateTrajectoryTrailColor();
             }
         }
 
