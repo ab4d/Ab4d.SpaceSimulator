@@ -50,36 +50,11 @@ public class CelestialBodyView
         {
             _orbitColor = value;
 
-            if (OrbitNode != null)
-                OrbitNode.LineColor = (value * 0.5f).ToColor4(); // Make orbit color darker
+            UpdateOrbitColor();
 
             if (TrajectoryTrailNode != null)
                 UpdateTrajectoryTrailColor(true); // Force the update due to color change
         }
-    }
-
-
-    private void UpdateTrajectoryTrailColor(bool force = false)
-    {
-        if (TrajectoryTrailNode?.Material is not PositionColoredLineMaterial positionColoredLineMaterial)
-            return;
-
-        var numColors = positionColoredLineMaterial.PositionColors?.Length ?? 0;
-        var numPositions = TrajectoryTrailNode.Positions?.Length ?? 0;
-
-        // Since color alpha is computed based on number of positions (rather the distance or angle between them), we
-        // can avoid an update when the number of positions remains unchanged; unless the update is forced due to
-        // orbit color change.
-        if (numPositions == numColors && !force)
-            return;
-
-        var positionColors = new Color4[numPositions];
-        for (var i = 0; i < numPositions; i++)
-        {
-            positionColors[i] = new Color4(0.7f * OrbitColor, (float)i / numPositions); // Base color is lighter than orbit's color; alpha is based on position.
-        }
-
-        positionColoredLineMaterial.PositionColors = positionColors;
     }
 
     public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material)
@@ -259,6 +234,35 @@ public class CelestialBodyView
         this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
 
         UpdateNameSceneNode();
+    }    
+
+    public void UpdateOrbitColor()
+    {
+        if (OrbitNode != null)
+            OrbitNode.LineColor = (this.OrbitColor * _visualizationEngine.OrbitColorMultiplier).ToColor4(); // Make orbit color darker
+    }
+
+    private void UpdateTrajectoryTrailColor(bool force = false)
+    {
+        if (TrajectoryTrailNode?.Material is not PositionColoredLineMaterial positionColoredLineMaterial)
+            return;
+
+        var numColors = positionColoredLineMaterial.PositionColors?.Length ?? 0;
+        var numPositions = TrajectoryTrailNode.Positions?.Length ?? 0;
+
+        // Since color alpha is computed based on number of positions (rather the distance or angle between them), we
+        // can avoid an update when the number of positions remains unchanged; unless the update is forced due to
+        // orbit color change.
+        if (numPositions == numColors && !force)
+            return;
+
+        var positionColors = new Color4[numPositions];
+        for (var i = 0; i < numPositions; i++)
+        {
+            positionColors[i] = new Color4(_visualizationEngine.TrailColorMultiplier * OrbitColor, (float)i / numPositions); // Base color is lighter than orbit's color; alpha is based on position.
+        }
+
+        positionColoredLineMaterial.PositionColors = positionColors;
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()

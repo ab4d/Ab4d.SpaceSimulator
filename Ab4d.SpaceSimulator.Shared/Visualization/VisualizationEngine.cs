@@ -26,6 +26,9 @@ public class VisualizationEngine
 
     public const float MinOrbitScreenSize = 20; // If moon or planet's orbit is smaller than 20 pixels, then hide the planet or moon. This is used when using actual body sizes.
 
+    public float OrbitColorMultiplier = 0.3f;
+    public float TrailColorMultiplier = 1.0f;
+
     public readonly SceneView SceneView;
     public readonly TargetPositionCamera Camera;
     public readonly GesturesCameraController CameraController;
@@ -246,8 +249,14 @@ public class VisualizationEngine
 
     private void UpdateVisibleObjects()
     {
+        // Darken the orbit when trails are also shown so the trail is better visible
+        OrbitColorMultiplier = ShowTrails ? 0.3f : 0.5f;
+
         foreach (var celestialBodyView in CelestialBodyViews)
+        {
+            celestialBodyView.UpdateOrbitColor();
             celestialBodyView.Update(dataChange: false);
+        }
     }
 
     private void UpdateCameraNearAndFarPlanes()
