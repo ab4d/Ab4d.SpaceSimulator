@@ -263,6 +263,9 @@ public class CelestialBodyView
         }
 
         positionColoredLineMaterial.PositionColors = positionColors;
+
+        // Workaround for the issue with transparency in PositionColoredLineMaterial (this will be solved in v3.1)
+        positionColoredLineMaterial.LineColor = new Color4(1, 1, 1, 0.99f); // Force using alpha blending by setting LineColor.Alpha to less than 1
     }
 
     private MatrixTransform ComputeTiltAndRotationTransform()
