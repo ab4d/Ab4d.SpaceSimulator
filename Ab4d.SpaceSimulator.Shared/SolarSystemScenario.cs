@@ -337,7 +337,7 @@ public class SolarSystemScenario
                 AxialTilt = entity.AxialTilt, // degrees
                 Parent = sunObject,
             };
-
+            celestialBody.Initialize(); // Set up trajectory tracker, etc.
             physicsEngine.AddBody(celestialBody);
 
             // Visualization
@@ -386,7 +386,7 @@ public class SolarSystemScenario
                     Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + celestialBody.Velocity, // m/s
                     Parent = celestialBody, // parent mass body
                 };
-
+                moonMassBody.Initialize(); // Set up trajectory tracker, etc.
                 physicsEngine.AddBody(moonMassBody);
 
 

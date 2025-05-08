@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using Ab4d.SharpEngine;
-using Ab4d.SharpEngine.Cameras;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
 using Ab4d.SharpEngine.SceneNodes;
@@ -33,7 +32,6 @@ public class CelestialBodyView
     public readonly EllipseLineNode? OrbitNode;
 
     // Dynamic trajectory / trail
-    private readonly TrajectoryTracker? _trajectoryTracker;
     public readonly MultiLineNode? TrajectoryTrailNode;
 
     public SceneNode? NameSceneNode { get; set; }
@@ -97,12 +95,8 @@ public class CelestialBodyView
         }
 
         // Trail / trajectory for objects with parent (planets and moons)
-        if (CelestialBody.Parent != null)
+        if (CelestialBody.TrajectoryTracker != null)
         {
-            // Create trajectory tracker
-            _trajectoryTracker = new TrajectoryTracker();
-            _trajectoryTracker.UpdatePosition(CelestialBody);
-
             // Create trajectory multi-line node
             var initialTrajectory = GetTrajectoryTrail();
             TrajectoryTrailNode = new MultiLineNode(
@@ -153,10 +147,9 @@ public class CelestialBodyView
                 OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position);
             }
 
-            // Update trajectory tracker to obtain celestial body's trail
-            if (_trajectoryTracker != null && TrajectoryTrailNode != null)
+            // Update celestial body's trail (positions), and its color data (alpha blending depends on number of positions).
+            if (CelestialBody.TrajectoryTracker != null && TrajectoryTrailNode != null)
             {
-                _trajectoryTracker.UpdatePosition(CelestialBody);
                 TrajectoryTrailNode.Positions = GetTrajectoryTrail();
                 UpdateTrajectoryTrailColor();
             }
@@ -234,7 +227,7 @@ public class CelestialBodyView
         this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
 
         UpdateNameSceneNode();
-    }    
+    }
 
     public void UpdateOrbitColor()
     {
@@ -309,10 +302,10 @@ public class CelestialBodyView
 
     private Vector3[] GetTrajectoryTrail()
     {
-        if (_trajectoryTracker == null)
+        if (CelestialBody.TrajectoryTracker == null)
             return [];
 
-        var data = _trajectoryTracker.TrajectoryData;
+        var data = CelestialBody.TrajectoryTracker.TrajectoryData;
         var trajectory = new Vector3[data.Count + 1]; // Always append current position
 
         var idx = 0;

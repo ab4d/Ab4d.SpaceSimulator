@@ -32,6 +32,14 @@ public class PhysicsEngine
         {
             RunSimulationStep(timeStep);
 
+            // Once the simulation step is complete, update trajectory trackers. This needs to be done after we have
+            // updated all objects' state (position), in case we need to keep track of both object's and its parent's
+            // position, independently of the said parent's trajectory tracker.
+            foreach (var body in _massBodies)
+            {
+                body.UpdateTrajectory();
+            }
+
             timeDelta -= timeStep;
         }
     }

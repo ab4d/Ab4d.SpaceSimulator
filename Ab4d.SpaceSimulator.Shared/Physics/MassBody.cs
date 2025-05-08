@@ -12,6 +12,16 @@ public class MassBody
 
     public Vector3d TotalGravitationalForce; // N
 
+    public virtual void Initialize()
+    {
+
+    }
+
+    public virtual void UpdateTrajectory()
+    {
+
+    }
+
     public virtual void UpdateState(double timeDelta)
     {
 

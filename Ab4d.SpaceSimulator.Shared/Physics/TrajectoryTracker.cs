@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Ab4d.SpaceSimulator.Physics;
 
-namespace Ab4d.SpaceSimulator.Visualization;
+namespace Ab4d.SpaceSimulator.Physics;
 
 public class TrajectoryTracker
 {

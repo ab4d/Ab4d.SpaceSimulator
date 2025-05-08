@@ -25,6 +25,25 @@ public class CelestialBody : MassBody
     // Parent in the star -> planet -> moon hierarchy
     public CelestialBody? Parent;
 
+    // Trajectory tracker
+    public TrajectoryTracker? TrajectoryTracker;
+
+    public override void Initialize()
+    {
+        // Create trajectory trail tracker, if applicable (i.e., if the celestial body has stable orbit around a parent).
+        if (Parent != null && HasOrbit)
+        {
+            TrajectoryTracker = new TrajectoryTracker();
+            TrajectoryTracker.UpdatePosition(this); // Initialize with current position.
+        }
+    }
+
+    public override void UpdateTrajectory()
+    {
+        // Update our instance of trajectory tracker
+        TrajectoryTracker?.UpdatePosition(this);
+    }
+
     public override void UpdateState(double timeDelta)
     {
         // Chain up to parent
