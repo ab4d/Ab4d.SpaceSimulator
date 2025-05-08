@@ -22,18 +22,18 @@ public class GesturesCameraController : PointerCameraController
     public bool IsScrollGestureEnabled { get; set; } = true;
 
     public bool RotateCameraWithScrollGesture { get; set; } = true;
-    
+
     public bool RotateWithPinchGesture { get; set; } = false;
 
     private float _previousPinchScale = 1;
     private Vector3? _lastPinchRotationCenterPosition;
 
-    public GesturesCameraController(SharpEngineSceneView sharpEngineSceneView, InputElement? eventsSourceElement = null) 
+    public GesturesCameraController(SharpEngineSceneView sharpEngineSceneView, InputElement? eventsSourceElement = null)
         : base(sharpEngineSceneView, eventsSourceElement)
     {
         if (eventsSourceElement == null)
             eventsSourceElement = sharpEngineSceneView;
-        
+
         eventsSourceElement.GestureRecognizers.Add(new PinchGestureRecognizer());
 
         sharpEngineSceneView.AddHandler(Gestures.PinchEvent, PinchEventHandler);
@@ -81,7 +81,7 @@ public class GesturesCameraController : PointerCameraController
 
 
         EndPointerProcessing(); // This is required to prevent invalid camera rotation after next touch (this will not be needed anymore in the next version)
-        
+
         args.Handled = true;
 
 #if WRITE_INFO_TO_OUTPUT
@@ -101,7 +101,7 @@ public class GesturesCameraController : PointerCameraController
         var pointerPosition = new Vector2((float)args.ScaleOrigin.X, (float)args.ScaleOrigin.Y);
         bool resetRotationCenterPosition = false;
         bool isCameraRotationCenterPositionUpdated = false;
-        
+
         // Save RotationCenterPosition so it can be reset at the end of this method
         Vector3? savedRotationCenterPosition = GetCameraRotationCenterPosition();
 
@@ -120,7 +120,7 @@ public class GesturesCameraController : PointerCameraController
 
                 float headingChange = 0;
                 float attitudeChange = 0;
-                
+
                 if (this.IsHeadingRotationEnabled)
                 {
                     headingChange = angleDelta;
@@ -164,7 +164,7 @@ public class GesturesCameraController : PointerCameraController
                     resetRotationCenterPosition = true;
                     isCameraRotationCenterPositionUpdated = true;
                 }
-                
+
                 Camera.RotateCamera(headingChange, attitudeChange);
             }
 

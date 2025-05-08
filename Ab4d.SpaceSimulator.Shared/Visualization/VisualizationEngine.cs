@@ -62,7 +62,7 @@ public class VisualizationEngine
         get => _showOrbits;
         set
         {
-            _showOrbits = value; 
+            _showOrbits = value;
             UpdateVisibleObjects();
         }
     }
@@ -73,7 +73,7 @@ public class VisualizationEngine
         get => _showTrails;
         set
         {
-            _showTrails = value; 
+            _showTrails = value;
             UpdateVisibleObjects();
         }
     }
@@ -84,7 +84,7 @@ public class VisualizationEngine
         get => _showNames;
         set
         {
-            _showNames = value; 
+            _showNames = value;
             UpdateVisibleObjects();
         }
     }
@@ -226,10 +226,10 @@ public class VisualizationEngine
         //var textPosition = celestialBodyView.SphereNode.CenterPosition + Vector3.UnitX * celestialBodyView.SphereNode.Radius * 1.5f;
 
         var textNode = BitmapTextCreator.CreateTextNode(text: celestialBodyView.Name,
-                                                        position: Vector3.Zero, 
+                                                        position: Vector3.Zero,
                                                         positionType: PositionTypes.Left, // left align text to the position
-                                                        textDirection: Vector3.UnitX, 
-                                                        upDirection: Vector3.UnitY, 
+                                                        textDirection: Vector3.UnitX,
+                                                        upDirection: Vector3.UnitY,
                                                         fontSize: 1,
                                                         textColor: Colors.White,
                                                         isSolidColorMaterial: true);

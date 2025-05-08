@@ -352,7 +352,7 @@ public class SolarSystemScenario
                 planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
 
             var celestialBodyView = new CelestialBodyView(visualizationEngine, celestialBody, material);
-            
+
             celestialBodyView.OrbitColor = entity.BaseColor;
 
             if (entity.Name == "Sun")
@@ -362,7 +362,7 @@ public class SolarSystemScenario
             }
             else
             {
-                celestialBodyView.Parent = sunView; 
+                celestialBodyView.Parent = sunView;
             }
 
             if (entity.Type == CelestialBodyType.Star)

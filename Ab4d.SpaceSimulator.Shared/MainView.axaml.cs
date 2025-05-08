@@ -114,7 +114,7 @@ public partial class MainView : UserControl
                 var bodyView = _visualizationEngine.CelestialBodyViews[i];
                 if (selectedIndex == 0 && bodyView.Type == CelestialBodyType.Star)
                     selectedIndex = i + 1; // skip 'custom'
-                        
+
                 selectionNames.Add(bodyView.Name);
             }
 
@@ -138,7 +138,7 @@ public partial class MainView : UserControl
             if (!_isPlaying)
             {
                 _previousUpdateTime = now;
-                
+
                 return;
             }
 
@@ -159,7 +159,7 @@ public partial class MainView : UserControl
         // Initial UI update
         UpdateShownSimulationTime();
         SetSimulationSpeed(GetSimulationSpeed());
-        
+
         if (_visualizationEngine.IsMinSizeLimited)
             MinScreenSizeSlider.Value = _visualizationEngine.MinScreenSize;
         else
@@ -203,7 +203,7 @@ public partial class MainView : UserControl
                 Grid.SetColumnSpan(TimePanel, 3);
                 Grid.SetColumn(ViewCenterPanel, 0);
                 Grid.SetColumn(SettingsPanel, 2);
-                
+
                 Grid.SetRow(TimePanel, 0);
                 Grid.SetRow(ViewCenterPanel, 1);
                 Grid.SetRow(SettingsPanel, 1);
@@ -214,12 +214,12 @@ public partial class MainView : UserControl
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
-                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));      
-                
+                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
+
                 Grid.SetRow(TimePanel, 0);
                 Grid.SetRow(ViewCenterPanel, 0);
                 Grid.SetRow(SettingsPanel, 0);
-                
+
                 Grid.SetColumn(TimePanel, 0);
                 Grid.SetColumnSpan(TimePanel, 1);
                 Grid.SetColumn(ViewCenterPanel, 1);
@@ -244,7 +244,7 @@ public partial class MainView : UserControl
             ViewWidth = 500,
             TargetPosition = new Vector3(x: 0, y: 0, z: 0),
             ShowCameraLight = ShowCameraLightType.Never,
-            
+
             IsAutomaticNearPlaneDistanceCalculation = false,
             IsAutomaticFarPlaneDistanceCalculation = false
         };
@@ -448,7 +448,7 @@ public partial class MainView : UserControl
             _allMessages.RemoveAt(0);
         }
     }
-    
+
     private async Task InitializeBitmapTextCreatorAsync()
     {
         var bitmapTextCreator = await BitmapTextCreator.GetDefaultBitmapTextCreatorAsync(MainSceneView.Scene);
@@ -493,7 +493,7 @@ public partial class MainView : UserControl
     {
         AddInfoMessage("Scenario 1 started", Colors.Orange);
     }
-    
+
     private void UseActualSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine == null)
@@ -539,7 +539,7 @@ public partial class MainView : UserControl
     private void AutoMaxSimulationTimeStepCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         bool isAutoTimeStep = AutoMaxSimulationTimeStepCheckBox.IsChecked ?? false;
-        
+
         SimulationTimeStepValueTextBlock.IsVisible = isAutoTimeStep;
         SimulationTimeStepTextBox.IsVisible = !isAutoTimeStep;
 
@@ -593,12 +593,12 @@ public partial class MainView : UserControl
     private void ShowTrailsCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine != null)
-            _visualizationEngine.ShowTrails = ShowTrailsCheckBox.IsChecked ?? false;        
+            _visualizationEngine.ShowTrails = ShowTrailsCheckBox.IsChecked ?? false;
     }
 
     private void ShowNamesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine != null)
-            _visualizationEngine.ShowNames = ShowNamesCheckBox.IsChecked ?? false;        
+            _visualizationEngine.ShowNames = ShowNamesCheckBox.IsChecked ?? false;
     }
 }
