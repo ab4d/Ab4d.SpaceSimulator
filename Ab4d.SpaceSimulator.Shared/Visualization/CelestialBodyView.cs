@@ -358,19 +358,8 @@ public class CelestialBodyView
         var viewHeight = (float)_visualizationEngine.SceneView.Height;
 
 
-        // Get lookDirectionDistance
-        // If we look directly at the sphere, then we could use: lookDirectionDistance = textPosition - cameraPosition,
-        // but when we look at some other direction, then we need to use the following code that
-        // gets the distance to the text in the look direction:
-        var textCenterPosition = NameSceneNode.WorldBoundingBox.GetCenterPosition();
-        var cameraPosition = camera.GetCameraPosition();
-
-        var distanceVector = textCenterPosition - cameraPosition;
-
-        var lookDirection = Vector3.Normalize(camera.GetLookDirection());
-
-        // To get look direction distance we project the distanceVector to the look direction vector
-        var lookDirectionDistance = Vector3.Dot(distanceVector, lookDirection);
+        // Get lookDirectionDistance - re-use the distance from camera to celestial body.
+        var lookDirectionDistance = this.DistanceToCamera;
 
         float aspectRatio = viewWidth / viewHeight;
         float xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
