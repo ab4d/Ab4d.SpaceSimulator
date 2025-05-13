@@ -112,7 +112,8 @@ public class CelestialBodyView
         }
 
         // Perform initial update
-        Update(true);
+        UpdatePhysicalProperties();
+        UpdateVisualization();
     }
 
     public void RegisterNodes(GroupNode rootNode)
@@ -128,33 +129,37 @@ public class CelestialBodyView
         }
     }
 
-    public void Update(bool dataChange)
+    // Update properties to reflect the change in underlying physical object properties (e.g., position).
+    public void UpdatePhysicalProperties()
     {
-        // Update properties to reflect the change in underlying physical object properties (e.g., position).
-        if (dataChange)
+        // Update position from the underlying physical object
+        SphereNode.CenterPosition = ScalePosition(CelestialBody.Position);
+
+        // Rotate around body's axis
+        SphereNode.Transform = ComputeTiltAndRotationTransform();
+
+        // Update orbit ellipse - its position
+        if (OrbitNode != null && CelestialBody.Parent != null)
         {
-            // Update position from the underlying physical object
-            SphereNode.CenterPosition = ScalePosition(CelestialBody.Position);
-
-            // Rotate around body's axis
-            SphereNode.Transform = ComputeTiltAndRotationTransform();
-
-            // Update orbit ellipse - its position
-            if (OrbitNode != null && CelestialBody.Parent != null)
-            {
-                // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
-                // parameters...
-                OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position);
-            }
-
-            // Update celestial body's trail (positions), and its color data (alpha blending depends on number of positions).
-            if (CelestialBody.TrajectoryTracker != null && TrajectoryTrailNode != null)
-            {
-                TrajectoryTrailNode.Positions = GetTrajectoryTrail();
-                UpdateTrajectoryTrailColor();
-            }
+            // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
+            // parameters...
+            OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position);
         }
 
+        // Update celestial body's trail (positions), and its color data (alpha blending depends on number of positions).
+        if (CelestialBody.TrajectoryTracker != null && TrajectoryTrailNode != null)
+        {
+            TrajectoryTrailNode.Positions = GetTrajectoryTrail();
+            UpdateTrajectoryTrailColor();
+        }
+    }
+
+    // Finalize the visualization update - this updates properties that depend on both celestial body's physical properties
+    // (e.g., position) and camera position/orientation. Therefore, this update must be performed *after* UpdatePhysicalProperties()
+    // is called, and after any potential changes are made to camera (for example, if camera's position and orientation
+    // are set by tracking of the celestial body).
+    public void UpdateVisualization()
+    {
         var camera = _visualizationEngine.Camera;
         var viewWidth = _visualizationEngine.SceneView.Width;
 

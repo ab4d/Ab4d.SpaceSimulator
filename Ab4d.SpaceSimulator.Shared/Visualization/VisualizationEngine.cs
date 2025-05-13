@@ -39,7 +39,7 @@ public class VisualizationEngine
 
     // Scale factor for scaling celestial body dimensions
     private float _celestialBodyScaleFactor = 1f;
-    
+
     private bool _isMilkyWayLoadingStarted;
     private SphereModelNode? _milkyWaySphereNode;
     private FirstPersonCamera? _milkyWayCamera;
@@ -54,11 +54,11 @@ public class VisualizationEngine
         get => _showMilkyWay;
         set
         {
-            _showMilkyWay = value; 
+            _showMilkyWay = value;
             UpdateMilkyWay();
         }
     }
-    
+
     private bool _showOrbits = true;
     public bool ShowOrbits
     {
@@ -108,10 +108,10 @@ public class VisualizationEngine
             // But when the simulation is paused, then we need to update that on each camera move.
             if (IsSimulationPaused)
             {
-                foreach (var celestialBodyView in CelestialBodyViews)
-                    celestialBodyView.Update(dataChange: false);
-
                 UpdateCameraNearAndFarPlanes();
+
+                foreach (var celestialBodyView in CelestialBodyViews)
+                    celestialBodyView.UpdateVisualization();
             }
 
             if (_milkyWayCamera != null)
@@ -164,10 +164,16 @@ public class VisualizationEngine
 
     public void Update(bool dataChange)
     {
-        // Update celestial body views / visualizations
-        foreach (var celestialBodyView in CelestialBodyViews)
+        // If applicable, update parts of celestial body visualization that are based solely on the physical properties
+        // (position, orientation, trail, etc.). Properties such as dynamic scale and visibility of children (moons)
+        // need to be updated later, after we update camera (whose position might in turn depend on position of
+        // celestial body, which we update here).
+        if (dataChange)
         {
-            celestialBodyView.Update(dataChange);
+            foreach (var celestialBodyView in CelestialBodyViews)
+            {
+                celestialBodyView.UpdatePhysicalProperties();
+            }
         }
 
         // If we are tracking a celestial body, update the zoom/rotation center and the camera target position
@@ -179,6 +185,13 @@ public class VisualizationEngine
         }
 
         UpdateCameraNearAndFarPlanes();
+
+        // Finally, update the rest of celestial body visualization; perform dynamic scaling (based on distance from
+        // camera), show/hide children (i.e., moons), etc.
+        foreach (var celestialBodyView in CelestialBodyViews)
+        {
+            celestialBodyView.UpdateVisualization();
+        }
     }
 
     public void TrackCelestialBody(string? name)
@@ -255,7 +268,7 @@ public class VisualizationEngine
         foreach (var celestialBodyView in CelestialBodyViews)
         {
             celestialBodyView.UpdateOrbitColor();
-            celestialBodyView.Update(dataChange: false);
+            celestialBodyView.UpdateVisualization(); // Update just visualization
         }
     }
 
@@ -334,11 +347,11 @@ public class VisualizationEngine
             var textureFileName = "MilkyWay.png";
 
             var bitmapStream = AssetLoader.Open(new Uri(assetsPath + textureFileName));
-                
+
             if (bitmapStream != null && SceneView.GpuDevice != null)
             {
                 var gpuImage = await TextureLoader.CreateTextureAsync(bitmapStream, textureFileName, SceneView.GpuDevice);
-                    
+
                     // When the texture is loaded, create the sphere model node
                     var textureMaterial = new SolidColorMaterial(gpuImage);
                     //textureMaterial = new SolidColorMaterial(Colors.SkyBlue);
@@ -350,7 +363,7 @@ public class VisualizationEngine
                         Radius = 10,
                         BackMaterial = textureMaterial,                         // Set milkyway texture as the back material so it is visible from inside the sphere
                         Transform = new YawPitchRollRotateTransform(0, 0, -75), // Spiral arms of the Milky Way are rotated by 75 degrees to the solar system plane
-                        CustomRenderingLayer = backgroundRenderingLayer         // Pot the sphere in the background rendering layer (See below)                            
+                        CustomRenderingLayer = backgroundRenderingLayer         // Pot the sphere in the background rendering layer (See below)
                     };
 
                     if (backgroundRenderingLayer != null)
