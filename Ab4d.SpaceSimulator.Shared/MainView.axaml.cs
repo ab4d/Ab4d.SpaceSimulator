@@ -315,6 +315,16 @@ public partial class MainView : UserControl
         panelToShow.IsVisible = true;
     }
 
+    private void UncheckOtherSettingsButtons(ToggleButton activeButton)
+    {
+        // Uncheck other buttons in the settings panel.
+        foreach (var button in SettingsPanel.Children.OfType<ToggleButton>())
+        {
+            if (button != activeButton)
+                button.IsChecked = false;
+        }
+    }
+
     private void HideSettingsPanel()
     {
         SettingBorder.IsVisible = false;
@@ -563,7 +573,7 @@ public partial class MainView : UserControl
     {
         if (ViewSettingsButton.IsChecked ?? false)
         {
-            SimulationSettingsButton.IsChecked = false;
+            UncheckOtherSettingsButtons(ViewSettingsButton);
             ShowSettingsPanels(ViewSettingsPanel);
         }
         else
@@ -576,8 +586,21 @@ public partial class MainView : UserControl
     {
         if (SimulationSettingsButton.IsChecked ?? false)
         {
-            ViewSettingsButton.IsChecked = false;
+            UncheckOtherSettingsButtons(SimulationSettingsButton);
             ShowSettingsPanels(SimulationSettingsPanel);
+        }
+        else
+        {
+            HideSettingsPanel();
+        }
+    }
+
+    private void ScenariosButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (ScenariosButton.IsChecked ?? false)
+        {
+            UncheckOtherSettingsButtons(ScenariosButton);
+            ShowSettingsPanels(ScenarioSettingsPanel);
         }
         else
         {

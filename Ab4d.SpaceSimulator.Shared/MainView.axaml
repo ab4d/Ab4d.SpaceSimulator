@@ -42,22 +42,13 @@
                     <TextBlock Text="Settings:" Margin="10 0 5 0" VerticalAlignment="Center"/>
                     <ToggleButton Name="SimulationSettingsButton" Content="Simulation" Margin="5" VerticalAlignment="Center" IsCheckedChanged="SimulationSettingsButton_OnIsCheckedChanged" />
                     <ToggleButton Name="ViewSettingsButton" Content="View" Margin="5" VerticalAlignment="Center" IsCheckedChanged="ViewSettingsButton_OnIsCheckedChanged" />
-                  <!--<ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" Click="ScenariosButton_OnClick" />-->
+                    <ToggleButton Name="ScenariosButton" Content="Scenarios" Margin="0 0 0 0" VerticalAlignment="Center" IsCheckedChanged="ScenariosButton_OnIsCheckedChanged" />
                 </StackPanel>
             </Grid>
         </Border>
 
         <Border Name="InfoMessagesBorder" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5">
             <StackPanel Name="InfoMessagesPanel" Orientation="Vertical" />
-        </Border>
-
-        <Border Name="ScenariosBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
-            <StackPanel Orientation="Vertical" Margin="8 10">
-                <TextBlock Text="Select scenario:" FontWeight="Bold"></TextBlock>
-
-                <Button Name="Scenario1Button" Content="Scenario 1" Margin="0 5 0 0" Click="Scenario1Button_OnClick"
-                                               ToolTip.Tip="Additional info about scenario 1"/>
-            </StackPanel>
         </Border>
 
         <Border Name="SettingBorder" Grid.Row="0" IsVisible="False" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 -1" BorderThickness="1" BorderBrush="Gray" Background="#222">
@@ -85,6 +76,13 @@
                   </StackPanel>
 
                   <CheckBox Name="AutoMaxSimulationTimeStepCheckBox" Content="Is automatic" IsChecked="True" IsCheckedChanged="AutoMaxSimulationTimeStepCheckBox_OnIsCheckedChanged"></CheckBox>
+                </StackPanel>
+
+                <StackPanel Name="ScenarioSettingsPanel" IsVisible="False" Orientation="Vertical" Margin="8 10">
+                    <TextBlock Text="Select scenario:" FontWeight="Bold" Margin="0 0 0 3" />
+
+                    <Button Name="Scenario1Button" Content="Scenario 1" Margin="0 5 0 0" Click="Scenario1Button_OnClick"
+                            ToolTip.Tip="Additional info about scenario 1"/>
                 </StackPanel>
 
             </Grid>
