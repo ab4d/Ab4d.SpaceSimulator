@@ -133,6 +133,10 @@ public class VisualizationEngine
 
         // Clear lights
         Lights.Clear();
+
+        // Re-add Milky Way node, if available.
+        if (_milkyWaySphereNode != null)
+            RootNode.Add(_milkyWaySphereNode);
     }
 
     public float CelestialBodyScaleFactor
