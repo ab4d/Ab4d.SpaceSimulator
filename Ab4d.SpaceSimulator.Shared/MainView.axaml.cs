@@ -101,13 +101,16 @@ public partial class MainView : UserControl
         {
             _planetTextureLoader = new PlanetTextureLoader(args.GpuDevice);
 
-            // Call async method from sync context:
+            // Setup initial scenario - do this before starting InitializeBitmapTextCreatorAsync(), so that the nodes
+            // are ready when the async task below completes (and tries to create name nodes).
+            SetupScenario(ScenarioComboBox.SelectedIndex);
+
+            // Call async method from sync context; this will also create name nodes for celestial bodies once the bitmap
+            // text creator is ready. (This is necessary for delayed text node initialization for the initial scenario,
+            // which happens during application start-up).
             _ = InitializeBitmapTextCreatorAsync();
 
             _visualizationEngine.UpdateMilkyWay();
-
-            // Setup initial scenario
-            SetupScenario(ScenarioComboBox.SelectedIndex);
         };
 
         MainSceneView.SceneViewInitialized += (sender, args) =>
@@ -189,6 +192,13 @@ public partial class MainView : UserControl
 
         // Setup scenario
         scenario.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
+
+        // Create name scene nodes - this requires _visualizationEngine.BitmapTextCreator to be initialized and set.
+        // During initial scenario setup (part of application start up) this will not be the case yet (SetupScenario
+        // is called before bitmap text creator is initialized in an async task, and text nodes are created post-hoc
+        // in that task as well). During subsequent scenario switches/restarts, however, the bitmap text creator should
+        // be available, and this call ends up creating the name nodes.
+        _visualizationEngine.CreateNameSceneNodes();
 
         // Setup lights
         MainSceneView.Scene.SetAmbientLight(0.2f);
