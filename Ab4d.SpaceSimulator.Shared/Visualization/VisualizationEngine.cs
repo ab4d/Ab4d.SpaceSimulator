@@ -315,7 +315,7 @@ public class VisualizationEngine
         }
 
 
-        if (minDistanceIndex > 0) // Is there any celestial body found
+        if (minDistanceIndex != -1) // Is there any celestial body found
         {
             var minDistance = MathF.Sqrt(minDistanceSquared);
             minDistance -= CelestialBodyViews[minDistanceIndex].SphereNode.Radius;
