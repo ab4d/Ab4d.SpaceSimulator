@@ -49,6 +49,11 @@ public partial class MainView : UserControl
 
     private string[] _selectionNames = ["custom"]; // Populated once scenario is set up
 
+    private readonly string[] _scenarios =
+    [
+        "Solar system",
+    ];
+
     private PlanetTextureLoader? _planetTextureLoader;
 
     private bool _isVerticalView;
@@ -61,13 +66,20 @@ public partial class MainView : UserControl
         ViewCenterComboBox.SelectionChanged += ViewCenterComboBox_OnSelectionChanged;
         ViewCenterComboBox.SelectedIndex = 0;
 
+        ScenarioComboBox.ItemsSource = _scenarios;
+        ScenarioComboBox.SelectedIndex = 0; // Set before adding callback to SelectionChanged, to avoid triggering it before everything is set up.
+        ScenarioComboBox.SelectionChanged += ((sender, args) =>
+        {
+            var scenarioIdx = ScenarioComboBox.SelectedIndex;
+            SetupScenario(scenarioIdx);
+        });
+
         _simulationSpeedIntervals = new int[] { 0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 10 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600 };
 
         SimulationSpeedSlider.Value = 0; // initially paused
 
         SimulationSpeedSlider.Maximum = _simulationSpeedIntervals.Length - 1;
         SpeedInfoTextBlock.Text = "";
-
 
         MainSceneView.CreateOptions.EnableStandardValidation = true;
         Log.LogLevel = LogLevels.Warn;
@@ -82,45 +94,20 @@ public partial class MainView : UserControl
         _visualizationEngine = new VisualizationEngine(MainSceneView.SceneView, _camera, _cameraController);
 
         // Create scene
-        var solarSystem = new SolarSystemScenario();
 
         MainSceneView.Scene.RootNode.Add(_visualizationEngine.RootNode);
 
         MainSceneView.GpuDeviceCreated += (sender, args) =>
         {
             _planetTextureLoader = new PlanetTextureLoader(args.GpuDevice);
-            solarSystem.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
 
             // Call async method from sync context:
             _ = InitializeBitmapTextCreatorAsync();
 
             _visualizationEngine.UpdateMilkyWay();
 
-            // Setup lights
-            MainSceneView.Scene.SetAmbientLight(0.2f);
-
-            foreach (var oneLight in _visualizationEngine.Lights)
-                MainSceneView.Scene.Lights.Add(oneLight);
-
-
-            // Populate the list for ViewCenterComboBox
-            var selectionNames = new List<string>();
-            selectionNames.Add("custom");
-
-            int selectedIndex = 0;
-
-            for (var i = 0; i < _visualizationEngine.CelestialBodyViews.Count; i++)
-            {
-                var bodyView = _visualizationEngine.CelestialBodyViews[i];
-                if (selectedIndex == 0 && bodyView.Type == CelestialBodyType.Star)
-                    selectedIndex = i + 1; // skip 'custom'
-
-                selectionNames.Add(bodyView.Name);
-            }
-
-            _selectionNames = selectionNames.ToArray();
-            ViewCenterComboBox.ItemsSource = _selectionNames;
-            ViewCenterComboBox.SelectedIndex = selectedIndex;
+            // Setup initial scenario
+            SetupScenario(ScenarioComboBox.SelectedIndex);
         };
 
         MainSceneView.SceneViewInitialized += (sender, args) =>
@@ -179,6 +166,57 @@ public partial class MainView : UserControl
         };
 
         this.SizeChanged += (sender, args) => OnViewSizeChanged(args);
+    }
+
+    private void SetupScenario(int scenarioIndex)
+    {
+        var solarSystem = new SolarSystemScenario();
+        SetupScenario(solarSystem);
+    }
+
+    private void SetupScenario(SolarSystemScenario scenario)
+    {
+        Debug.Assert(_physicsEngine != null, nameof(_physicsEngine) + " != null");
+        Debug.Assert(_visualizationEngine != null, nameof(_visualizationEngine) + " != null");
+        Debug.Assert(_planetTextureLoader != null, nameof(_planetTextureLoader) + " != null");
+
+        // Ensure simulation is stopped
+        SimulationSpeedSlider.Value = 0;
+
+        // Reset physics engine and visualization engine
+        _physicsEngine.Reset();
+        _visualizationEngine.Reset();
+
+        // Setup scenario
+        scenario.SetupScenario(_physicsEngine, _visualizationEngine, _planetTextureLoader);
+
+        // Setup lights
+        MainSceneView.Scene.SetAmbientLight(0.2f);
+
+        foreach (var oneLight in _visualizationEngine.Lights)
+            MainSceneView.Scene.Lights.Add(oneLight);
+
+        // Populate the list for ViewCenterComboBox
+        var selectionNames = new List<string>();
+        selectionNames.Add("custom");
+
+        int selectedIndex = 0;
+
+        for (var i = 0; i < _visualizationEngine.CelestialBodyViews.Count; i++)
+        {
+            var bodyView = _visualizationEngine.CelestialBodyViews[i];
+            if (selectedIndex == 0 && bodyView.Type == CelestialBodyType.Star)
+                selectedIndex = i + 1; // skip 'custom'
+
+            selectionNames.Add(bodyView.Name);
+        }
+
+        _selectionNames = selectionNames.ToArray();
+        ViewCenterComboBox.ItemsSource = _selectionNames;
+        ViewCenterComboBox.SelectedIndex = selectedIndex;
+
+        // Simulation time needs to be explicitly updated (since we stopped simulation).
+        UpdateShownSimulationTime();
     }
 
     private void OnViewSizeChanged(SizeChangedEventArgs args)
@@ -511,9 +549,9 @@ public partial class MainView : UserControl
         _visualizationEngine?.TrackCelestialBody(name);
     }
 
-    private void Scenario1Button_OnClick(object? sender, RoutedEventArgs e)
+    private void ScenarioRestartButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        AddInfoMessage("Scenario 1 started", Colors.Orange);
+        SetupScenario(ScenarioComboBox.SelectedIndex);
     }
 
     private void UseActualSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)

@@ -14,6 +14,12 @@ public class PhysicsEngine
     // Mass bodies in the system
     private readonly List<MassBody> _massBodies = [];
 
+    public void Reset()
+    {
+        _massBodies.Clear();
+        SimulationTime = 0;
+    }
+
     public void AddBody(MassBody body)
     {
         Debug.Assert(Vector3d.IsFinite(body.Position), "Position is non-finite!");

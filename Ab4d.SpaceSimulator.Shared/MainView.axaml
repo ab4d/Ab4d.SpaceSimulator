@@ -81,8 +81,9 @@
                 <StackPanel Name="ScenarioSettingsPanel" IsVisible="False" Orientation="Vertical" Margin="8 10">
                     <TextBlock Text="Select scenario:" FontWeight="Bold" Margin="0 0 0 3" />
 
-                    <Button Name="Scenario1Button" Content="Scenario 1" Margin="0 5 0 0" Click="Scenario1Button_OnClick"
-                            ToolTip.Tip="Additional info about scenario 1"/>
+                    <ComboBox Name="ScenarioComboBox" Width="300" Margin="3 0 0 0" VerticalAlignment="Center" />
+                    <Button Name="RestartScenarioButton" Content="Restart" Margin="0 5 0 0" Click="ScenarioRestartButton_OnClick"
+                            ToolTip.Tip="Restart selected scenario"/>
                 </StackPanel>
 
             </Grid>

@@ -122,6 +122,19 @@ public class VisualizationEngine
         };
     }
 
+    public void Reset()
+    {
+        // Remove all visualization nodes from root node
+        RootNode.Clear();
+
+        // Clear internal list of visualization nodes
+        _trackedCelestialBody = null;
+        CelestialBodyViews.Clear();
+
+        // Clear lights
+        Lights.Clear();
+    }
+
     public float CelestialBodyScaleFactor
     {
         get => _celestialBodyScaleFactor;
