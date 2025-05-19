@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Lights;
 using Ab4d.SharpEngine.Materials;
@@ -8,9 +7,9 @@ using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.Physics;
 using Ab4d.SpaceSimulator.Visualization;
 
-namespace Ab4d.SpaceSimulator;
+namespace Ab4d.SpaceSimulator.Scenarios;
 
-public class SolarSystemScenario
+public class SolarSystem : IScenario
 {
     private struct Entity
     {
@@ -286,7 +285,7 @@ public class SolarSystemScenario
     private readonly IBitmapIO _imageReader = new PngBitmapIO();
     private readonly List<Entity> _entities;
 
-    public SolarSystemScenario()
+    public SolarSystem()
     {
         _entities =
         [
@@ -312,6 +311,11 @@ public class SolarSystemScenario
         var phi = orbitalInclination * Math.PI / 180.0; // deg -> rad
         var directionVector = new Vector3d(Math.Cos(phi), Math.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
         return orbitalVelocity * directionVector;
+    }
+
+    public string? GetDefaultView()
+    {
+        return "Sun";
     }
 
     public void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine, PlanetTextureLoader planetTextureLoader)

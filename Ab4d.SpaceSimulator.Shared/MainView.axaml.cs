@@ -25,6 +25,7 @@ using Ab4d.SharpEngine.Utilities;
 using Ab4d.SharpEngine;
 using Ab4d.SharpEngine.Core;
 using Ab4d.SharpEngine.Vulkan;
+using Ab4d.SpaceSimulator.Scenarios;
 using Avalonia.Platform;
 
 namespace Ab4d.SpaceSimulator.Shared;
@@ -52,6 +53,7 @@ public partial class MainView : UserControl
     private readonly string[] _scenarios =
     [
         "Solar system",
+        "Empty space",
     ];
 
     private PlanetTextureLoader? _planetTextureLoader;
@@ -173,11 +175,18 @@ public partial class MainView : UserControl
 
     private void SetupScenario(int scenarioIndex)
     {
-        var solarSystem = new SolarSystemScenario();
-        SetupScenario(solarSystem);
+        Scenarios.IScenario? scenario = scenarioIndex switch
+        {
+            // NOTE: the order should match the order of entries in _scenarios array!
+            0 => new Scenarios.SolarSystem(),
+            1 => new Scenarios.EmptySpace(),
+            _ => null
+        };
+        if (scenario != null)
+            SetupScenario(scenario);
     }
 
-    private void SetupScenario(SolarSystemScenario scenario)
+    private void SetupScenario(Scenarios.IScenario scenario)
     {
         Debug.Assert(_physicsEngine != null, nameof(_physicsEngine) + " != null");
         Debug.Assert(_visualizationEngine != null, nameof(_visualizationEngine) + " != null");
@@ -210,12 +219,13 @@ public partial class MainView : UserControl
         var selectionNames = new List<string>();
         selectionNames.Add("custom");
 
-        int selectedIndex = 0;
+        var defaultView = scenario.GetDefaultView();
+        var selectedIndex = 0;
 
         for (var i = 0; i < _visualizationEngine.CelestialBodyViews.Count; i++)
         {
             var bodyView = _visualizationEngine.CelestialBodyViews[i];
-            if (selectedIndex == 0 && bodyView.Type == CelestialBodyType.Star)
+            if (defaultView != null && bodyView.Name == defaultView)
                 selectedIndex = i + 1; // skip 'custom'
 
             selectionNames.Add(bodyView.Name);
