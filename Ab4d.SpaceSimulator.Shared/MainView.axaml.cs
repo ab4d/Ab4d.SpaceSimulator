@@ -192,6 +192,9 @@ public partial class MainView : UserControl
 
             if (isVerticalView)
             {
+                // Vertical layout: N x 3 grid:
+                //  - first row: time panel (spans all three columns)
+                //  - second row: view-center panel (first column), empty (second column), settings panel (third column)
                 BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
                 BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
 
@@ -199,31 +202,40 @@ public partial class MainView : UserControl
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
 
+                Grid.SetRow(TimePanel, 0);
                 Grid.SetColumn(TimePanel, 0);
                 Grid.SetColumnSpan(TimePanel, 3);
-                Grid.SetColumn(ViewCenterPanel, 0);
-                Grid.SetColumn(SettingsPanel, 2);
 
-                Grid.SetRow(TimePanel, 0);
                 Grid.SetRow(ViewCenterPanel, 1);
+                Grid.SetColumn(ViewCenterPanel, 0);
+                Grid.SetColumnSpan(ViewCenterPanel, 1);
+
                 Grid.SetRow(SettingsPanel, 1);
+                Grid.SetColumn(SettingsPanel, 2);
+                Grid.SetColumnSpan(SettingsPanel, 1);
             }
             else
             {
-                BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
+                // Horizontal layout: 1 x 4 grid: time panel (first column), view-center panel (second column), empty (third column), settings panel (fourth column).
+                // NOTE: this layout should match what is originally defined in the axaml file.
+                BottomOptionsGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Auto));
+
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
                 BottomOptionsGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Auto));
 
                 Grid.SetRow(TimePanel, 0);
-                Grid.SetRow(ViewCenterPanel, 0);
-                Grid.SetRow(SettingsPanel, 0);
-
                 Grid.SetColumn(TimePanel, 0);
                 Grid.SetColumnSpan(TimePanel, 1);
+
+                Grid.SetRow(ViewCenterPanel, 0);
                 Grid.SetColumn(ViewCenterPanel, 1);
+                Grid.SetColumnSpan(ViewCenterPanel, 1);
+
+                Grid.SetRow(SettingsPanel, 0);
                 Grid.SetColumn(SettingsPanel, 3);
+                Grid.SetColumnSpan(SettingsPanel, 1);
             }
 
             _isVerticalView = isVerticalView;
@@ -251,7 +263,7 @@ public partial class MainView : UserControl
 
         // After the "powered by AB4D" logo is hidden, start the camera rotation
         // This is stopped on first manual camera rotation - see below the CameraRotateStarted event handler
-        MainSceneView.SceneView.OnLicenseLogoRemoved = () => 
+        MainSceneView.SceneView.OnLicenseLogoRemoved = () =>
             _camera.StartRotation(headingChangeInSecond: 2, attitudeChangeInSecond: 0, accelerationSpeed: 1.01f, easingFunction: EasingFunctions.QuadraticEaseInFunction);
 
         MainSceneView.SceneView.Camera = _camera;
@@ -583,7 +595,7 @@ public partial class MainView : UserControl
         if (_visualizationEngine != null)
             _visualizationEngine.ShowMilkyWay = ShowMilkyWayCheckBox.IsChecked ?? false;
     }
-    
+
     private void ShowOrbitsCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (_visualizationEngine != null)
