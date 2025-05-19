@@ -237,6 +237,13 @@ public partial class MainView : UserControl
 
         // Simulation time needs to be explicitly updated (since we stopped simulation).
         UpdateShownSimulationTime();
+
+        // Force the update of world-bounding-box on the scene's root node, which is used to update far and near plane
+        // distance in VisualizationEngine.UpdateCameraNearAndFarPlanes(), called by VisualizationEngine.Update().
+        // This ensures that near and far plane are set correctly in the frame that immediately follows the scenario
+        // switch.
+        MainSceneView.Scene.RootNode.Update();
+        _visualizationEngine.Update(dataChange: true);
     }
 
     private void OnViewSizeChanged(SizeChangedEventArgs args)
