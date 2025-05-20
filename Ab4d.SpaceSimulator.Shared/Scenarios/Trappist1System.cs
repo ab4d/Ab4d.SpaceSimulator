@@ -12,6 +12,7 @@ namespace Ab4d.SpaceSimulator.Scenarios;
 ///
 /// For textures, see:
 ///  - https://celestiaproject.space/forum/viewtopic.php?f=5&t=20423
+///  - https://caltech.app.box.com/s/a9kd2sxhirx59vds2dlx95f5rlmnhsec/folder/46298041428
 /// </summary>
 public class Trappist1System : BaseStarSystemScenario
 {
@@ -65,6 +66,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.728,
 
+        TextureName = "T1b-color+clouds-1k.png",
         BaseColor = Colors.LightSkyBlue,
     };
 
@@ -83,6 +85,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.778,
 
+        TextureName = "T1c-color+clouds-1k.png",
         BaseColor = Colors.Beige,
     };
 
@@ -101,6 +104,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.896,
 
+        TextureName = "T1d-color+clouds-1k.png",
         BaseColor = Colors.DarkBlue,
     };
 
@@ -119,6 +123,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.793,
 
+        TextureName = "T1e-color+clouds-1k.png",
         BaseColor = Colors.DimGray,
     };
 
@@ -137,6 +142,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.740,
 
+        TextureName = "T1f-color+clouds-1k.png",
         BaseColor = Colors.WhiteSmoke,
     };
 
@@ -155,6 +161,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.742,
 
+        TextureName = "T1g-color+clouds-1k.png",
         BaseColor = Colors.DimGray,
     };
 
@@ -173,6 +180,7 @@ public class Trappist1System : BaseStarSystemScenario
 
         OrbitalInclination = 89.805,
 
+        TextureName = "T1h-color-1k.png",
         BaseColor = Colors.SandyBrown,
     };
 

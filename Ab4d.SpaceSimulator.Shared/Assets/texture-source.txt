@@ -1,5 +1,8 @@
 ﻿Source of the planet textures:
 https://planetpixelemporium.com/planets.html
 
+Source of TRAPPIST-1 planet textures:
+https://caltech.app.box.com/s/a9kd2sxhirx59vds2dlx95f5rlmnhsec/folder/46298041428
+
 Source of background mily way texture:
 https://www.eso.org/public/images/eso0932a/
