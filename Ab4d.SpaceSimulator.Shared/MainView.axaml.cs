@@ -53,6 +53,7 @@ public partial class MainView : UserControl
     private readonly string[] _scenarios =
     [
         "Solar system",
+        "TRAPPIST-1",
         "Empty space",
     ];
 
@@ -179,7 +180,8 @@ public partial class MainView : UserControl
         {
             // NOTE: the order should match the order of entries in _scenarios array!
             0 => new Scenarios.SolarSystem(),
-            1 => new Scenarios.EmptySpace(),
+            1 => new Scenarios.Trappist1System(),
+            2 => new Scenarios.EmptySpace(),
             _ => null
         };
         if (scenario != null)
