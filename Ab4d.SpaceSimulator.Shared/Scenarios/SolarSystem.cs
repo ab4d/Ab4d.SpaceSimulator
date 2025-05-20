@@ -1,59 +1,40 @@
-using System;
-using System.Collections.Generic;
 using Ab4d.SharpEngine.Common;
-using Ab4d.SharpEngine.Lights;
-using Ab4d.SharpEngine.Materials;
-using Ab4d.SharpEngine.Utilities;
 using Ab4d.SpaceSimulator.Physics;
-using Ab4d.SpaceSimulator.Visualization;
 
 namespace Ab4d.SpaceSimulator.Scenarios;
 
-public class SolarSystem : IScenario
+/// <summary>
+/// Our solar system.
+///
+/// Unless otherwise indicated, data is taken from the NASA planetary fact sheet:
+/// https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
+///
+/// For textures, see the following possible sources:
+///  - https://nasa3d.arc.nasa.gov/images
+///  - https://planetpixelemporium.com
+/// </summary>
+public class SolarSystem : BaseStarSystemScenario
 {
-    private struct Entity
+    public SolarSystem()
+        : base([
+            Sun,
+            Mercury,
+            Venus,
+            Earth,
+            Mars,
+            Jupiter,
+            Saturn,
+            Uranus,
+            Neptune,
+            Pluto,
+        ])
     {
-        // ** Basic info **
-        public required string Name;
-        public required CelestialBodyType Type;
+    }
 
-        // ** Basic dimension properties required for the mass/gravity interaction model **
-        // Available from NASA planetary fact sheet:
-        // https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
-        public required double Mass; // kg
-        public required double Diameter; // meters
-        public required double DistanceFromParent; // meters
-        public required double OrbitalVelocity; // m/s
-
-        // Inclination of orbit with respect to Earth's rotation plane (i.e., Earth's orbital inclination is 0).
-        public double OrbitalInclination = 0; // degrees
-
-        // The tilt of planet's axis; called "obliquity to orbit" in NASA planetary fact sheet.
-        public double AxialTilt = 0; // degrees
-
-        // Rotation
-        public double RotationPeriod = 0; // hours
-
-        // ** Visualization info **
-
-        // Texture - see the following possible sources:
-        //  https://nasa3d.arc.nasa.gov/images
-        //  https://planetpixelemporium.com
-        public string? TextureName;
-
-        // Base color name
-        public required Color3 BaseColor;
-
-        // Moons
-        public List<Entity>? Moons;
-
-        public Entity()
-        {
-        }
-    };
+    #region Celestial bodies
 
     // Sun / Sol
-    private readonly Entity Sun = new()
+    private static readonly Entity Sun = new()
     {
         Name = "Sun",
         Type = CelestialBodyType.Star,
@@ -65,14 +46,14 @@ public class SolarSystem : IScenario
 
         AxialTilt = 7.25, // https://en.wikipedia.org/wiki/Axial_tilt
 
-        RotationPeriod = 27 * 24, // 24.47 days at equator, 30 days at poles - use 27 days
+        RotationPeriod = 27 * 24, // 24.47 days at Equator, 30 days at poles - use 27 days.
 
         TextureName = "sunmap.png",
         BaseColor = Colors.Yellow,
     };
 
     // Mercury
-    private readonly Entity Mercury = new()
+    private static readonly Entity Mercury = new()
     {
         Name = "Mercury",
         Type = CelestialBodyType.Planet,
@@ -93,7 +74,7 @@ public class SolarSystem : IScenario
     };
 
     // Venus
-    private readonly Entity Venus = new()
+    private static readonly Entity Venus = new()
     {
         Name = "Venus",
         Type = CelestialBodyType.Planet,
@@ -115,7 +96,7 @@ public class SolarSystem : IScenario
     };
 
     // Earth and its Moon
-    private readonly Entity Earth = new()
+    private static readonly Entity Earth = new()
     {
         Name = "Earth",
         Type = CelestialBodyType.Planet,
@@ -157,7 +138,7 @@ public class SolarSystem : IScenario
     };
 
     // Mars
-    private readonly Entity Mars = new()
+    private static readonly Entity Mars = new()
     {
         Name = "Mars",
         Type = CelestialBodyType.Planet,
@@ -178,7 +159,7 @@ public class SolarSystem : IScenario
     };
 
     // Jupiter
-    private readonly Entity Jupiter = new()
+    private static readonly Entity Jupiter = new()
     {
         Name = "Jupiter",
         Type = CelestialBodyType.Planet,
@@ -199,7 +180,7 @@ public class SolarSystem : IScenario
     };
 
     // Saturn
-    private readonly Entity Saturn = new()
+    private static readonly Entity Saturn = new()
     {
         Name = "Saturn",
         Type = CelestialBodyType.Planet,
@@ -220,7 +201,7 @@ public class SolarSystem : IScenario
     };
 
     // Uranus
-    private readonly Entity Uranus = new()
+    private static readonly Entity Uranus = new()
     {
         Name = "Uranus",
         Type = CelestialBodyType.Planet,
@@ -241,7 +222,7 @@ public class SolarSystem : IScenario
     };
 
     // Neptune
-    private readonly Entity Neptune = new()
+    private static readonly Entity Neptune = new()
     {
         Name = "Nepute",
         Type = CelestialBodyType.Planet,
@@ -262,7 +243,7 @@ public class SolarSystem : IScenario
     };
 
     // Pluto
-    private readonly Entity Pluto = new()
+    private static readonly Entity Pluto = new()
     {
         Name = "Pluto",
         Type = CelestialBodyType.Planet,
@@ -282,134 +263,5 @@ public class SolarSystem : IScenario
         BaseColor = new Color3(0.75f, 0.78f, 0.80f), // grey
     };
 
-    private readonly IBitmapIO _imageReader = new PngBitmapIO();
-    private readonly List<Entity> _entities;
-
-    public SolarSystem()
-    {
-        _entities =
-        [
-            Sun,
-            Mercury,
-            Venus,
-            Earth,
-            Mars,
-            Jupiter,
-            Saturn,
-            Uranus,
-            Neptune,
-            Pluto,
-        ];
-    }
-
-    private static Vector3d TiltOrbitalVelocity(double orbitalVelocity, double orbitalInclination)
-    {
-        // In initial state, the celestial body is placed at position (0, 0, R), in coordinate system where X axis
-        // points to the right of the monitor, Y axis points upwards, and Z axis points out of the monitor (towards
-        // user). The orbital velocity is tangential, so if it were not for orbital inclination, it would point in
-        // direction of the X unit vector. To account for inclination, we need to tilt the vector in the X-Y plane.
-        var phi = orbitalInclination * Math.PI / 180.0; // deg -> rad
-        var directionVector = new Vector3d(Math.Cos(phi), Math.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
-        return orbitalVelocity * directionVector;
-    }
-
-    public string? GetDefaultView()
-    {
-        return "Sun";
-    }
-
-    public void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine, PlanetTextureLoader planetTextureLoader)
-    {
-        CelestialBody? sunObject = null; // Used to set parent object for planets
-        CelestialBodyView? sunView = null;
-
-        foreach (var entity in _entities)
-        {
-            // Mass body for the physics engine
-            var celestialBody = new CelestialBody()
-            {
-                Name = entity.Name,
-                Type = entity.Type,
-                Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
-                Mass = entity.Mass, // kg
-                Radius = entity.Diameter / 2.0, // meters
-                HasOrbit = true,
-                OrbitRadius = entity.DistanceFromParent, // meters
-                OrbitalInclination = entity.OrbitalInclination, // deg
-                Velocity = TiltOrbitalVelocity(entity.OrbitalVelocity, entity.OrbitalInclination), // m/s
-                RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
-                AxialTilt = entity.AxialTilt, // degrees
-                Parent = sunObject,
-            };
-            celestialBody.Initialize(); // Set up trajectory tracker, etc.
-            physicsEngine.AddBody(celestialBody);
-
-            // Visualization
-            StandardMaterialBase material;
-
-            if (entity.Type == CelestialBodyType.Star)
-                material = new SolidColorMaterial(entity.BaseColor, name: $"{entity.Name}Material");
-            else
-                material = new StandardMaterial(entity.BaseColor, name: $"{entity.Name}Material");
-
-            if (entity.TextureName != null)
-                planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
-
-            var celestialBodyView = new CelestialBodyView(visualizationEngine, celestialBody, material);
-
-            celestialBodyView.OrbitColor = entity.BaseColor;
-
-            if (entity.Name == "Sun")
-            {
-                sunObject = celestialBody;
-                sunView = celestialBodyView;
-            }
-            else
-            {
-                celestialBodyView.Parent = sunView;
-            }
-
-            if (entity.Type == CelestialBodyType.Star)
-                visualizationEngine.Lights.Add(new PointLight(celestialBodyView.SphereNode.CenterPosition));
-
-            visualizationEngine.AddCelestialBodyVisualization(celestialBodyView);
-
-            // Create moon(s)
-            foreach (var moonEntity in entity.Moons ?? [])
-            {
-                var moonMassBody = new CelestialBody()
-                {
-                    Name = moonEntity.Name,
-                    Type = moonEntity.Type,
-                    Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + celestialBody.Position, // meters
-                    Mass = moonEntity.Mass, // kg
-                    Radius = moonEntity.Diameter / 2.0, // meters
-                    HasOrbit = true,
-                    OrbitRadius = moonEntity.DistanceFromParent, // meters
-                    OrbitalInclination = moonEntity.OrbitalInclination, // deg
-                    Velocity = TiltOrbitalVelocity(moonEntity.OrbitalVelocity,  moonEntity.OrbitalInclination) + celestialBody.Velocity, // m/s
-                    Parent = celestialBody, // parent mass body
-                };
-                moonMassBody.Initialize(); // Set up trajectory tracker, etc.
-                physicsEngine.AddBody(moonMassBody);
-
-
-                StandardMaterial moonMaterial = new StandardMaterial(Colors.Gray, name: $"{entity.Name}Material");
-
-                if (moonEntity.TextureName != null)
-                    planetTextureLoader.LoadPlanetTextureAsync(moonEntity.TextureName, moonMaterial);
-
-                var moonVisualization = new CelestialBodyView(
-                    visualizationEngine,
-                    moonMassBody,
-                    moonMaterial)
-                {
-                    Parent = celestialBodyView, // parent visualization
-                };
-
-                visualizationEngine.AddCelestialBodyVisualization(moonVisualization);
-                celestialBodyView.Children.Add(moonVisualization); // register as child visualization
-            }
-        }
-    }
+    #endregion
 }
