@@ -310,7 +310,7 @@ public class CelestialBodyView
         if (CelestialBody.TrajectoryTracker == null)
             return [];
 
-        var data = CelestialBody.TrajectoryTracker.TrajectoryData;
+        var data = CelestialBody.TrajectoryTracker.GetTrajectoryData();
         var trajectory = new Vector3[data.Count + 1]; // Always append current position
 
         var idx = 0;

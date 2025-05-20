@@ -26,16 +26,20 @@ public class CelestialBody : MassBody
     public CelestialBody? Parent;
 
     // Trajectory tracker
-    public TrajectoryTracker? TrajectoryTracker;
+    public ITrajectoryTracker? TrajectoryTracker;
 
     public override void Initialize()
     {
         // Create trajectory trail tracker, if applicable (i.e., if the celestial body has stable orbit around a parent).
         if (Parent != null && HasOrbit)
         {
-            TrajectoryTracker = new TrajectoryTracker();
-            TrajectoryTracker.UpdatePosition(this); // Initialize with current position.
+            TrajectoryTracker = new AngularTrajectoryTracker();
         }
+        else
+        {
+            TrajectoryTracker = new LinearTrajectoryTracker();
+        }
+        TrajectoryTracker.UpdatePosition(this); // Initialize with current position.
     }
 
     public override void UpdateTrajectory()

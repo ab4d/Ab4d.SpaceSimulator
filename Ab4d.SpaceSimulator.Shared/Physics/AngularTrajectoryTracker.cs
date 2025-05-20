@@ -3,27 +3,25 @@ using System.Collections.Generic;
 
 namespace Ab4d.SpaceSimulator.Physics;
 
-public class TrajectoryTracker
+public class AngularTrajectoryTracker : ITrajectoryTracker
 {
-    public class TrajectoryEntry
-    {
-        //public double Timestamp;
-        public Vector3d Position;
-        public Vector3d ParentPosition;
-    };
-
     public double MinimumAngleIncrement = 1; // minimum angle increment w.r.t. previous location, in degrees
     public double MaxAngle = 90;             // maximum angle w.r.t. last entry, in degrees
 
     // Axis of the celestial body's revolution. Inferred on the very first update from the initial position.
     public Vector3d? RevolutionAxis = null;
 
-    public readonly Queue<TrajectoryEntry> TrajectoryData = new();
-    private TrajectoryEntry? _lastTrajectoryEntry = null; // Keep track of last inserted item, since Queue supports look-up of only first element.
+    private readonly Queue<ITrajectoryTracker.TrajectoryEntry> _trajectoryData = new();
+    private ITrajectoryTracker.TrajectoryEntry? _lastTrajectoryEntry = null; // Keep track of last inserted item, since Queue supports look-up of only first element.
+
+    public Queue<ITrajectoryTracker.TrajectoryEntry> GetTrajectoryData()
+    {
+        return _trajectoryData;
+    }
 
     public void UpdatePosition(CelestialBody celestialBody)
     {
-        var newEntry = new TrajectoryEntry()
+        var newEntry = new ITrajectoryTracker.TrajectoryEntry()
         {
             Position = celestialBody.Position,
             ParentPosition = celestialBody.Parent?.Position ?? Vector3d.Zero,
@@ -56,18 +54,18 @@ public class TrajectoryTracker
         }
 
         // Store new entry.
-        TrajectoryData.Enqueue(newEntry);
+        _trajectoryData.Enqueue(newEntry);
         _lastTrajectoryEntry = newEntry;
 
         // Prune old entries - i.e., the ones that exceed the maximum angle w.r.t. the latest entry.
-        while (TrajectoryData.Count > 1)
+        while (_trajectoryData.Count > 1)
         {
             // Peek at first entry
-            var entry = TrajectoryData.Peek();
+            var entry = _trajectoryData.Peek();
             var angle = ComputeAngle(entry, _lastTrajectoryEntry, RevolutionAxis.Value);
             if (angle > MaxAngle)
             {
-                TrajectoryData.Dequeue();
+                _trajectoryData.Dequeue();
             }
             else
             {
@@ -76,7 +74,7 @@ public class TrajectoryTracker
         }
     }
 
-    private static double ComputeAngle(TrajectoryEntry entry1, TrajectoryEntry entry2, Vector3d normalAxis)
+    private static double ComputeAngle(ITrajectoryTracker.TrajectoryEntry entry1, ITrajectoryTracker.TrajectoryEntry entry2, Vector3d normalAxis)
     {
         // TODO: if we wanted to track helio-centric trajectories of moons, the vectors would need to be computed
         // w.r.t. sun position, not parent position!
