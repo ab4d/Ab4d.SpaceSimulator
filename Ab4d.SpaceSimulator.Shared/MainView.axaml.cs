@@ -55,6 +55,7 @@ public partial class MainView : UserControl
         "Solar system",
         "TRAPPIST-1",
         "Empty space",
+        "Binary stars",
     ];
 
     private PlanetTextureLoader? _planetTextureLoader;
@@ -182,6 +183,7 @@ public partial class MainView : UserControl
             0 => new Scenarios.SolarSystem(),
             1 => new Scenarios.Trappist1System(),
             2 => new Scenarios.EmptySpace(),
+            3 => new Scenarios.BinaryStarsWithPlanets(),
             _ => null
         };
         if (scenario != null)
