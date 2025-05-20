@@ -64,8 +64,6 @@ public class Trappist1System : BaseStarSystemScenario
         DistanceFromParent = 0.01154 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
 
-        OrbitalInclination = 89.728,
-
         TextureName = "T1b-color+clouds-1k.png",
         BaseColor = Colors.LightSkyBlue,
     };
@@ -82,8 +80,6 @@ public class Trappist1System : BaseStarSystemScenario
         Diameter = 1.097 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.01580 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
-
-        OrbitalInclination = 89.778,
 
         TextureName = "T1c-color+clouds-1k.png",
         BaseColor = Colors.Beige,
@@ -102,8 +98,6 @@ public class Trappist1System : BaseStarSystemScenario
         DistanceFromParent = 0.02227 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
 
-        OrbitalInclination = 89.896,
-
         TextureName = "T1d-color+clouds-1k.png",
         BaseColor = Colors.DarkBlue,
     };
@@ -120,8 +114,6 @@ public class Trappist1System : BaseStarSystemScenario
         Diameter = 0.920 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.02925 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
-
-        OrbitalInclination = 89.793,
 
         TextureName = "T1e-color+clouds-1k.png",
         BaseColor = Colors.DimGray,
@@ -140,8 +132,6 @@ public class Trappist1System : BaseStarSystemScenario
         DistanceFromParent = 0.03849 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
 
-        OrbitalInclination = 89.740,
-
         TextureName = "T1f-color+clouds-1k.png",
         BaseColor = Colors.WhiteSmoke,
     };
@@ -159,8 +149,6 @@ public class Trappist1System : BaseStarSystemScenario
         DistanceFromParent = 0.04683 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
 
-        OrbitalInclination = 89.742,
-
         TextureName = "T1g-color+clouds-1k.png",
         BaseColor = Colors.DimGray,
     };
@@ -177,8 +165,6 @@ public class Trappist1System : BaseStarSystemScenario
         Diameter = 0.755 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.06189 * Constants.AstronomicalUnit,
         OrbitalVelocity = 0, // Estimate
-
-        OrbitalInclination = 89.805,
 
         TextureName = "T1h-color-1k.png",
         BaseColor = Colors.SandyBrown,
