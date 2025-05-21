@@ -191,6 +191,11 @@ public abstract class BaseStarSystemScenario : IScenario
         return _entities.Count > 0 ? _entities[0].Name : null;
     }
 
+    public virtual float? GetDefaultCameraDistance()
+    {
+        return null; // Default view is given via GetDefaultView().
+    }
+
     private double ComputeOrbitalVelocity(double parentMass, double orbitRadius)
     {
         return Math.Sqrt(parentMass * Constants.GravitationalConstant / orbitRadius);

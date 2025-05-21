@@ -89,4 +89,9 @@ public class BinaryStarsWithPlanets : IScenario
     {
         return null; // No default view
     }
+
+    public float? GetDefaultCameraDistance()
+    {
+        return 1000;
+    }
 }

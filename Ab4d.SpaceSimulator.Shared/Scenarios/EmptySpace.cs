@@ -20,4 +20,9 @@ public class EmptySpace : IScenario
     {
         return null; // None available
     }
+
+    public float? GetDefaultCameraDistance()
+    {
+        return null; // Use whatever fallback the calling code uses.
+    }
 }
