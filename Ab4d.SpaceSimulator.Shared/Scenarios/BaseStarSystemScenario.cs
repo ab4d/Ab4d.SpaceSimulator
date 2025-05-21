@@ -201,6 +201,11 @@ public abstract class BaseStarSystemScenario : IScenario
         return null; // No custom intervals; might be overridden by child implementation.
     }
 
+    public virtual (double, int)? GetSimulationStepSettings()
+    {
+        return null; // No custom settings; might be overridden by child implementation.
+    }
+
     private double ComputeOrbitalVelocity(double parentMass, double orbitRadius)
     {
         return Math.Sqrt(parentMass * Constants.GravitationalConstant / orbitRadius);

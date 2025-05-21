@@ -99,4 +99,9 @@ public class BinaryStarsWithPlanets : IScenario
     {
         return null; // No custom intervals
     }
+
+    public (double, int)? GetSimulationStepSettings()
+    {
+        return (3600, 0); // 1-hour step, disable dynamic step scaling.
+    }
 }

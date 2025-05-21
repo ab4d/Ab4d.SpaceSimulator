@@ -39,4 +39,13 @@ public interface IScenario
     /// </summary>
     /// <returns></returns>
     public int[]? GetSimulationSpeedIntervals();
+
+    /// <summary>
+    /// Return simulation step settings; the maximum discrete simulation step (in seconds), and the number of maximum
+    /// iterations for dynamic scaling. If simulation speed exceeds the specified step value by factor of N, the step
+    /// is dynamically adjusted so that N iterations (sub-steps) are performed. This dynamic scaling can be disabled
+    /// by setting the value of N to 0.
+    /// </summary>
+    /// <returns></returns>
+    public (double, int)? GetSimulationStepSettings();
 }

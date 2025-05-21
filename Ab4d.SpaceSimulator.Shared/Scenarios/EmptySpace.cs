@@ -30,4 +30,9 @@ public class EmptySpace : IScenario
     {
         return null; // No custom intervals
     }
+
+    public (double, int)? GetSimulationStepSettings()
+    {
+        return null; // No custom settings
+    }
 }

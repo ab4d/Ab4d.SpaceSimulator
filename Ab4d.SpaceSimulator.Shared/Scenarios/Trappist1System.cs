@@ -36,6 +36,14 @@ public class Trappist1System : BaseStarSystemScenario
         return [0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 2 * 24 * 3600, 3 * 24 * 3600, 4 * 24 * 3600, 5 * 24 * 3600];
     }
 
+    public override (double, int)? GetSimulationStepSettings()
+    {
+        // 1-hour step, disable dynamic step scaling.
+        // At the highest speed (5 days/sec - see GetSimulationSpeedIntervals()), we are still reasonably close to the
+        // step of 3600 seconds, so no scaling should be necessary.
+        return (3600, 0);
+    }
+
     #region Celestial bodies
 
     // TRAPPIST-1

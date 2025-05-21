@@ -40,6 +40,8 @@ public partial class MainView : UserControl
     private double _simulationSpeed;
 
     private int[] _simulationSpeedIntervals;
+    private double _maxSimulationTimeStep = 3600; // 1 hour
+    private int _maxSimulationIterations = 100; // 100 iterations with dynamically-scaled max. time step.
 
     private DateTime _previousUpdateTime = DateTime.Now;
 
@@ -207,6 +209,9 @@ public partial class MainView : UserControl
         _simulationSpeedIntervals = scenario.GetSimulationSpeedIntervals() ??
                                     [0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 10 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600]; // Defaults
         SimulationSpeedSlider.Maximum = _simulationSpeedIntervals.Length - 1;
+
+        // Setup simulation step and its dynamic scaling
+        (_maxSimulationTimeStep, _maxSimulationIterations) = scenario.GetSimulationStepSettings() ?? (3600.0, 100);
 
         // Reset physics engine and visualization engine
         _physicsEngine.Reset();
@@ -464,7 +469,17 @@ public partial class MainView : UserControl
 
         if (AutoMaxSimulationTimeStepCheckBox.IsChecked ?? false)
         {
-            _physicsEngine.MaxSimulationTimeStep = Math.Max(3600, _simulationSpeed / 100); // Use 1 hour (3600 s) or run at least 100 sub-steps if simulationSpeed is bigger than 100 hours
+            // Determine maximum discrete simulation step for physics engine. The scenario can specify its own value;
+            // if not, default of 1 hour (= 3600 seconds) is used. If simulation speed exceeds that by factor of N,
+            // we try to run N sub-steps. Scenario can disable this dynamic scaling by setting the N value ("maximum
+            // number of simulation iterations") to 0.
+            var maxStep = _maxSimulationTimeStep;
+            if (_maxSimulationIterations > 0)
+            {
+                maxStep = Math.Max(maxStep, _simulationSpeed / _maxSimulationIterations);
+            }
+
+            _physicsEngine.MaxSimulationTimeStep = maxStep; // Use 1 hour (3600 s) or run at least 100 sub-steps if simulationSpeed is bigger than 100 hours
 
             var usedTimeStep = Math.Min(_simulationSpeed, _physicsEngine.MaxSimulationTimeStep);
             SimulationTimeStepValueTextBlock.Text = usedTimeStep.ToString("N0"); // number with thousands separator and no decimals
