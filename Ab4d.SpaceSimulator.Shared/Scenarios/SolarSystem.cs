@@ -16,7 +16,7 @@ namespace Ab4d.SpaceSimulator.Scenarios;
 public class SolarSystem : BaseStarSystemScenario
 {
     public SolarSystem()
-        : base([
+        : base("Solar system", [
             Sun,
             Mercury,
             Venus,

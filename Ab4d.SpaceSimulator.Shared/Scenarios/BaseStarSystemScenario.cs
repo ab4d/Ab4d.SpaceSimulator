@@ -53,9 +53,12 @@ public abstract class BaseStarSystemScenario : IScenario
 
     private readonly IBitmapIO _imageReader = new PngBitmapIO();
     private readonly List<Entity> _entities;
+    private readonly string _name;
 
-    protected BaseStarSystemScenario(List<Entity> entities)
+    protected BaseStarSystemScenario(string name, List<Entity> entities)
     {
+        _name = name;
+
         // Validate the entities list; by convention, we require the first entity to be the host star.
         if (entities.Count > 0)
         {
@@ -67,6 +70,11 @@ public abstract class BaseStarSystemScenario : IScenario
         }
 
         _entities = entities;
+    }
+
+    public string GetName()
+    {
+        return _name;
     }
 
     public virtual void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine,

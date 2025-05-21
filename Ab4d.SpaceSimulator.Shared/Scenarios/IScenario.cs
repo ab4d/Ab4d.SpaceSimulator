@@ -6,6 +6,12 @@ namespace Ab4d.SpaceSimulator.Scenarios;
 public interface IScenario
 {
     /// <summary>
+    /// Return scenario name.
+    /// </summary>
+    /// <returns></returns>
+    public string GetName();
+
+    /// <summary>
     /// Set up the scenario; create the mass bodies and their corresponding visualizations.
     /// </summary>
     /// <param name="physicsEngine"></param>

@@ -50,13 +50,7 @@ public partial class MainView : UserControl
 
     private string[] _selectionNames = ["custom"]; // Populated once scenario is set up
 
-    private readonly string[] _scenarios =
-    [
-        "Solar system",
-        "TRAPPIST-1",
-        "Empty space",
-        "Binary stars",
-    ];
+    private IScenario? _selectedScenario;
 
     private PlanetTextureLoader? _planetTextureLoader;
 
@@ -70,13 +64,36 @@ public partial class MainView : UserControl
         ViewCenterComboBox.SelectionChanged += ViewCenterComboBox_OnSelectionChanged;
         ViewCenterComboBox.SelectedIndex = 0;
 
-        ScenarioComboBox.ItemsSource = _scenarios;
-        ScenarioComboBox.SelectedIndex = 0; // Set before adding callback to SelectionChanged, to avoid triggering it before everything is set up.
-        ScenarioComboBox.SelectionChanged += ((sender, args) =>
+        // Initialize scenario list and populate the UI
+        var scenarios = new IScenario[] {
+            new SolarSystem(),
+            new Trappist1System(),
+            new BinaryStarsWithPlanets(),
+            new EmptySpace(),
+        };
+        _selectedScenario = scenarios[0];
+
+        foreach (var scenario in scenarios)
         {
-            var scenarioIdx = ScenarioComboBox.SelectedIndex;
-            SetupScenario(scenarioIdx);
-        });
+            var button = new RadioButton
+            {
+                GroupName = "ScenariosRadioButtonGroup",
+                Content = scenario.GetName(),
+            };
+            ScenarioListStackPanel.Children.Add(button);
+
+            if (scenario == _selectedScenario)
+                button.IsChecked = true;
+
+            button.IsCheckedChanged += (sender, args) =>
+            {
+                var isChecked = button.IsChecked ?? false;
+                if (!isChecked)
+                    return;
+                _selectedScenario = scenario;
+                SetupScenario(_selectedScenario);
+            };
+        }
 
         _simulationSpeedIntervals = new int[] { 0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 10 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600 };
 
@@ -107,7 +124,8 @@ public partial class MainView : UserControl
 
             // Setup initial scenario - do this before starting InitializeBitmapTextCreatorAsync(), so that the nodes
             // are ready when the async task below completes (and tries to create name nodes).
-            SetupScenario(ScenarioComboBox.SelectedIndex);
+            if (_selectedScenario != null)
+                SetupScenario(_selectedScenario);
 
             // Call async method from sync context; this will also create name nodes for celestial bodies once the bitmap
             // text creator is ready. (This is necessary for delayed text node initialization for the initial scenario,
@@ -173,21 +191,6 @@ public partial class MainView : UserControl
         };
 
         this.SizeChanged += (sender, args) => OnViewSizeChanged(args);
-    }
-
-    private void SetupScenario(int scenarioIndex)
-    {
-        Scenarios.IScenario? scenario = scenarioIndex switch
-        {
-            // NOTE: the order should match the order of entries in _scenarios array!
-            0 => new Scenarios.SolarSystem(),
-            1 => new Scenarios.Trappist1System(),
-            2 => new Scenarios.EmptySpace(),
-            3 => new Scenarios.BinaryStarsWithPlanets(),
-            _ => null
-        };
-        if (scenario != null)
-            SetupScenario(scenario);
     }
 
     private void SetupScenario(Scenarios.IScenario scenario)
@@ -582,7 +585,10 @@ public partial class MainView : UserControl
 
     private void ScenarioRestartButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        SetupScenario(ScenarioComboBox.SelectedIndex);
+        // Restart the selected scenario
+        if (_selectedScenario == null)
+            return;
+        SetupScenario(_selectedScenario);
     }
 
     private void UseActualSizeCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)

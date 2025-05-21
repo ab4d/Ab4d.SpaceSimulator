@@ -17,7 +17,7 @@ namespace Ab4d.SpaceSimulator.Scenarios;
 public class Trappist1System : BaseStarSystemScenario
 {
     public Trappist1System()
-        : base([
+        : base("TRAPPIST-1", [
             Trappist1,
             Trappist1B,
             Trappist1C,

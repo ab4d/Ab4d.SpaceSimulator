@@ -10,6 +10,11 @@ namespace Ab4d.SpaceSimulator.Scenarios;
 /// </summary>
 public class BinaryStarsWithPlanets : IScenario
 {
+    public string GetName()
+    {
+        return "Binary stars";
+    }
+
     public void SetupScenario(PhysicsEngine physicsEngine, VisualizationEngine visualizationEngine,
         PlanetTextureLoader planetTextureLoader)
     {
