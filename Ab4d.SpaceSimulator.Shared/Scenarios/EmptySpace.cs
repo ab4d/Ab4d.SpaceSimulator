@@ -25,4 +25,9 @@ public class EmptySpace : IScenario
     {
         return null; // Use whatever fallback the calling code uses.
     }
+
+    public int[]? GetSimulationSpeedIntervals()
+    {
+        return null; // No custom intervals
+    }
 }

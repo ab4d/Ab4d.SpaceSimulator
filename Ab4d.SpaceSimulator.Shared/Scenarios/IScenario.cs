@@ -33,4 +33,10 @@ public interface IScenario
     /// </summary>
     /// <returns></returns>
     public float? GetDefaultCameraDistance();
+
+    /// <summary>
+    /// Returns scenario-specific simulation speed intervals, if applicable.
+    /// </summary>
+    /// <returns></returns>
+    public int[]? GetSimulationSpeedIntervals();
 }

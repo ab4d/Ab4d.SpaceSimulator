@@ -30,6 +30,12 @@ public class Trappist1System : BaseStarSystemScenario
     {
     }
 
+    public override int[]? GetSimulationSpeedIntervals()
+    {
+        // Limit the intervals up to 5 days/sec, because the planets are moving quite fast.
+        return [0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 2 * 24 * 3600, 3 * 24 * 3600, 4 * 24 * 3600, 5 * 24 * 3600];
+    }
+
     #region Celestial bodies
 
     // TRAPPIST-1

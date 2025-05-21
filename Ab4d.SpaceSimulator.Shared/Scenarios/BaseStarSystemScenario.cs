@@ -196,6 +196,11 @@ public abstract class BaseStarSystemScenario : IScenario
         return null; // Default view is given via GetDefaultView().
     }
 
+    public virtual int[]? GetSimulationSpeedIntervals()
+    {
+        return null; // No custom intervals; might be overridden by child implementation.
+    }
+
     private double ComputeOrbitalVelocity(double parentMass, double orbitRadius)
     {
         return Math.Sqrt(parentMass * Constants.GravitationalConstant / orbitRadius);

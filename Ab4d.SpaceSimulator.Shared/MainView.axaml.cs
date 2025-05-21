@@ -37,8 +37,9 @@ public partial class MainView : UserControl
     private TargetPositionCamera? _camera;
 
     private bool _isPlaying;
-    private readonly int[] _simulationSpeedIntervals;
     private double _simulationSpeed;
+
+    private int[] _simulationSpeedIntervals;
 
     private DateTime _previousUpdateTime = DateTime.Now;
 
@@ -95,7 +96,7 @@ public partial class MainView : UserControl
             };
         }
 
-        _simulationSpeedIntervals = new int[] { 0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 10 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600 };
+        _simulationSpeedIntervals = [0]; // Will be initialized when scenario is set up.
 
         SimulationSpeedSlider.Value = 0; // initially paused
 
@@ -201,6 +202,11 @@ public partial class MainView : UserControl
 
         // Ensure simulation is stopped
         SimulationSpeedSlider.Value = 0;
+
+        // Setup simulation speed intervals
+        _simulationSpeedIntervals = scenario.GetSimulationSpeedIntervals() ??
+                                    [0, 10, 100, 600, 3600, 6 * 3600, 24 * 3600, 10 * 24 * 3600, 30 * 24 * 3600, 100 * 24 * 3600]; // Defaults
+        SimulationSpeedSlider.Maximum = _simulationSpeedIntervals.Length - 1;
 
         // Reset physics engine and visualization engine
         _physicsEngine.Reset();

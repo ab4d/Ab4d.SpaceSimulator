@@ -94,4 +94,9 @@ public class BinaryStarsWithPlanets : IScenario
     {
         return 1000;
     }
+
+    public int[]? GetSimulationSpeedIntervals()
+    {
+        return null; // No custom intervals
+    }
 }
