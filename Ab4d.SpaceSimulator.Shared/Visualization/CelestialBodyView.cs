@@ -73,12 +73,13 @@ public class CelestialBodyView
         {
             var orbitColor = new Color3(0.2f, 0.2f, 0.2f);  // This is the default color that can be changed by setting OrbitColor
 
+            var phi = (float)CelestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
+
             var majorSemiAxis = (float)ScaleDistance(CelestialBody.OrbitRadius);
-            var majorSemiAxisDir = Vector3.UnitZ;
+            var majorSemiAxisDir = new Vector3(0, -MathF.Sin(phi), MathF.Cos(phi)); // becomes (0, 0, 1) when phi=0
 
             var minorSemiAxis = majorSemiAxis * MathF.Sqrt(1 - (float)(CelestialBody.OrbitalEccentricity * CelestialBody.OrbitalEccentricity)); // b = a * sqrt(1 - e^2)
-            var phi = (float)CelestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
-            var minorSemiAxisDir = new Vector3(MathF.Cos(phi), MathF.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
+            var minorSemiAxisDir = Vector3.UnitX;
 
             var centerOffset = new Vector3d(0, 0, CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius); // c = a * e
             var center = ScalePosition(CelestialBody.Parent.Position + centerOffset);
