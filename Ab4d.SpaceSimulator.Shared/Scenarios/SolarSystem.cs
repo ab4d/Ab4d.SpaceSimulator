@@ -63,6 +63,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 57.9 * 1e9,
         OrbitalVelocity = 47.4 * 1e3,
 
+        OrbitalEccentricity = 0.206,
         OrbitalInclination = 7.0,
 
         AxialTilt = 0.034,
@@ -84,6 +85,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 108.2 * 1e9,
         OrbitalVelocity = 35.0 * 1e3,
 
+        OrbitalEccentricity = 0.007,
         OrbitalInclination = 3.4,
 
         AxialTilt = 177.4,
@@ -108,6 +110,7 @@ public class SolarSystem : BaseStarSystemScenario
 
         AxialTilt = 23.4,
 
+        OrbitalEccentricity = 0.017,
         OrbitalInclination = 0.0, // Earth's revolution plane is the reference!
 
         RotationPeriod = 23.9, // hours
@@ -127,6 +130,7 @@ public class SolarSystem : BaseStarSystemScenario
 
                 AxialTilt = 6.7,
 
+                OrbitalEccentricity = 0.055,
                 OrbitalInclination = 5.1,
 
                 RotationPeriod = 655.7, // hours
@@ -148,6 +152,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 228.0 * 1e9,
         OrbitalVelocity = 24.1 * 1e3,
 
+        OrbitalEccentricity = 0.094,
         OrbitalInclination = 1.8,
 
         AxialTilt = 25.2,
@@ -169,6 +174,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 778.5 * 1e9,
         OrbitalVelocity = 13.1 * 1e3,
 
+        OrbitalEccentricity = 0.049,
         OrbitalInclination = 1.3,
 
         AxialTilt = 3.1,
@@ -190,6 +196,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 1_432.0 * 1e9,
         OrbitalVelocity = 9.7 * 1e3,
 
+        OrbitalEccentricity = 0.052,
         OrbitalInclination = 2.5,
 
         AxialTilt = 26.7,
@@ -211,6 +218,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 2_867.0 * 1e9,
         OrbitalVelocity = 6.8 * 1e3,
 
+        OrbitalEccentricity = 0.047,
         OrbitalInclination = 0.8,
 
         AxialTilt = 97.8,
@@ -232,6 +240,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 4_515.0 * 1e9,
         OrbitalVelocity = 5.4 * 1e3,
 
+        OrbitalEccentricity = 0.010,
         OrbitalInclination = 1.8,
 
         AxialTilt = 28.3,
@@ -253,6 +262,7 @@ public class SolarSystem : BaseStarSystemScenario
         DistanceFromParent = 5_906.4 * 1e9,
         OrbitalVelocity = 4.7 * 1e3,
 
+        OrbitalEccentricity = 0.244,
         OrbitalInclination = 17.2,
 
         AxialTilt = 119.5,

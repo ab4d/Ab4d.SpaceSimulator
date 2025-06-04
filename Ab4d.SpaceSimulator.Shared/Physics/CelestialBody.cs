@@ -22,6 +22,8 @@ public class CelestialBody : MassBody
     public double OrbitRadius; // meters
     public double OrbitalInclination; // deg
 
+    public double OrbitalEccentricity;
+
     // Parent in the star -> planet -> moon hierarchy
     public CelestialBody? Parent;
 

@@ -26,6 +26,9 @@ public abstract class BaseStarSystemScenario : IScenario
         public required double DistanceFromParent; // meters
         public required double OrbitalVelocity; // m/s
 
+        // Eccentricity
+        public double OrbitalEccentricity = 0;
+
         // Inclination of orbit with respect to Earth's rotation plane (i.e., Earth's orbital inclination is 0).
         public double OrbitalInclination = 0; // degrees
 
@@ -102,6 +105,7 @@ public abstract class BaseStarSystemScenario : IScenario
                 Radius = entity.Diameter / 2.0, // meters
                 HasOrbit = true,
                 OrbitRadius = entity.DistanceFromParent, // meters
+                OrbitalEccentricity = entity.OrbitalEccentricity,
                 OrbitalInclination = entity.OrbitalInclination, // deg
                 Velocity = TiltOrbitalVelocity(orbitalVelocity, entity.OrbitalInclination), // m/s
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)

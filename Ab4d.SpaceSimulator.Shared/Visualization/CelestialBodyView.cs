@@ -76,20 +76,23 @@ public class CelestialBodyView
             var majorSemiAxis = (float)ScaleDistance(CelestialBody.OrbitRadius);
             var majorSemiAxisDir = Vector3.UnitZ;
 
-            var minorSemiAxis = majorSemiAxis; // Approximate circular orbit
+            var minorSemiAxis = majorSemiAxis * MathF.Sqrt(1 - (float)(CelestialBody.OrbitalEccentricity * CelestialBody.OrbitalEccentricity)); // b = a * sqrt(1 - e^2)
             var phi = (float)CelestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
             var minorSemiAxisDir = new Vector3(MathF.Cos(phi), MathF.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
+
+            var centerOffset = new Vector3d(0, 0, CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius); // c = a * e
+            var center = ScalePosition(CelestialBody.Parent.Position + centerOffset);
 
             OrbitNode = new EllipseLineNode(
                 orbitColor,
                 1,
                 name: $"{this.Name}-OrbitEllipse")
             {
-                CenterPosition = ScalePosition(CelestialBody.Parent.Position),
+                CenterPosition = center,
                 WidthDirection = majorSemiAxisDir,
                 Width = majorSemiAxis * 2,
                 HeightDirection = minorSemiAxisDir,
-                Height = majorSemiAxis * 2,
+                Height = minorSemiAxis * 2,
                 Segments = 359, // 1-degree resolution
             };
         }
@@ -143,7 +146,8 @@ public class CelestialBodyView
         {
             // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
             // parameters...
-            OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position);
+            var centerOffset = new Vector3d(0, 0, CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius); // c = a * e
+            OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position + centerOffset);
         }
 
         // Update celestial body's trail (positions), and its color data (alpha blending depends on number of positions).
