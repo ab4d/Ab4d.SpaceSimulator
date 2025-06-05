@@ -34,6 +34,7 @@ public class CelestialBodyView
     // Dynamic trajectory / trail
     public readonly MultiLineNode? TrajectoryTrailNode;
 
+    public bool ShowName = true;
     public SceneNode? NameSceneNode { get; set; }
 
     public float DistanceToCamera { get; private set; }
@@ -232,7 +233,7 @@ public class CelestialBodyView
 
 
         if (NameSceneNode != null)
-            NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames && ShowName) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
 
         this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
 

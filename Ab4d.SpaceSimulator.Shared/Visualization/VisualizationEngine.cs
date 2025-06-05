@@ -271,6 +271,10 @@ public class VisualizationEngine
         else
             textNode.Visibility = SceneNodeVisibility.Hidden;
 
+        // Check if name is explicitly hidden on celestial body visualization object.
+        if (!celestialBodyView.ShowName)
+            textNode.Visibility = SceneNodeVisibility.Hidden;
+
         celestialBodyView.NameSceneNode = textNode;
         celestialBodyView.UpdateNameSceneNode();
 
