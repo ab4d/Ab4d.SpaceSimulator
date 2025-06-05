@@ -29,8 +29,15 @@ public abstract class BaseStarSystemScenario : IScenario
         // Eccentricity
         public double OrbitalEccentricity = 0;
 
-        // Inclination of orbit with respect to Earth's rotation plane (i.e., Earth's orbital inclination is 0).
+        // Inclination of orbit with respect to ecliptic plane; in the case of Solar system, the ecliptic plane is
+        // Earth's rotation plane (i.e., Earth's orbital inclination is 0).
         public double OrbitalInclination = 0; // degrees
+
+        // Longitude of ascending node and argument of periapsis
+        public double LongitudeOfAscendingNode = 0; // degrees
+        public double ArgumentOfPeriapsis = 0; // degrees
+        // NOTE: in-lieu of "arugment of periapsis", "longitude of periapsis" might be specified, which is a sum of
+        // "longitude of ascending" node and "argument of periapsis".
 
         // The tilt of planet's axis; called "obliquity to orbit" in NASA planetary fact sheet.
         public double AxialTilt = 0; // degrees
@@ -107,6 +114,8 @@ public abstract class BaseStarSystemScenario : IScenario
                 OrbitRadius = entity.DistanceFromParent, // meters
                 OrbitalEccentricity = entity.OrbitalEccentricity,
                 OrbitalInclination = entity.OrbitalInclination, // deg
+                LongitudeOfAscendingNode = entity.LongitudeOfAscendingNode, // deg
+                ArgumentOfPeriapsis = entity.ArgumentOfPeriapsis, // deg
                 Velocity = TiltOrbitalVelocity(orbitalVelocity, entity.OrbitalInclination), // m/s
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
                 AxialTilt = entity.AxialTilt, // degrees
@@ -164,6 +173,8 @@ public abstract class BaseStarSystemScenario : IScenario
                     HasOrbit = true,
                     OrbitRadius = moonEntity.DistanceFromParent, // meters
                     OrbitalInclination = moonEntity.OrbitalInclination, // deg
+                    LongitudeOfAscendingNode = entity.LongitudeOfAscendingNode, // deg
+                    ArgumentOfPeriapsis = entity.ArgumentOfPeriapsis, // deg
                     Velocity = TiltOrbitalVelocity(moonOrbitalVelocity,  moonEntity.OrbitalInclination) + celestialBody.Velocity, // m/s
                     Parent = celestialBody, // parent mass body
                 };
