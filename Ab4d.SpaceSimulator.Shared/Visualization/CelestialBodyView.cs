@@ -86,7 +86,7 @@ public class CelestialBodyView
 
             OrbitNode = new EllipseLineNode(
                 orbitColor,
-                1,
+                8,
                 name: $"{this.Name}-OrbitEllipse")
             {
                 CenterPosition = center,
