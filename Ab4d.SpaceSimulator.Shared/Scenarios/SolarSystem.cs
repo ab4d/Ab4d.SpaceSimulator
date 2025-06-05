@@ -64,7 +64,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 47.4 * 1e3,
 
         OrbitalEccentricity = 0.206,
-        OrbitalInclination = 7.0,
+
+        OrbitalInclination = 7.00487,
+        LongitudeOfAscendingNode = 48.33167,
+        ArgumentOfPeriapsis = 77.45645 - 48.33167,
 
         AxialTilt = 0.034,
 
@@ -86,7 +89,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 35.0 * 1e3,
 
         OrbitalEccentricity = 0.007,
-        OrbitalInclination = 3.4,
+
+        OrbitalInclination = 3.39471,
+        LongitudeOfAscendingNode = 76.68069,
+        ArgumentOfPeriapsis = 131.53298 - 76.68069,
 
         AxialTilt = 177.4,
 
@@ -111,7 +117,10 @@ public class SolarSystem : BaseStarSystemScenario
         AxialTilt = 23.4,
 
         OrbitalEccentricity = 0.017,
-        OrbitalInclination = 0.0, // Earth's revolution plane is the reference!
+
+        OrbitalInclination = 0.00005, // Earth's revolution plane is the reference!
+        LongitudeOfAscendingNode = -11.26064,
+        ArgumentOfPeriapsis = 102.94719 - (-11.26064),
 
         RotationPeriod = 23.9, // hours
 
@@ -153,7 +162,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 24.1 * 1e3,
 
         OrbitalEccentricity = 0.094,
-        OrbitalInclination = 1.8,
+
+        OrbitalInclination = 1.85061,
+        LongitudeOfAscendingNode = 49.57854,
+        ArgumentOfPeriapsis =336.04084 - 49.57854,
 
         AxialTilt = 25.2,
 
@@ -175,7 +187,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 13.1 * 1e3,
 
         OrbitalEccentricity = 0.049,
-        OrbitalInclination = 1.3,
+
+        OrbitalInclination = 1.30530,
+        LongitudeOfAscendingNode = 100.55615,
+        ArgumentOfPeriapsis = 14.75385 - 100.55615,
 
         AxialTilt = 3.1,
 
@@ -197,7 +212,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 9.7 * 1e3,
 
         OrbitalEccentricity = 0.052,
-        OrbitalInclination = 2.5,
+
+        OrbitalInclination = 2.48446,
+        LongitudeOfAscendingNode = 113.71504,
+        ArgumentOfPeriapsis = 92.43194 - 113.71504,
 
         AxialTilt = 26.7,
 
@@ -219,7 +237,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 6.8 * 1e3,
 
         OrbitalEccentricity = 0.047,
-        OrbitalInclination = 0.8,
+
+        OrbitalInclination = 0.76986,
+        LongitudeOfAscendingNode = 74.22988,
+        ArgumentOfPeriapsis = 170.96424 - 74.22988,
 
         AxialTilt = 97.8,
 
@@ -241,7 +262,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 5.4 * 1e3,
 
         OrbitalEccentricity = 0.010,
-        OrbitalInclination = 1.8,
+
+        OrbitalInclination = 1.76917,
+        LongitudeOfAscendingNode = 131.72169,
+        ArgumentOfPeriapsis = 44.97135 - 131.72169,
 
         AxialTilt = 28.3,
 
@@ -263,7 +287,10 @@ public class SolarSystem : BaseStarSystemScenario
         OrbitalVelocity = 4.7 * 1e3,
 
         OrbitalEccentricity = 0.244,
-        OrbitalInclination = 17.2,
+
+        OrbitalInclination = 17.14175,
+        LongitudeOfAscendingNode = 110.30347,
+        ArgumentOfPeriapsis = 224.06676 - 110.30347,
 
         AxialTilt = 119.5,
 
