@@ -19,10 +19,13 @@ public class CelestialBody : MassBody
 
     // Fixed orbit
     public bool HasOrbit;
-    public double OrbitRadius; // meters
-    public double OrbitalInclination; // deg
 
+    public double OrbitRadius; // meters
     public double OrbitalEccentricity;
+
+    public double OrbitalInclination; // deg
+    public double LongitudeOfAscendingNode; // deg
+    public double ArgumentOfPeriapsis; // deg
 
     // Parent in the star -> planet -> moon hierarchy
     public CelestialBody? Parent;
