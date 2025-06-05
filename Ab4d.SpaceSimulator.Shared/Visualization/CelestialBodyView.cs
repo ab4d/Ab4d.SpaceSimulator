@@ -30,6 +30,7 @@ public class CelestialBodyView
 
     // Fixed trajectory / orbit
     public readonly EllipseLineNode? OrbitNode;
+    private Vector3d _centerOffset;
 
     // Dynamic trajectory / trail
     public readonly MultiLineNode? TrajectoryTrailNode;
@@ -74,23 +75,35 @@ public class CelestialBodyView
         {
             var orbitColor = new Color3(0.2f, 0.2f, 0.2f);  // This is the default color that can be changed by setting OrbitColor
 
-            var phi = (float)CelestialBody.OrbitalInclination * MathF.PI / 180.0f; // deg -> rad
-
+            // The given orbital radius is interpreted as the major semi-axis; from it and eccentricity, we can compute the
+            // minor semi-axis.
             var majorSemiAxis = (float)ScaleDistance(CelestialBody.OrbitRadius);
-            var majorSemiAxisDir = new Vector3(0, -MathF.Sin(phi), MathF.Cos(phi)); // becomes (0, 0, 1) when phi=0
-
             var minorSemiAxis = majorSemiAxis * MathF.Sqrt(1 - (float)(CelestialBody.OrbitalEccentricity * CelestialBody.OrbitalEccentricity)); // b = a * sqrt(1 - e^2)
-            var minorSemiAxisDir = Vector3.UnitX;
 
-            var centerOffset = new Vector3d(0, 0, CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius); // c = a * e
-            var center = ScalePosition(CelestialBody.Parent.Position + centerOffset);
+            // Orientation of the ellipse is determined from Kepler elements - longitude of ascending node (Omega),
+            // inclination (i), and argument of periapsis (omega), which can be interpreted as 3-1-3 Euler angles,
+            // and used to rotate the base axis vectors.
+            var dcm =
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, (float)CelestialBody.ArgumentOfPeriapsis * MathF.PI / 180) *
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, (float)CelestialBody.OrbitalInclination * MathF.PI / 180) *
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, (float)CelestialBody.LongitudeOfAscendingNode * MathF.PI / 180);
+
+            var majorSemiAxisDir = Vector3.Transform(Vector3.UnitX, dcm);
+            var minorSemiAxisDir = Vector3.Transform(Vector3.UnitY, dcm);
+
+            // For eccentric orbits, we need to shift the center so that the parent is placed into one of its foci.
+            // The shift needs to be done along the transformed major semi-axis.
+            //
+            // NOTE: the offset is stored, so that it can be re-applied in UpdateVisualization().
+            var c = CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius; // c = a * e
+            _centerOffset = -c * new Vector3d(majorSemiAxisDir.X, majorSemiAxisDir.Y, majorSemiAxisDir.Z);
 
             OrbitNode = new EllipseLineNode(
                 orbitColor,
                 8,
                 name: $"{this.Name}-OrbitEllipse")
             {
-                CenterPosition = center,
+                CenterPosition = ScalePosition(CelestialBody.Parent.Position + _centerOffset),
                 WidthDirection = majorSemiAxisDir,
                 Width = majorSemiAxis * 2,
                 HeightDirection = minorSemiAxisDir,
@@ -148,8 +161,11 @@ public class CelestialBodyView
         {
             // NOTE: strictly speaking, we should scale using parent's ScalePosition(), in case it uses different
             // parameters...
-            var centerOffset = new Vector3d(0, 0, CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius); // c = a * e
-            OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position + centerOffset);
+            // NOTE2: we apply pre-computed center offset for the eccentric orbit; this implicitly assumes that the
+            // orbital parameters (from which the offset was computed) do not change with time. If we wanted to implement
+            // time-based change (e.g., using almanac to periodically update orbital parameters), we would need to
+            // perform all computations here (or on the orbital parameter update).
+            OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position + _centerOffset);
         }
 
         // Update celestial body's trail (positions), and its color data (alpha blending depends on number of positions).
