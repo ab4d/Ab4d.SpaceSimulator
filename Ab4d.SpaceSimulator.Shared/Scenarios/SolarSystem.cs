@@ -73,7 +73,6 @@ public class SolarSystem : BaseStarSystemScenario
             {
                 almanac.Update(dateTime.AddDays(timeIncrement * i));
 
-                // TODO: transform coordinate system
                 var position = new Vector3d(
                     almanacBody.EclipticX,
                     almanacBody.EclipticY,

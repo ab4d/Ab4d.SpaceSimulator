@@ -98,12 +98,19 @@ public class CelestialBodyView
             var c = CelestialBody.OrbitalEccentricity * CelestialBody.OrbitRadius; // c = a * e
             _centerOffset = -c * new Vector3d(majorSemiAxisDir.X, majorSemiAxisDir.Y, majorSemiAxisDir.Z);
 
+            // We have a coordinate system mismatch between the ecliptic coordinate system (used by the computational
+            // part of our codebase) and display coordinate system. See TransformPosition() for details.
+            // Therefore, the semi-axis direction vectors need to be transformed/corrected before being passed to
+            // the display node.
+            majorSemiAxisDir = new Vector3(majorSemiAxisDir.X, majorSemiAxisDir.Z, -majorSemiAxisDir.Y);
+            minorSemiAxisDir = new Vector3(minorSemiAxisDir.X, minorSemiAxisDir.Z, -minorSemiAxisDir.Y);
+
             OrbitNode = new EllipseLineNode(
                 orbitColor,
                 8,
                 name: $"{this.Name}-OrbitEllipse")
             {
-                CenterPosition = ScalePosition(CelestialBody.Parent.Position + _centerOffset),
+                CenterPosition = TransformPosition(CelestialBody.Parent.Position + _centerOffset),
                 WidthDirection = majorSemiAxisDir,
                 Width = majorSemiAxis * 2,
                 HeightDirection = minorSemiAxisDir,
@@ -151,7 +158,7 @@ public class CelestialBodyView
     public void UpdatePhysicalProperties()
     {
         // Update position from the underlying physical object
-        SphereNode.CenterPosition = ScalePosition(CelestialBody.Position);
+        SphereNode.CenterPosition = TransformPosition(CelestialBody.Position);
 
         // Rotate around body's axis
         SphereNode.Transform = ComputeTiltAndRotationTransform();
@@ -165,7 +172,7 @@ public class CelestialBodyView
             // orbital parameters (from which the offset was computed) do not change with time. If we wanted to implement
             // time-based change (e.g., using almanac to periodically update orbital parameters), we would need to
             // perform all computations here (or on the orbital parameter update).
-            OrbitNode.CenterPosition = ScalePosition(CelestialBody.Parent.Position + _centerOffset);
+            OrbitNode.CenterPosition = TransformPosition(CelestialBody.Parent.Position + _centerOffset);
         }
 
         // Update celestial body's trail (positions), and its color data (alpha blending depends on number of positions).
@@ -307,13 +314,17 @@ public class CelestialBodyView
         return distance * VisualizationEngine.ViewUnitScale;
     }
 
-    private Vector3 ScalePosition(Vector3d realPosition)
+    // Scale the position, as well as apply transformation from ecliptic coordinate system to display one.
+    // The ecliptic coordinate system: X axis pointing out, Y axis pointing right, Z axis pointing up
+    // Display coordinate system: X axis pointing out, Y axis pointing up, Z axis pointing left
+    // Thus: Xd = Xe, Yd = Ze, Zd = -Ye
+    private Vector3 TransformPosition(Vector3d realPosition)
     {
         var length = realPosition.Length();
         var scaledLength = ScaleDistance(length);
 
         var scaledPosition = scaledLength > 0 ? scaledLength * Vector3d.Normalize(realPosition) : Vector3d.Zero;
-        return new Vector3((float)scaledPosition.X, (float)scaledPosition.Y, (float)scaledPosition.Z);
+        return new Vector3((float)scaledPosition.X, (float)scaledPosition.Z, -(float)scaledPosition.Y);
     }
 
     private float ScaleSize(double realSize)
@@ -343,7 +354,7 @@ public class CelestialBodyView
             foreach (var entry in data)
             {
                 var position = currentParentPosition + (entry.Position - entry.ParentPosition);
-                trajectory[idx++] = ScalePosition(position);
+                trajectory[idx++] = TransformPosition(position);
             }
         }
         else
@@ -351,14 +362,14 @@ public class CelestialBodyView
             // Helio-centric trajectory
             foreach (var entry in data)
             {
-                trajectory[idx++] = ScalePosition(entry.Position);
+                trajectory[idx++] = TransformPosition(entry.Position);
             }
         }
 
         // Add current position - this prevents "gaps" between the last tracked position and the current position
         // (current position might not be tracked due to its revolution angle being below the threshold), and makes
         // the trajectory update appear to be smooth.
-        trajectory[idx++] = ScalePosition(CelestialBody.Position);
+        trajectory[idx++] = TransformPosition(CelestialBody.Position);
 
         return trajectory;
     }

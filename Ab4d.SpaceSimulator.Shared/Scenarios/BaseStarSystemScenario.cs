@@ -107,7 +107,7 @@ public abstract class BaseStarSystemScenario : IScenario
             {
                 Name = entity.Name,
                 Type = entity.Type,
-                Position = new Vector3d(0, 0, entity.DistanceFromParent), // meters
+                Position = new Vector3d(entity.DistanceFromParent, 0, 0), // meters
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
                 HasOrbit = true,
@@ -167,7 +167,7 @@ public abstract class BaseStarSystemScenario : IScenario
                 {
                     Name = moonEntity.Name,
                     Type = moonEntity.Type,
-                    Position = new Vector3d(0, 0, moonEntity.DistanceFromParent) + celestialBody.Position, // meters
+                    Position = new Vector3d(moonEntity.DistanceFromParent, 0, 0) + celestialBody.Position, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters
                     HasOrbit = true,
@@ -228,12 +228,12 @@ public abstract class BaseStarSystemScenario : IScenario
 
     private static Vector3d TiltOrbitalVelocity(double orbitalVelocity, double orbitalInclination)
     {
-        // In initial state, the celestial body is placed at position (0, 0, R), in coordinate system where X axis
-        // points to the right of the monitor, Y axis points upwards, and Z axis points out of the monitor (towards
-        // user). The orbital velocity is tangential, so if it were not for orbital inclination, it would point in
-        // direction of the X unit vector. To account for inclination, we need to tilt the vector in the X-Y plane.
+        // In initial state, the celestial body is placed at position (R, 0, 0), in coordinate system where X axis
+        // points out of the monitor (towards the user), Y axis points right, and Z axis points upwards. The orbital
+        // velocity is tangential, so if it were not for orbital inclination, it would point in direction of the Y
+        // unit vector. To account for inclination, we need to tilt the vector in the X-Y plane.
         var phi = orbitalInclination * Math.PI / 180.0; // deg -> rad
-        var directionVector = new Vector3d(Math.Cos(phi), Math.Sin(phi), 0); // becomes (1, 0, 0) when phi=0
+        var directionVector = new Vector3d(0, Math.Cos(phi), Math.Sin(phi)); // becomes (0, 1, 0) when phi=0
         return orbitalVelocity * directionVector;
     }
 }
