@@ -1,3 +1,4 @@
+using System;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SpaceSimulator.Physics;
 
@@ -29,6 +30,70 @@ public class SolarSystem : BaseStarSystemScenario
             Pluto,
         ])
     {
+    }
+
+    public override void SetupScenario(PhysicsEngine physicsEngine, Visualization.VisualizationEngine visualizationEngine, Visualization.PlanetTextureLoader planetTextureLoader)
+    {
+        base.SetupScenario(physicsEngine, visualizationEngine, planetTextureLoader);
+
+        // Instantiate almanac and create additional visualization entries for planets
+        var almanac = new SolarSystemAlmanac();
+
+        var entries = new[]
+        {
+            (Mercury, almanac.Mercury),
+            (Venus, almanac.Venus),
+            //(Earth, almanac.Earth),
+            //(Moon, almanac.Moon),
+            (Mars, almanac.Mars),
+            (Jupiter, almanac.Jupiter),
+            (Saturn, almanac.Saturn),
+            (Uranus, almanac.Uranus),
+            (Neptune, almanac.Neptune),
+            (Pluto, almanac.Pluto),
+        };
+
+        var dateTime = new DateTime(year: 1990, month: 4, day: 19, hour: 0, minute: 0, second: 0, kind: DateTimeKind.Utc); // Start time
+        foreach (var (entity, almanacBody) in entries)
+        {
+            SharpEngine.Materials.StandardMaterialBase material;
+
+            // Material / texture
+            if (entity.Type == CelestialBodyType.Star)
+                material = new SharpEngine.Materials.SolidColorMaterial(entity.BaseColor, name: $"{entity.Name}Material");
+            else
+                material = new SharpEngine.Materials.StandardMaterial(entity.BaseColor, name: $"{entity.Name}Material");
+            if (entity.TextureName != null)
+                planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
+            material.Opacity = 0.5f;
+
+            var orbitalPeriod = entity.DistanceFromParent * 2 * Math.PI / (entity.OrbitalVelocity * 3600 * 24);
+            var timeIncrement = orbitalPeriod / 360 * 10; // 10 deg
+            for (var i = 0; i < (360 / 10); i++)
+            {
+                almanac.Update(dateTime.AddDays(timeIncrement * i));
+
+                // TODO: transform coordinate system
+                var position = new Vector3d(
+                    almanacBody.EclipticX,
+                    almanacBody.EclipticY,
+                    almanacBody.EclipticZ
+                ) * Constants.AstronomicalUnit; // Almanac returns positions scaled with AU
+
+                var physicalObject = new Physics.CelestialBody()
+                {
+                    Name = $"{entity.Name}-{i}",
+                    Position = position,
+                    Radius = 0.5 * entity.Diameter / 4, // Quarter of original planet size
+                };
+
+                var visualization = new Visualization.CelestialBodyView(visualizationEngine, physicalObject, material)
+                {
+                    ShowName = false
+                };
+                visualizationEngine.AddCelestialBodyVisualization(visualization);
+            }
+        }
     }
 
     #region Celestial bodies
