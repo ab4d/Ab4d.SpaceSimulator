@@ -102,6 +102,8 @@ public class VisualizationEngine
         Camera = camera;
         CameraController = cameraController;
 
+        RootNode.Transform = new AxisAngleRotateTransform(Vector3.UnitX, -90);
+
         camera.CameraChanged += (sender, args) =>
         {
             // When simulation is not paused, then on each update we will update the scale of body spheres and positions and alignment of body names.
