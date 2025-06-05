@@ -16,6 +16,7 @@ public class SolarSystemAlmanac
     public readonly CelestialBody Saturn = new _Saturn();
     public readonly CelestialBody Uranus = new _Uranus();
     public readonly CelestialBody Neptune = new _Neptune();
+    public readonly CelestialBody Pluto = new _Pluto();
 
     public void Update(DateTime dateTime)
     {
@@ -35,7 +36,8 @@ public class SolarSystemAlmanac
             Jupiter,
             Saturn,
             Uranus,
-            Neptune
+            Neptune,
+            Pluto
         };
         foreach (var planet in planets)
         {
@@ -313,12 +315,34 @@ public class SolarSystemAlmanac
     {
         public override void UpdateOrbitalParameters(double d)
         {
-            LongitudeOfAscendingNode = 131.7806 + 3.0173E-5 * d;
-            Inclination = 1.7700 - 2.55E-7 * d;
-            ArgumentOfPerihelion = 272.8461 - 6.027E-6 * d;
+            LongitudeOfAscendingNode = (131.7806 + 3.0173E-5 * d) % 360;
+            Inclination = (1.7700 - 2.55E-7 * d) % 360;
+            ArgumentOfPerihelion = (272.8461 - 6.027E-6 * d) % 360;
             MeanDistance = 30.05826 + 3.313E-8 * d;
             Eccentricity = 0.008606 + 2.15E-9 * d;
-            MeanAnomaly = 260.2471 + 0.005995147 * d;
+            MeanAnomaly = (260.2471 + 0.005995147 * d) % 360;
+        }
+    }
+
+    private class _Pluto() : CelestialBody("Pluto")
+    {
+        // NOTE: not available in https://www.stjarnhimlen.se/comp/tutorial.html
+        // Taken from Orbital Ephemerides of the Sun, Moon, and Planets, Table 8.10.2 (parameters valid for 1800 AD - 2050 AD).
+        public override void UpdateOrbitalParameters(double d)
+        {
+            // The change rates here are per-century instead of per day
+            d /= (365.25 * 100);
+
+            var longitudeOfPerihelion = 224.06891629 - 0.04062942 * d;
+            var meanLongitude = 238.92903833 + 145.20780515 * d;
+
+            LongitudeOfAscendingNode = 110.30393684 - 0.01183482 * d;
+            Inclination = 17.14001206 + 0.00004818 * d;
+            ArgumentOfPerihelion = longitudeOfPerihelion - LongitudeOfAscendingNode;
+            MeanDistance = 39.48211675 - 0.00031596 * d;
+            Eccentricity = 0.24882730 + 0.00005170 * d;
+
+            MeanAnomaly = meanLongitude - longitudeOfPerihelion;
         }
     }
 }
