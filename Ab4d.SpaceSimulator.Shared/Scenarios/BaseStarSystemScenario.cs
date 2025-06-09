@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Lights;
 using Ab4d.SharpEngine.Materials;
@@ -111,10 +112,7 @@ public abstract class BaseStarSystemScenario : IScenario
                 }
                 else
                 {
-                    initialPosition = new Vector3d(entity.DistanceFromParent, 0, 0);
-
-                    var orbitalVelocity = ComputeOrbitalVelocity(hostStarObject.Mass, entity.DistanceFromParent);
-                    initialVelocity = TiltOrbitalVelocity(orbitalVelocity, entity.OrbitalInclination);
+                    (initialPosition, initialVelocity) = PlaceIntoOrbitAtPeriapsis(entity, hostStarObject);
                 }
             }
 
@@ -183,9 +181,7 @@ public abstract class BaseStarSystemScenario : IScenario
                 }
                 else
                 {
-                    moonInitialPosition = new Vector3d(moonEntity.DistanceFromParent, 0, 0) + celestialBody.Position;
-                    var moonOrbitalVelocity = ComputeOrbitalVelocity(celestialBody.Mass, moonEntity.DistanceFromParent);
-                    moonInitialVelocity = TiltOrbitalVelocity(moonOrbitalVelocity, moonEntity.OrbitalInclination) + celestialBody.Velocity;
+                    (moonInitialPosition, moonInitialVelocity) = PlaceIntoOrbitAtPeriapsis(moonEntity, celestialBody);
                 }
 
                 var moonMassBody = new CelestialBody()
@@ -246,19 +242,27 @@ public abstract class BaseStarSystemScenario : IScenario
         return null; // No custom settings; might be overridden by child implementation.
     }
 
-    private double ComputeOrbitalVelocity(double parentMass, double orbitRadius)
+    private static Tuple<Vector3d, Vector3d> PlaceIntoOrbitAtPeriapsis(Entity entity, CelestialBody parent)
     {
-        return Math.Sqrt(parentMass * Constants.GravitationalConstant / orbitRadius);
-    }
+        // Orientation of the ellipse is determined from Kepler elements - longitude of ascending node (Omega),
+        // inclination (i), and argument of periapsis (omega), which can be interpreted as 3-1-3 Euler angles,
+        // and used to rotate the base axis vectors.
+        var dcm =
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, (float)entity.ArgumentOfPeriapsis * MathF.PI / 180) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, (float)entity.OrbitalInclination * MathF.PI / 180) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, (float)entity.LongitudeOfAscendingNode * MathF.PI / 180);
 
-    private static Vector3d TiltOrbitalVelocity(double orbitalVelocity, double orbitalInclination)
-    {
-        // In initial state, the celestial body is placed at position (R, 0, 0), in coordinate system where X axis
-        // points out of the monitor (towards the user), Y axis points right, and Z axis points upwards. The orbital
-        // velocity is tangential, so if it were not for orbital inclination, it would point in direction of the Y
-        // unit vector. To account for inclination, we need to tilt the vector in the X-Y plane.
-        var phi = orbitalInclination * Math.PI / 180.0; // deg -> rad
-        var directionVector = new Vector3d(0, Math.Cos(phi), Math.Sin(phi)); // becomes (0, 1, 0) when phi=0
-        return orbitalVelocity * directionVector;
+        // Place the entity at the periapsis. The nice thing about periapsis (and apoapsis) is that the direction of
+        // velocity is the same as that of semi-minor axis.
+        var majorSemiAxisDir = Vector3.Transform(Vector3.UnitX, dcm);
+        var minorSemiAxisDir = Vector3.Transform(Vector3.UnitY, dcm);
+
+        var distPeriapsis = (1 - entity.OrbitalEccentricity) * entity.DistanceFromParent;
+        var orbitalVelocity = Math.Sqrt(Constants.GravitationalConstant  * parent.Mass * (2.0 / distPeriapsis - 1 / entity.DistanceFromParent));
+
+        var initialPosition = parent.Position + new Vector3d(majorSemiAxisDir.X, majorSemiAxisDir.Y, majorSemiAxisDir.Z) * distPeriapsis;
+        var initialVelocity = new Vector3d(minorSemiAxisDir.X, minorSemiAxisDir.Y, minorSemiAxisDir.Z) * orbitalVelocity;
+
+        return new Tuple<Vector3d, Vector3d>(initialPosition, initialVelocity + parent.Velocity);
     }
 }
