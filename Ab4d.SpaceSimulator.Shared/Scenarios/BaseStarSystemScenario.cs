@@ -193,9 +193,10 @@ public abstract class BaseStarSystemScenario : IScenario
                     Radius = moonEntity.Diameter / 2.0, // meters
                     HasOrbit = true,
                     OrbitRadius = moonEntity.DistanceFromParent, // meters
+                    OrbitalEccentricity = moonEntity.OrbitalEccentricity,
                     OrbitalInclination = moonEntity.OrbitalInclination, // deg
-                    LongitudeOfAscendingNode = entity.LongitudeOfAscendingNode, // deg
-                    ArgumentOfPeriapsis = entity.ArgumentOfPeriapsis, // deg
+                    LongitudeOfAscendingNode = moonEntity.LongitudeOfAscendingNode, // deg
+                    ArgumentOfPeriapsis = moonEntity.ArgumentOfPeriapsis, // deg
                     Velocity = moonInitialVelocity, // m/s
                     Parent = celestialBody, // parent mass body
                 };
