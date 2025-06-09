@@ -1,4 +1,5 @@
 using System;
+using Ab4d.SpaceSimulator.Physics;
 
 namespace Ab4d.SpaceSimulator.Scenarios;
 
@@ -128,6 +129,8 @@ public class SolarSystemAlmanac
         public double EclipticLon;
         public double EclipticLat;
         public double EclipticDistance;
+
+        public Vector3d EclipticPosition => new Vector3d(EclipticX, EclipticY, EclipticZ) * Constants.AstronomicalUnit;
 
         public abstract void UpdateOrbitalParameters(double d);
 

@@ -73,16 +73,10 @@ public class SolarSystem : BaseStarSystemScenario
             {
                 almanac.Update(dateTime.AddSeconds(timeIncrement * i));
 
-                var position = new Vector3d(
-                    almanacBody.EclipticX,
-                    almanacBody.EclipticY,
-                    almanacBody.EclipticZ
-                ) * Constants.AstronomicalUnit; // Almanac returns positions scaled with AU
-
                 var physicalObject = new Physics.CelestialBody()
                 {
                     Name = $"{entity.Name}-{i}",
-                    Position = position,
+                    Position = almanacBody.EclipticPosition,
                     Radius = 0.5 * entity.Diameter / 4, // Quarter of original planet size
                 };
 
