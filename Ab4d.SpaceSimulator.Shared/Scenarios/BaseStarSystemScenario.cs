@@ -15,7 +15,7 @@ namespace Ab4d.SpaceSimulator.Scenarios;
 /// </summary>
 public abstract class BaseStarSystemScenario : IScenario
 {
-    protected struct Entity
+    protected class Entity
     {
         // ** Basic info **
         public required string Name;

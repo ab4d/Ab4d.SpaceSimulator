@@ -34,10 +34,13 @@ public class SolarSystem : BaseStarSystemScenario
 
     public override void SetupScenario(PhysicsEngine physicsEngine, Visualization.VisualizationEngine visualizationEngine, Visualization.PlanetTextureLoader planetTextureLoader)
     {
-        base.SetupScenario(physicsEngine, visualizationEngine, planetTextureLoader);
+        const bool initializeFromAlmanac = true; // Initialize planet positions from almanac.
+        const bool showAlmanacPositions = true; // Show planet positions computed by almanac.
 
-        // Instantiate almanac and create additional visualization entries for planets
+        // Instantiate almanac
         var almanac = new SolarSystemAlmanac();
+
+        var dateTime = new DateTime(year: 1990, month: 4, day: 19, hour: 0, minute: 0, second: 0, kind: DateTimeKind.Utc); // Start time
 
         var entries = new[]
         {
@@ -53,7 +56,33 @@ public class SolarSystem : BaseStarSystemScenario
             (Pluto, almanac.Pluto),
         };
 
-        var dateTime = new DateTime(year: 1990, month: 4, day: 19, hour: 0, minute: 0, second: 0, kind: DateTimeKind.Utc); // Start time
+        // Initialize planet positions from almanac
+        if (initializeFromAlmanac)
+        {
+            almanac.Update(dateTime);
+            foreach (var (entity, almanacBody) in entries)
+            {
+                entity.InitialPosition = almanacBody.EclipticPosition;
+
+                // TODO: we could also update the orbital parameters with the ones from almanac.
+            }
+
+            // For now, estimate initial velocities from 1-minute deltas.
+            const double dt = 60;
+            almanac.Update(dateTime.AddSeconds(dt));
+            foreach (var (entity, almanacBody) in entries)
+            {
+                entity.InitialVelocity = (almanacBody.EclipticPosition - entity.InitialPosition) / dt;
+            }
+        }
+
+        // Setup scenario
+        base.SetupScenario(physicsEngine, visualizationEngine, planetTextureLoader);
+
+        // Show planet positions computed by almanac.
+        if (!showAlmanacPositions)
+            return;
+
         foreach (var (entity, almanacBody) in entries)
         {
             SharpEngine.Materials.StandardMaterialBase material;
@@ -67,7 +96,8 @@ public class SolarSystem : BaseStarSystemScenario
                 planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
             material.Opacity = 0.5f;
 
-            var orbitalPeriod = 2 * Math.PI * Math.Sqrt(Math.Pow(entity.DistanceFromParent, 3) / (Constants.GravitationalConstant * Constants.MassOfSun)); // seconds
+            const double mu = Constants.GravitationalConstant * Constants.MassOfSun;
+            var orbitalPeriod = 2 * Math.PI * Math.Sqrt(Math.Pow(entity.DistanceFromParent, 3) / mu); // seconds
             var timeIncrement = orbitalPeriod / 360 * 10; // 10 deg
             for (var i = 0; i < (360 / 10); i++)
             {
@@ -110,7 +140,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Mercury
-    private static readonly Entity Mercury = new()
+    private static Entity Mercury = new()
     {
         Name = "Mercury",
         Type = CelestialBodyType.Planet,
@@ -134,7 +164,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Venus
-    private static readonly Entity Venus = new()
+    private static Entity Venus = new()
     {
         Name = "Venus",
         Type = CelestialBodyType.Planet,
@@ -159,7 +189,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Earth and its Moon
-    private static readonly Entity Earth = new()
+    private static Entity Earth = new()
     {
         Name = "Earth",
         Type = CelestialBodyType.Planet,
@@ -204,7 +234,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Mars
-    private static readonly Entity Mars = new()
+    private static Entity Mars = new()
     {
         Name = "Mars",
         Type = CelestialBodyType.Planet,
@@ -228,7 +258,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Jupiter
-    private static readonly Entity Jupiter = new()
+    private static Entity Jupiter = new()
     {
         Name = "Jupiter",
         Type = CelestialBodyType.Planet,
@@ -252,7 +282,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Saturn
-    private static readonly Entity Saturn = new()
+    private static Entity Saturn = new()
     {
         Name = "Saturn",
         Type = CelestialBodyType.Planet,
@@ -276,7 +306,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Uranus
-    private static readonly Entity Uranus = new()
+    private static Entity Uranus = new()
     {
         Name = "Uranus",
         Type = CelestialBodyType.Planet,
@@ -300,7 +330,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Neptune
-    private static readonly Entity Neptune = new()
+    private static Entity Neptune = new()
     {
         Name = "Nepute",
         Type = CelestialBodyType.Planet,
@@ -324,7 +354,7 @@ public class SolarSystem : BaseStarSystemScenario
     };
 
     // Pluto
-    private static readonly Entity Pluto = new()
+    private static Entity Pluto = new()
     {
         Name = "Pluto",
         Type = CelestialBodyType.Planet,
