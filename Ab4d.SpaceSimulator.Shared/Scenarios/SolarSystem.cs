@@ -67,11 +67,11 @@ public class SolarSystem : BaseStarSystemScenario
                 planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
             material.Opacity = 0.5f;
 
-            var orbitalPeriod = entity.DistanceFromParent * 2 * Math.PI / (entity.OrbitalVelocity * 3600 * 24);
+            var orbitalPeriod = 2 * Math.PI * Math.Sqrt(Math.Pow(entity.DistanceFromParent, 3) / (Constants.GravitationalConstant * Constants.MassOfSun)); // seconds
             var timeIncrement = orbitalPeriod / 360 * 10; // 10 deg
             for (var i = 0; i < (360 / 10); i++)
             {
-                almanac.Update(dateTime.AddDays(timeIncrement * i));
+                almanac.Update(dateTime.AddSeconds(timeIncrement * i));
 
                 var position = new Vector3d(
                     almanacBody.EclipticX,
