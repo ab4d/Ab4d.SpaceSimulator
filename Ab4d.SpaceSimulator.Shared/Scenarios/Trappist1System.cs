@@ -56,7 +56,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 0.0898 * Constants.MassOfSun,
         Diameter = 0.1192 * Constants.DiameterOfSun,
         DistanceFromParent = 0,
-        OrbitalVelocity = 0,
 
         AxialTilt = 0,
 
@@ -76,7 +75,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 1.374 * Constants.MassOfEarth,
         Diameter = 1.116 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.01154 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1b-color+clouds-1k.png",
         BaseColor = Colors.LightSkyBlue,
@@ -93,7 +91,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 1.308 * Constants.MassOfEarth,
         Diameter = 1.097 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.01580 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1c-color+clouds-1k.png",
         BaseColor = Colors.Beige,
@@ -110,7 +107,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 0.388 * Constants.MassOfEarth,
         Diameter = 0.788 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.02227 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1d-color+clouds-1k.png",
         BaseColor = Colors.DarkBlue,
@@ -127,7 +123,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 0.692 * Constants.MassOfEarth,
         Diameter = 0.920 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.02925 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1e-color+clouds-1k.png",
         BaseColor = Colors.DimGray,
@@ -144,7 +139,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 1.039 * Constants.MassOfEarth,
         Diameter = 1.045 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.03849 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1f-color+clouds-1k.png",
         BaseColor = Colors.WhiteSmoke,
@@ -161,7 +155,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 1.321 * Constants.MassOfEarth,
         Diameter = 1.129 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.04683 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1g-color+clouds-1k.png",
         BaseColor = Colors.DimGray,
@@ -178,7 +171,6 @@ public class Trappist1System : BaseStarSystemScenario
         Mass = 0.326 * Constants.MassOfEarth,
         Diameter = 0.755 * Constants.DiameterOfEarth,
         DistanceFromParent = 0.06189 * Constants.AstronomicalUnit,
-        OrbitalVelocity = 0, // Estimate
 
         TextureName = "T1h-color-1k.png",
         BaseColor = Colors.SandyBrown,

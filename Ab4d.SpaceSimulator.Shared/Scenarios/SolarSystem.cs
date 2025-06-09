@@ -106,7 +106,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 1_988_550 * 1e24,
         Diameter = 1_392_700 * 1e3,
         DistanceFromParent = 0,
-        OrbitalVelocity = 0,
 
         AxialTilt = 7.25, // https://en.wikipedia.org/wiki/Axial_tilt
 
@@ -125,7 +124,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 0.330 * 1e24,
         Diameter = 4_879 * 1e3,
         DistanceFromParent = 57.9 * 1e9,
-        OrbitalVelocity = 47.4 * 1e3,
 
         OrbitalEccentricity = 0.206,
 
@@ -150,7 +148,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 4.87 * 1e24,
         Diameter = 12_104 * 1e3,
         DistanceFromParent = 108.2 * 1e9,
-        OrbitalVelocity = 35.0 * 1e3,
 
         OrbitalEccentricity = 0.007,
 
@@ -176,7 +173,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 5.97 * 1e24,
         Diameter = 12_756 * 1e3,
         DistanceFromParent = 149.6 * 1e9,
-        OrbitalVelocity = 29.8 * 1e3,
 
         AxialTilt = 23.4,
 
@@ -199,7 +195,6 @@ public class SolarSystem : BaseStarSystemScenario
                 Mass = 0.073 * 1e24,
                 Diameter = 3_475 * 1e3,
                 DistanceFromParent = 0.384 * 1e9,
-                OrbitalVelocity = 1.0 * 1e3,
 
                 AxialTilt = 6.7,
 
@@ -223,7 +218,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 0.642 * 1e24,
         Diameter = 6_792 * 1e3,
         DistanceFromParent = 228.0 * 1e9,
-        OrbitalVelocity = 24.1 * 1e3,
 
         OrbitalEccentricity = 0.094,
 
@@ -248,7 +242,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 1_898 * 1e24,
         Diameter = 142_984 * 1e3,
         DistanceFromParent = 778.5 * 1e9,
-        OrbitalVelocity = 13.1 * 1e3,
 
         OrbitalEccentricity = 0.049,
 
@@ -273,7 +266,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 568 * 1e24,
         Diameter = 120_536 * 1e3,
         DistanceFromParent = 1_432.0 * 1e9,
-        OrbitalVelocity = 9.7 * 1e3,
 
         OrbitalEccentricity = 0.052,
 
@@ -298,7 +290,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 86.8 * 1e24,
         Diameter = 51_118 * 1e3,
         DistanceFromParent = 2_867.0 * 1e9,
-        OrbitalVelocity = 6.8 * 1e3,
 
         OrbitalEccentricity = 0.047,
 
@@ -323,7 +314,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 102 * 1e24,
         Diameter = 49_528 * 1e3,
         DistanceFromParent = 4_515.0 * 1e9,
-        OrbitalVelocity = 5.4 * 1e3,
 
         OrbitalEccentricity = 0.010,
 
@@ -348,7 +338,6 @@ public class SolarSystem : BaseStarSystemScenario
         Mass = 0.0130 * 1e24,
         Diameter = 2_376 * 1e3,
         DistanceFromParent = 5_906.4 * 1e9,
-        OrbitalVelocity = 4.7 * 1e3,
 
         OrbitalEccentricity = 0.244,
 

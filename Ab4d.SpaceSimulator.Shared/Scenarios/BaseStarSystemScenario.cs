@@ -24,7 +24,11 @@ public abstract class BaseStarSystemScenario : IScenario
         public required double Mass; // kg
         public required double Diameter; // meters
         public required double DistanceFromParent; // meters
-        public required double OrbitalVelocity; // m/s
+
+        // Optional initial position and velocity vector (in ecliptic coordinates). If either is missing, the entity
+        // is placed into periapsis of its orbit, and initial velocity is automatically estimated.
+        public Vector3d? InitialPosition = null;
+        public Vector3d? InitialVelocity = null;
 
         // Eccentricity
         public double OrbitalEccentricity = 0;
@@ -95,11 +99,23 @@ public abstract class BaseStarSystemScenario : IScenario
 
         foreach (var entity in _entities)
         {
-            // If orbital velocity is not given for a planet/moon, estimate it.
-            var orbitalVelocity = entity.OrbitalVelocity;
-            if (orbitalVelocity == 0 && entity.Type != CelestialBodyType.Star && hostStarObject != null)
+            var initialPosition = Vector3d.Zero;
+            var initialVelocity = Vector3d.Zero;
+
+            if (hostStarObject != null)
             {
-                orbitalVelocity = ComputeOrbitalVelocity(hostStarObject.Mass, entity.DistanceFromParent);
+                if (entity is { InitialPosition: not null, InitialVelocity: not null })
+                {
+                    initialPosition = entity.InitialPosition.Value;
+                    initialVelocity = entity.InitialVelocity.Value;
+                }
+                else
+                {
+                    initialPosition = new Vector3d(entity.DistanceFromParent, 0, 0);
+
+                    var orbitalVelocity = ComputeOrbitalVelocity(hostStarObject.Mass, entity.DistanceFromParent);
+                    initialVelocity = TiltOrbitalVelocity(orbitalVelocity, entity.OrbitalInclination);
+                }
             }
 
             // Mass body for the physics engine
@@ -107,7 +123,7 @@ public abstract class BaseStarSystemScenario : IScenario
             {
                 Name = entity.Name,
                 Type = entity.Type,
-                Position = new Vector3d(entity.DistanceFromParent, 0, 0), // meters
+                Position = initialPosition, // meters
                 Mass = entity.Mass, // kg
                 Radius = entity.Diameter / 2.0, // meters
                 HasOrbit = true,
@@ -116,7 +132,7 @@ public abstract class BaseStarSystemScenario : IScenario
                 OrbitalInclination = entity.OrbitalInclination, // deg
                 LongitudeOfAscendingNode = entity.LongitudeOfAscendingNode, // deg
                 ArgumentOfPeriapsis = entity.ArgumentOfPeriapsis, // deg
-                Velocity = TiltOrbitalVelocity(orbitalVelocity, entity.OrbitalInclination), // m/s
+                Velocity = initialVelocity, // m/s
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
                 AxialTilt = entity.AxialTilt, // degrees
                 Parent = hostStarObject,
@@ -157,17 +173,26 @@ public abstract class BaseStarSystemScenario : IScenario
             // Create moon(s)
             foreach (var moonEntity in entity.Moons ?? [])
             {
-                var moonOrbitalVelocity = moonEntity.OrbitalVelocity;
-                if (moonOrbitalVelocity == 0)
+                Vector3d moonInitialPosition;
+                Vector3d moonInitialVelocity;
+
+                if (moonEntity is { InitialPosition: not null, InitialVelocity: not null })
                 {
-                    moonOrbitalVelocity = ComputeOrbitalVelocity(celestialBody.Mass, moonEntity.DistanceFromParent);
+                    moonInitialPosition = moonEntity.InitialPosition.Value;
+                    moonInitialVelocity = moonEntity.InitialVelocity.Value;
+                }
+                else
+                {
+                    moonInitialPosition = new Vector3d(moonEntity.DistanceFromParent, 0, 0) + celestialBody.Position;
+                    var moonOrbitalVelocity = ComputeOrbitalVelocity(celestialBody.Mass, moonEntity.DistanceFromParent);
+                    moonInitialVelocity = TiltOrbitalVelocity(moonOrbitalVelocity, moonEntity.OrbitalInclination) + celestialBody.Velocity;
                 }
 
                 var moonMassBody = new CelestialBody()
                 {
                     Name = moonEntity.Name,
                     Type = moonEntity.Type,
-                    Position = new Vector3d(moonEntity.DistanceFromParent, 0, 0) + celestialBody.Position, // meters
+                    Position = moonInitialPosition, // meters
                     Mass = moonEntity.Mass, // kg
                     Radius = moonEntity.Diameter / 2.0, // meters
                     HasOrbit = true,
@@ -175,7 +200,7 @@ public abstract class BaseStarSystemScenario : IScenario
                     OrbitalInclination = moonEntity.OrbitalInclination, // deg
                     LongitudeOfAscendingNode = entity.LongitudeOfAscendingNode, // deg
                     ArgumentOfPeriapsis = entity.ArgumentOfPeriapsis, // deg
-                    Velocity = TiltOrbitalVelocity(moonOrbitalVelocity,  moonEntity.OrbitalInclination) + celestialBody.Velocity, // m/s
+                    Velocity = moonInitialVelocity, // m/s
                     Parent = celestialBody, // parent mass body
                 };
                 moonMassBody.Initialize(); // Set up trajectory tracker, etc.
