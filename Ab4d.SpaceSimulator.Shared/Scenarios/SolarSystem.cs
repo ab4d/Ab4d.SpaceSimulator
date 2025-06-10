@@ -46,8 +46,8 @@ public class SolarSystem : BaseStarSystemScenario
         {
             (Mercury, almanac.Mercury),
             (Venus, almanac.Venus),
-            //(Earth, almanac.Earth),
-            //(Moon, almanac.Moon),
+            (Earth, almanac.Earth),
+            //(Moon, almanac.Moon), // TODO
             (Mars, almanac.Mars),
             (Jupiter, almanac.Jupiter),
             (Saturn, almanac.Saturn),
@@ -62,7 +62,7 @@ public class SolarSystem : BaseStarSystemScenario
             almanac.Update(dateTime);
             foreach (var (entity, almanacBody) in entries)
             {
-                entity.InitialPosition = almanacBody.EclipticPosition;
+                entity.InitialPosition = almanacBody.Position;
 
                 // TODO: we could also update the orbital parameters with the ones from almanac.
             }
@@ -72,7 +72,7 @@ public class SolarSystem : BaseStarSystemScenario
             almanac.Update(dateTime.AddSeconds(dt));
             foreach (var (entity, almanacBody) in entries)
             {
-                entity.InitialVelocity = (almanacBody.EclipticPosition - entity.InitialPosition) / dt;
+                entity.InitialVelocity = (almanacBody.Position - entity.InitialPosition) / dt;
             }
         }
 
@@ -106,7 +106,7 @@ public class SolarSystem : BaseStarSystemScenario
                 var physicalObject = new Physics.CelestialBody()
                 {
                     Name = $"{entity.Name}-{i}",
-                    Position = almanacBody.EclipticPosition,
+                    Position = almanacBody.Position,
                     Radius = 0.5 * entity.Diameter / 4, // Quarter of original planet size
                 };
 
