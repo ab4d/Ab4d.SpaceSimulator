@@ -107,7 +107,7 @@ public class CelestialBodyView
 
             OrbitNode = new EllipseLineNode(
                 orbitColor,
-                8,
+                1,
                 name: $"{this.Name}-OrbitEllipse")
             {
                 CenterPosition = TransformPosition(CelestialBody.Parent.Position + _centerOffset),
