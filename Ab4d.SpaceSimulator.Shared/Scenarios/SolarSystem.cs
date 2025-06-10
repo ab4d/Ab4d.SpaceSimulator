@@ -35,7 +35,7 @@ public class SolarSystem : BaseStarSystemScenario
     public override void SetupScenario(PhysicsEngine physicsEngine, Visualization.VisualizationEngine visualizationEngine, Visualization.PlanetTextureLoader planetTextureLoader)
     {
         const bool initializeFromAlmanac = true; // Initialize planet positions from almanac.
-        const bool showAlmanacPositions = true; // Show planet positions computed by almanac.
+        const bool showAlmanacPositions = false; // Show planet positions computed by almanac.
 
         // Instantiate almanac
         var almanac = new SolarSystemAlmanac();
