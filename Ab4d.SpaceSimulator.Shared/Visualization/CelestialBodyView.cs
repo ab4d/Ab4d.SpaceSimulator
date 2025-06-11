@@ -149,7 +149,7 @@ public class CelestialBodyView
                 var ringInfo = CelestialBody.Rings[i];
 
                 // Create material
-                var ringMaterial = new StandardMaterial(ringInfo.BaseColor, name: $"{this.Name}-{ringInfo.Name}-Material");
+                var ringMaterial = new SolidColorMaterial(ringInfo.BaseColor, name: $"{this.Name}-{ringInfo.Name}-Material");
                 if (ringInfo.TextureName != null && textureLoader != null)
                     textureLoader.LoadPlanetTextureAsync(ringInfo.TextureName, ringMaterial);
 
