@@ -332,6 +332,8 @@ public class SolarSystemAlmanac
 
             // Convert degree-based angular elements to radians to simplify subsequent computations.
             Inclination *= Math.PI / 180.0;
+            MeanLongitude *= Math.PI / 180.0;
+            LongitudeOfPerihelion *= Math.PI / 180.0;
             LongitudeOfAscendingNode *= Math.PI / 180.0;
             ArgumentOfPerihelion *= Math.PI / 180.0;
             MeanAnomaly *= Math.PI / 180.0;
@@ -342,6 +344,8 @@ public class SolarSystemAlmanac
             // Modulo the angular elements
             EccentricAnomaly %= 2 * Math.PI;
             Inclination %= 2 * Math.PI;
+            MeanLongitude %= 2 * Math.PI;
+            LongitudeOfPerihelion %= 2 * Math.PI;
             LongitudeOfAscendingNode %= 2 * Math.PI;
             ArgumentOfPerihelion %= 2 * Math.PI;
             MeanAnomaly %= 2 * Math.PI;
