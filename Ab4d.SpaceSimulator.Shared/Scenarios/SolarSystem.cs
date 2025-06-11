@@ -40,7 +40,7 @@ public class SolarSystem : BaseStarSystemScenario
         // Instantiate almanac
         var almanac = new SolarSystemAlmanac();
 
-        var dateTime = new DateTime(year: 1990, month: 4, day: 19, hour: 0, minute: 0, second: 0, kind: DateTimeKind.Utc); // Start time
+        var dateTime = DateTime.UtcNow;
 
         var entries = new[]
         {
