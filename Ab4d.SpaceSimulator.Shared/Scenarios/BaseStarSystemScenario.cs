@@ -61,6 +61,9 @@ public abstract class BaseStarSystemScenario : IScenario
         // Moons.
         public List<Entity>? Moons;
 
+        // Rings.
+        public List<CelestialBody.RingInfo>? Rings;
+
         public Entity()
         {
         }
@@ -134,6 +137,7 @@ public abstract class BaseStarSystemScenario : IScenario
                 RotationSpeed = (entity.RotationPeriod != 0) ? 360.0 / (entity.RotationPeriod * 3600) : 0, // rotation period (hours) -> angular speed (deg/s)
                 AxialTilt = entity.AxialTilt, // degrees
                 Parent = hostStarObject,
+                Rings = entity.Rings,
             };
             celestialBody.Initialize(); // Set up trajectory tracker, etc.
             physicsEngine.AddBody(celestialBody);
@@ -149,7 +153,11 @@ public abstract class BaseStarSystemScenario : IScenario
             if (entity.TextureName != null)
                 planetTextureLoader.LoadPlanetTextureAsync(entity.TextureName, material);
 
-            var celestialBodyView = new CelestialBodyView(visualizationEngine, celestialBody, material);
+            var celestialBodyView = new CelestialBodyView(
+                visualizationEngine,
+                celestialBody,
+                material,
+                planetTextureLoader);
 
             celestialBodyView.OrbitColor = entity.BaseColor;
 
@@ -199,6 +207,7 @@ public abstract class BaseStarSystemScenario : IScenario
                     ArgumentOfPeriapsis = moonEntity.ArgumentOfPeriapsis, // deg
                     Velocity = moonInitialVelocity, // m/s
                     Parent = celestialBody, // parent mass body
+                    Rings = moonEntity.Rings,
                 };
                 moonMassBody.Initialize(); // Set up trajectory tracker, etc.
                 physicsEngine.AddBody(moonMassBody);
@@ -211,7 +220,8 @@ public abstract class BaseStarSystemScenario : IScenario
                 var moonVisualization = new CelestialBodyView(
                     visualizationEngine,
                     moonMassBody,
-                    moonMaterial)
+                    moonMaterial,
+                    planetTextureLoader)
                 {
                     Parent = celestialBodyView, // parent visualization
                 };

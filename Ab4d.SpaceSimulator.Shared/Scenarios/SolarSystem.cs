@@ -308,6 +308,19 @@ public class SolarSystem : BaseStarSystemScenario
 
         TextureName = "saturnmap.png",
         BaseColor = new Color3(0.85f, 0.77f, 0.63f),  // Pale gold
+
+        Rings = [
+            new CelestialBody.RingInfo()
+            {
+                Name = "Dense Main Rings",
+                // Inner diameter of rings is: 184.000 km; outer diameter of rings is 274.000 km
+                // (source: https://wisp.physics.wisc.edu/astro104/lecture22/F15_02.jpg).
+                InnerRadius = 184_000_000 / 2.0, // meters
+                OuterRadius = 274_000_000 / 2.0, // meters
+                BaseColor = Colors.Gray,
+                TextureName = "saturn-rings-1x512.png",
+            },
+        ],
     };
 
     // Uranus

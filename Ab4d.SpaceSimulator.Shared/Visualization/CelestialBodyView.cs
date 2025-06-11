@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using System.Reflection.Metadata;
 using Ab4d.SharpEngine;
 using Ab4d.SharpEngine.Common;
 using Ab4d.SharpEngine.Materials;
@@ -35,6 +36,9 @@ public class CelestialBodyView
     // Dynamic trajectory / trail
     public readonly MultiLineNode? TrajectoryTrailNode;
 
+    // Ring(s)
+    public readonly CircleModelNode[]? RingNodes = null;
+
     public bool ShowName = true;
     public SceneNode? NameSceneNode { get; set; }
 
@@ -57,7 +61,7 @@ public class CelestialBodyView
         }
     }
 
-    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material)
+    public CelestialBodyView(VisualizationEngine engine, CelestialBody physicsObject, Material material, PlanetTextureLoader? textureLoader = null)
     {
         _visualizationEngine = engine;
 
@@ -136,6 +140,38 @@ public class CelestialBodyView
             UpdateTrajectoryTrailColor(); // Initial color update
         }
 
+        // Ring(s)
+        if (CelestialBody.Rings != null)
+        {
+            RingNodes = new CircleModelNode[CelestialBody.Rings.Count];
+            for (var i = 0; i < CelestialBody.Rings.Count; i++)
+            {
+                var ringInfo = CelestialBody.Rings[i];
+
+                // Create material
+                var ringMaterial = new StandardMaterial(ringInfo.BaseColor, name: $"{this.Name}-{ringInfo.Name}-Material");
+                if (ringInfo.TextureName != null && textureLoader != null)
+                    textureLoader.LoadPlanetTextureAsync(ringInfo.TextureName, ringMaterial);
+
+                // Create circle model node
+                RingNodes[i] = new CircleModelNode(name: $"{this.Name}-{ringInfo.Name}")
+                {
+                    CenterPosition = SphereNode.CenterPosition,
+                    InnerRadius = (float)ScaleDistance(ringInfo.InnerRadius),
+                    Radius = (float)ScaleDistance(ringInfo.OuterRadius),
+                    // By default, the ring circle lies in the X-Y visualization plane. UpdateVisualization() will
+                    // apply tilt transform, so that the ring's tilt will match that of the celestial body's sphere node.
+                    Normal = Vector3.UnitY,
+                    UpDirection = Vector3.UnitX,
+                    // Ensure ring is visible from both sides.
+                    Material = ringMaterial,
+                    BackMaterial = ringMaterial,
+                    TextureMappingType = CircleTextureMappingTypes.RadialFromInnerRadius,
+                    Segments = 359,
+                };
+            }
+        }
+
         // Perform initial update
         UpdatePhysicalProperties();
         UpdateVisualization();
@@ -151,6 +187,13 @@ public class CelestialBodyView
         if (TrajectoryTrailNode != null)
         {
             rootNode.Add(TrajectoryTrailNode);
+        }
+        if (RingNodes != null)
+        {
+            foreach (var ringNode in RingNodes)
+            {
+                rootNode.Add(ringNode);
+            }
         }
     }
 
@@ -181,6 +224,19 @@ public class CelestialBodyView
             TrajectoryTrailNode.Positions = GetTrajectoryTrail();
             UpdateTrajectoryTrailColor();
         }
+
+        // Update ring(s), if applicable - move their centers.
+        if (RingNodes != null)
+        {
+            foreach (var ringNode in RingNodes)
+            {
+                ringNode.CenterPosition = SphereNode.CenterPosition;
+
+                // Apply the same tilt/rotation transform; the ring should be rotationally invariant, so only the tilt
+                // part should be applicable.
+                ringNode.Transform = SphereNode.Transform;
+            }
+        }
     }
 
     // Finalize the visualization update - this updates properties that depend on both celestial body's physical properties
@@ -197,14 +253,13 @@ public class CelestialBodyView
         var lookDirection = Vector3.Normalize(camera.GetLookDirection());
         var distanceToCamera = Vector3.Dot(distanceVector, lookDirection);
 
-
         bool isBodyVisible;
+        bool forcedScaling = false;
 
         if (viewWidth > 0)
         {
             // Dynamic size change - can be triggered by other changes, such as viewport
             float sphereRadius = ScaleSize(CelestialBody.Radius);
-
 
             var xScale = MathF.Tan(camera.FieldOfView * MathF.PI / 360);
 
@@ -218,7 +273,10 @@ public class CelestialBodyView
                     var correctedSize = distanceToCamera * xScale * minSize / viewWidth; // Inverted eq. for displayedSize
 
                     if (correctedSize > 0)
+                    {
                         sphereRadius = correctedSize;
+                        forcedScaling = true; // Force rescaling of rings to match the size limit
+                    }
                 }
             }
 
@@ -254,9 +312,33 @@ public class CelestialBodyView
             isBodyVisible = false; // viewWidth == 0
         }
 
-
         if (NameSceneNode != null)
             NameSceneNode.Visibility = (isBodyVisible && _visualizationEngine.ShowNames && ShowName) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+
+        if (RingNodes != null && CelestialBody.Rings != null)
+        {
+            for (var i = 0; i < RingNodes.Length; i++)
+            {
+                var ringNode = RingNodes[i];
+                var ringInfo = CelestialBody.Rings[i];
+
+                if (forcedScaling)
+                {
+                    // Forced minimal planet size; rescale the ring radii accordingly.
+                    ringNode.InnerRadius = SphereNode.Radius * (float)(ringInfo.InnerRadius / CelestialBody.Radius);
+                    ringNode.Radius = SphereNode.Radius * (float)(ringInfo.OuterRadius / CelestialBody.Radius);
+                }
+                else
+                {
+                    // Native scaling
+                    ringNode.InnerRadius = (float)ScaleDistance(ringInfo.InnerRadius);
+                    ringNode.Radius = (float)ScaleDistance(ringInfo.OuterRadius);
+                }
+
+                // Toggle visibility
+                ringNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            }
+        }
 
         this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
 

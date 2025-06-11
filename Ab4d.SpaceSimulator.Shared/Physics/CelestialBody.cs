@@ -1,5 +1,6 @@
-using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using Ab4d.SharpEngine.Common;
 
 namespace Ab4d.SpaceSimulator.Physics;
 
@@ -32,6 +33,24 @@ public class CelestialBody : MassBody
 
     // Trajectory tracker
     public ITrajectoryTracker? TrajectoryTracker;
+
+    // Ring(s).
+    public struct RingInfo
+    {
+        // Name of the ring
+        public required string Name;
+
+        // Inner and outer radius of the ring, measured from parent planet's center (i.e., including the parent
+        // planet's radius).
+        public required double InnerRadius; // meters
+        public required double OuterRadius; // meters
+
+        // Base color and texture.
+        public required Color3 BaseColor;
+        public string? TextureName;
+    };
+
+    public List<RingInfo>? Rings;
 
     public override void Initialize()
     {
