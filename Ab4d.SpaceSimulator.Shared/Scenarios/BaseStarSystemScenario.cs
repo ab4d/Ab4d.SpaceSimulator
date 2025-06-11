@@ -42,7 +42,7 @@ public abstract class BaseStarSystemScenario : IScenario
         public double LongitudeOfAscendingNode = 0; // degrees
         public double ArgumentOfPeriapsis = 0; // degrees
         // NOTE: in-lieu of "arugment of periapsis", "longitude of periapsis" might be specified, which is a sum of
-        // "longitude of ascending" node and "argument of periapsis".
+        // "longitude of ascending node" and "argument of periapsis".
 
         // The tilt of planet's axis; called "obliquity to orbit" in NASA planetary fact sheet.
         public double AxialTilt = 0; // degrees

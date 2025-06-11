@@ -64,7 +64,12 @@ public class SolarSystem : BaseStarSystemScenario
             {
                 entity.InitialPosition = almanacBody.Position;
 
-                // TODO: we could also update the orbital parameters with the ones from almanac.
+                // Update orbital parameters (for visualization of orbit ellipses) as well.
+                // NOTE: almanac stores angular parameters in radians, whereas here we need them in degrees.
+                entity.OrbitalEccentricity = almanacBody.Eccentricity;
+                entity.OrbitalInclination = almanacBody.Inclination * 180 / Math.PI;
+                entity.LongitudeOfAscendingNode = almanacBody.LongitudeOfAscendingNode * 180 / Math.PI;
+                entity.ArgumentOfPeriapsis = almanacBody.ArgumentOfPerihelion * 180 / Math.PI;
             }
 
             // For now, estimate initial velocities from 1-minute deltas.
