@@ -92,6 +92,27 @@ public class VisualizationEngine
         }
     }
 
+    private bool _showOrbitalAxes = false;
+    public bool ShowOrbitalAxes
+    {
+        get => _showOrbitalAxes;
+        set
+        {
+            _showOrbitalAxes = value;
+            UpdateVisibleObjects();
+        }
+    }
+
+    private bool _showRotationalAxes = false;
+    public bool ShowRotationalAxes
+    {
+        get => _showRotationalAxes;
+        set
+        {
+            _showRotationalAxes = value;
+            UpdateVisibleObjects();
+        }
+    }
 
     // Tracked celestial body
     private CelestialBodyView? _trackedCelestialBody = null;

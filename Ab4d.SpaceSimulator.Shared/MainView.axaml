@@ -60,6 +60,9 @@
                     <CheckBox Name="ShowTrailsCheckBox" Content="Show trails" IsChecked="True" IsCheckedChanged="ShowTrailsCheckBox_OnIsCheckedChanged"></CheckBox>
                     <CheckBox Name="ShowNamesCheckBox" Content="Show names" IsChecked="True" IsCheckedChanged="ShowNamesCheckBox_OnIsCheckedChanged"></CheckBox>
 
+                    <CheckBox Name="ShowOrbitalAxesCheckBox" Content="Show orbital axes" IsChecked="False" Margin="0 14 0 0" IsCheckedChanged="ShowOrbitalAxesCheckBox_OnIsCheckedChanged"></CheckBox>
+                    <CheckBox Name="ShowRotationalAxesCheckBox" Content="Show rotational axes" IsChecked="False" IsCheckedChanged="ShowRotationalAxesCheckBox_OnIsCheckedChanged"></CheckBox>
+
                     <CheckBox Name="UseActualSizeCheckBox" Content="Use actual body sizes" IsChecked="False" Margin="0 14 0 0" IsCheckedChanged="UseActualSizeCheckBox_OnIsCheckedChanged"></CheckBox>
                     <TextBlock Name="MinScreenSizeTextBlock" Text="Min screen size: NN px" Width="200" Margin="0 7 0 0" VerticalAlignment="Center" />
                     <Slider Name="MinScreenSizeSlider" Minimum="1" Maximum="100" Width="200" Margin="0 0 0 0"

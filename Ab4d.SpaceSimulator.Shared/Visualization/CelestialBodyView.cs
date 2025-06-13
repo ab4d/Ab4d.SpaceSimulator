@@ -402,11 +402,11 @@ public class CelestialBodyView
         if (OrbitalAxesNode != null)
         {
             OrbitalAxesNode.Length = SphereNode.Radius * 2;
-            OrbitalAxesNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            OrbitalAxesNode.Visibility = (isBodyVisible && _visualizationEngine.ShowOrbitalAxes) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
         }
         if (RotationalAxesNode != null) {
             RotationalAxesNode.Length = SphereNode.Radius * 2;
-            RotationalAxesNode.Visibility = isBodyVisible ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+            RotationalAxesNode.Visibility = (isBodyVisible && _visualizationEngine.ShowRotationalAxes) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
         }
 
         this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
