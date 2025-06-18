@@ -741,4 +741,16 @@ public partial class MainView : UserControl
         if (_visualizationEngine != null)
             _visualizationEngine.ShowNames = ShowNamesCheckBox.IsChecked ?? false;
     }
+
+    private void ShowOrbitalAxesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_visualizationEngine != null)
+            _visualizationEngine.ShowOrbitalAxes = ShowOrbitalAxesCheckBox.IsChecked ?? false;
+    }
+
+    private void ShowRotationalAxesCheckBox_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_visualizationEngine != null)
+            _visualizationEngine.ShowRotationalAxes = ShowRotationalAxesCheckBox.IsChecked ?? false;
+    }
 }

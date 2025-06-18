@@ -39,6 +39,14 @@ public class CelestialBodyView
     // Ring(s)
     public readonly CircleModelNode[]? RingNodes = null;
 
+    // Axes
+    public readonly AxisLineNode? OrbitalAxesNode;
+    public readonly AxisLineNode? RotationalAxesNode;
+
+    // Pre-computed DCM matrix that corresponds to orbital parameters. Used to transform the ellipse's direction vectors,
+    // as well as to compute transform for sphere node, ring(s) and orbital/rotational axes.
+    private readonly Matrix4x4 _orbitDcm;
+
     public bool ShowName = true;
     public SceneNode? NameSceneNode { get; set; }
 
@@ -68,11 +76,33 @@ public class CelestialBodyView
         // Store reference to object from physics engine
         CelestialBody = physicsObject;
 
+        // Pre-compute the DCM (directional cosine matrix) for the orbit.
+        // Orientation of the ellipse is determined from Kepler elements - longitude of ascending node (Omega),
+        // inclination (i), and argument of periapsis (omega), which can be interpreted as 3-1-3 Euler angles,
+        // and used to rotate the base axis vectors.
+        if (CelestialBody.HasOrbit)
+        {
+            _orbitDcm =
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ,float.DegreesToRadians((float)CelestialBody.ArgumentOfPeriapsis)) *
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, float.DegreesToRadians((float)CelestialBody.OrbitalInclination)) *
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, float.DegreesToRadians((float)CelestialBody.LongitudeOfAscendingNode));
+        }
+        else
+        {
+            _orbitDcm = Matrix4x4.Identity;
+        }
+
         // Create sphere node
         SphereNode = new SphereModelNode(name: $"{this.Name}-Sphere")
         {
             Material = material,
         };
+
+        if (physicsObject.HasOrbit)
+        {
+            OrbitalAxesNode = new AxisLineNode(length: 1, name: $"{this.Name}-OrbitalAxes");
+            RotationalAxesNode = new AxisLineNode(length: 1, name: $"{this.Name}-RotationalAxes");
+        }
 
         // Orbit ellipse
         if (CelestialBody.HasOrbit && CelestialBody.Parent != null)
@@ -84,16 +114,8 @@ public class CelestialBodyView
             var majorSemiAxis = (float)ScaleDistance(CelestialBody.OrbitRadius);
             var minorSemiAxis = majorSemiAxis * MathF.Sqrt(1 - (float)(CelestialBody.OrbitalEccentricity * CelestialBody.OrbitalEccentricity)); // b = a * sqrt(1 - e^2)
 
-            // Orientation of the ellipse is determined from Kepler elements - longitude of ascending node (Omega),
-            // inclination (i), and argument of periapsis (omega), which can be interpreted as 3-1-3 Euler angles,
-            // and used to rotate the base axis vectors.
-            var dcm =
-                Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, (float)CelestialBody.ArgumentOfPeriapsis * MathF.PI / 180) *
-                Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, (float)CelestialBody.OrbitalInclination * MathF.PI / 180) *
-                Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, (float)CelestialBody.LongitudeOfAscendingNode * MathF.PI / 180);
-
-            var majorSemiAxisDir = Vector3.Transform(Vector3.UnitX, dcm);
-            var minorSemiAxisDir = Vector3.Transform(Vector3.UnitY, dcm);
+            var majorSemiAxisDir = Vector3.Transform(Vector3.UnitX, _orbitDcm);
+            var minorSemiAxisDir = Vector3.Transform(Vector3.UnitY, _orbitDcm);
 
             // For eccentric orbits, we need to shift the center so that the parent is placed into one of its foci.
             // The shift needs to be done along the transformed major semi-axis.
@@ -195,6 +217,12 @@ public class CelestialBodyView
                 rootNode.Add(ringNode);
             }
         }
+
+        if (OrbitalAxesNode != null)
+            rootNode.Add(OrbitalAxesNode);
+        if (RotationalAxesNode != null)
+            rootNode.Add(RotationalAxesNode);
+
     }
 
     // Update properties to reflect the change in underlying physical object properties (e.g., position).
@@ -203,8 +231,38 @@ public class CelestialBodyView
         // Update position from the underlying physical object
         SphereNode.CenterPosition = TransformPosition(CelestialBody.Position);
 
-        // Rotate around body's axis
-        SphereNode.Transform = ComputeTiltAndRotationTransform();
+        if (OrbitalAxesNode != null)
+            OrbitalAxesNode.Position = SphereNode.CenterPosition;
+        if (RotationalAxesNode != null)
+            RotationalAxesNode.Position = SphereNode.CenterPosition;
+
+        // Transform orbital (ecliptic) axes visualization
+        if (OrbitalAxesNode != null)
+        {
+            var transform = new MatrixTransform(
+                Matrix4x4.CreateTranslation(-SphereNode.CenterPosition) *
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, float.DegreesToRadians(90)) *
+                _orbitDcm *
+                Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, -float.DegreesToRadians(90)) *
+                Matrix4x4.CreateTranslation(SphereNode.CenterPosition));
+            OrbitalAxesNode.Transform = transform;
+        }
+
+        // Transform rotational axes visualization - and apply the same transform to the sphere node, so we can use
+        // the axes for visualization/debugging of the sphere's orientation.
+        var compositeMatrix = (
+            Matrix4x4.CreateTranslation(-SphereNode.CenterPosition) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, float.DegreesToRadians((float)CelestialBody.Rotation)) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, -float.DegreesToRadians((float)CelestialBody.AxialTilt)) *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, float.DegreesToRadians(90)) *
+            _orbitDcm *
+            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, -float.DegreesToRadians(90)) *
+            Matrix4x4.CreateTranslation(SphereNode.CenterPosition)
+        );
+        SphereNode.Transform = new MatrixTransform(compositeMatrix);
+
+        if (RotationalAxesNode != null)
+            RotationalAxesNode.Transform = SphereNode.Transform;
 
         // Update orbit ellipse - its position
         if (OrbitNode != null && CelestialBody.Parent != null)
@@ -340,6 +398,17 @@ public class CelestialBodyView
             }
         }
 
+        // Scaling and visibility of orbital/rotational axes
+        if (OrbitalAxesNode != null)
+        {
+            OrbitalAxesNode.Length = SphereNode.Radius * 2;
+            OrbitalAxesNode.Visibility = (isBodyVisible && _visualizationEngine.ShowOrbitalAxes) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
+        if (RotationalAxesNode != null) {
+            RotationalAxesNode.Length = SphereNode.Radius * 2;
+            RotationalAxesNode.Visibility = (isBodyVisible && _visualizationEngine.ShowRotationalAxes) ? SceneNodeVisibility.Visible : SceneNodeVisibility.Hidden;
+        }
+
         this.DistanceToCamera = isBodyVisible ? distanceToCamera : 0;
 
         UpdateNameSceneNode();
@@ -375,19 +444,6 @@ public class CelestialBodyView
 
         // Workaround for the issue with transparency in PositionColoredLineMaterial (this will be solved in v3.1)
         positionColoredLineMaterial.LineColor = new Color4(1, 1, 1, 0.99f); // Force using alpha blending by setting LineColor.Alpha to less than 1
-    }
-
-    private MatrixTransform ComputeTiltAndRotationTransform()
-    {
-        var center = SphereNode.CenterPosition;
-        var matrix = (
-            Matrix4x4.CreateTranslation(-center) *
-            Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, MathUtils.DegreesToRadians((float)CelestialBody.Rotation)) *
-            Matrix4x4.CreateFromAxisAngle(Vector3.UnitX, MathUtils.DegreesToRadians((float)CelestialBody.AxialTilt)) *
-            Matrix4x4.CreateTranslation(center)
-        );
-
-        return new MatrixTransform(matrix);
     }
 
     private double ScaleDistance(double distance)
