@@ -257,9 +257,9 @@ public partial class MainView : UserControl
         // default camera target and distance and apply them.
         if (defaultView == null && _camera != null)
         {
-            var defaultDistance = scenario.GetDefaultCameraDistance() != null ? scenario.GetDefaultCameraDistance().Value : 850;
+            var defaultDistance = scenario.GetDefaultCameraDistance();
             _camera.TargetPosition = new Vector3(0, 0, 0); // Center
-            _camera.Distance = defaultDistance;
+            _camera.Distance = defaultDistance ?? 850;
         }
 
         // Simulation time needs to be explicitly updated (since we stopped simulation).
