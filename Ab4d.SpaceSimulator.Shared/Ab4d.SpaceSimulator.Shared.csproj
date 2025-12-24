@@ -14,22 +14,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.10" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.8" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.10" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)==''">
+  <!--<ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)==''">-->
+  <ItemGroup>
     <PackageReference Include="Ab4d.SharpEngine" Version="3.2.9386" />
     <PackageReference Include="Ab4d.SharpEngine.AvaloniaUI" Version="3.2.9386" />
   </ItemGroup>
-  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)!=''">
+  <!--<ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)!=''">
     <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine\Ab4d.SharpEngine.csproj" />
     <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine.AvaloniaUI\Ab4d.SharpEngine.AvaloniaUI.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
   
   <!-- Textures -->
   <ItemGroup>
