@@ -22,15 +22,14 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.10" />
   </ItemGroup>
 
-  <!--<ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)==''">-->
-  <ItemGroup>
-    <PackageReference Include="Ab4d.SharpEngine" Version="3.2.9386" />
-    <PackageReference Include="Ab4d.SharpEngine.AvaloniaUI" Version="3.2.9386" />
+  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)==''">
+    <PackageReference Include="Ab4d.SharpEngine" Version="4.0.9584" />
+    <PackageReference Include="Ab4d.SharpEngine.AvaloniaUI" Version="4.0.9584" />
   </ItemGroup>
-  <!--<ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)!=''">
+  <ItemGroup Condition="$(SHARPENGINE_PRIVATE_DIR)!=''">
     <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine\Ab4d.SharpEngine.csproj" />
     <ProjectReference Include="$(SHARPENGINE_PRIVATE_DIR)\Ab4d.SharpEngine.AvaloniaUI\Ab4d.SharpEngine.AvaloniaUI.csproj" />
-  </ItemGroup>-->
+  </ItemGroup>
   
   <!-- Textures -->
   <ItemGroup>
