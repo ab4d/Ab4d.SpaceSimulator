@@ -1,14 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0-android</TargetFramework>
-    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <TargetFramework>net11.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <ApplicationId>com.Ab4d.SpaceSimulator</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>0.9</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <DefineConstants>$(DefineConstants);AVALONIA_12</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,11 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Android" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Android" Version="12.1.6" />
     <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0" />
     <!-- Add support for Android 16KB page size - see https://avaloniaui.net/blog/preparing-your-avalonia-apps-for-android-s-16-kb-page-size-requirement -->
-    <PackageReference Include="SkiaSharp" Version="3.119.1" />
-    <PackageVersion Include="SkiaSharp.HarfBuzz" Version="3.119.0" />
+    <PackageReference Include="SkiaSharp" Version="3.119.4" />
+    <PackageVersion Include="SkiaSharp.HarfBuzz" Version="3.119.4" />
   </ItemGroup>
 
   <ItemGroup>

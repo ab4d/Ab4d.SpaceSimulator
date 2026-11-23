@@ -1,7 +1,7 @@
 ﻿using System;
 using Ab4d.SpaceSimulator.Shared;
 using Avalonia;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Ab4d.SpaceSimulator.Desktop
 {
@@ -50,9 +50,8 @@ namespace Ab4d.SpaceSimulator.Desktop
                                  }
                              })
 #endif
-                             .WithInterFont()
                              .LogToTrace()
-                             .UseReactiveUI();
+                             .UseReactiveUI(uiBuilder => {});
         }
     }
 }
