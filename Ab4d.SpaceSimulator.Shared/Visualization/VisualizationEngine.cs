@@ -26,7 +26,7 @@ public class VisualizationEngine
 
     public const float MinOrbitScreenSize = 20; // If moon or planet's orbit is smaller than 20 pixels, then hide the planet or moon. This is used when using actual body sizes.
 
-    public float OrbitColorMultiplier = 0.3f;
+    public float OrbitColorMultiplier = 0.4f;
     public float TrailColorMultiplier = 1.0f;
 
     public readonly SceneView SceneView;
