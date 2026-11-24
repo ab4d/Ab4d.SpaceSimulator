@@ -37,7 +37,7 @@ public class PlanetTextureLoader
                 
                 if (bitmapStream != null)
                 {
-                    TextureLoader.CreateTextureAsync(bitmapStream, textureFileName, _gpuDevice, gpuImage =>
+                    TextureLoader.CreateTexture(bitmapStream, textureFileName, _gpuDevice, gpuImage =>
                     {
                         planetMaterial.DiffuseTexture = gpuImage;
                         planetMaterial.DiffuseColor = Colors.White; // no texture filter color
